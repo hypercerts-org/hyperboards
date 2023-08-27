@@ -1,0 +1,261 @@
+{
+  "platform": "nextjs",
+  "code": {
+    "lang": "ts",
+    "scheme": "blackbox",
+    "reactRuntime": "classic"
+  },
+  "style": {
+    "scheme": "css-modules",
+    "defaultStyleCssFilePath": "plasmic/plasmic__default_style.css"
+  },
+  "images": {
+    "scheme": "public-files",
+    "publicDir": "../public",
+    "publicUrlPrefix": "/"
+  },
+  "tokens": {
+    "scheme": "theo",
+    "tokensFilePath": "plasmic-tokens.theo.json"
+  },
+  "srcDir": "components",
+  "defaultPlasmicDir": "./plasmic",
+  "projects": [
+    {
+      "projectId": "fyzUiR9xFxM4i8qbFQTNzu",
+      "projectApiToken": "9w4RzLtSF94NnD1PUKqrKUWA2hTKdKJZARgeDx39cX4BCSvgkvkoknA70mClZNxRmemLYonFE4GohvY3bWg",
+      "projectName": "hyperboards",
+      "version": "latest",
+      "cssFilePath": "plasmic/hyperboards/plasmic_hyperboards.module.css",
+      "components": [
+        {
+          "id": "qqBCdYqqhY",
+          "name": "Homepage",
+          "type": "managed",
+          "projectId": "fyzUiR9xFxM4i8qbFQTNzu",
+          "renderModuleFilePath": "plasmic/hyperboards/PlasmicHomepage.tsx",
+          "importSpec": {
+            "modulePath": "../pages/test-page.tsx"
+          },
+          "cssFilePath": "plasmic/hyperboards/PlasmicHomepage.module.css",
+          "scheme": "blackbox",
+          "componentType": "page"
+        }
+      ],
+      "icons": [],
+      "images": [],
+      "indirect": false,
+      "globalContextsFilePath": "",
+      "codeComponents": [
+        {
+          "id": "ZL8VpxsGLBM",
+          "name": "PlasmicHead",
+          "displayName": "hostless-plasmic-head",
+          "componentImportPath": "@plasmicapp/react-web"
+        },
+        {
+          "id": "IsmCYcEq8Zd",
+          "name": "Fetcher",
+          "displayName": "plasmic-data-source-fetcher",
+          "componentImportPath": "@plasmicapp/react-web/lib/data-sources"
+        },
+        {
+          "id": "0f72YVm1qz",
+          "name": "ClientGrid",
+          "displayName": "ClientGrid",
+          "componentImportPath": "./components/client-grid"
+        },
+        {
+          "id": "giDHirukng",
+          "name": "Config",
+          "displayName": "Config",
+          "componentImportPath": "./components/config"
+        },
+        {
+          "id": "L5YDVrrq20",
+          "name": "DappState",
+          "displayName": "DappState",
+          "componentImportPath": "./components/dapp-state"
+        },
+        {
+          "id": "naWnYaz9ud",
+          "name": "ConnectWallet",
+          "displayName": "ConnectWallet",
+          "componentImportPath": "./components/connect-wallet"
+        },
+        {
+          "id": "tCom__ZGbi",
+          "name": "HypercertFetcher",
+          "displayName": "HypercertFetcher",
+          "componentImportPath": "./components/hypercert-metadata-fetcher"
+        },
+        {
+          "id": "xJxiASFOURY",
+          "name": "HypercertCreateForm",
+          "displayName": "HypercertCreateForm",
+          "componentImportPath": "./components/hypercert-create"
+        },
+        {
+          "id": "TBsUksvnbv5",
+          "name": "FormError",
+          "displayName": "FormError",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "xQeHjWwjyn6",
+          "name": "FormField",
+          "displayName": "FormField",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "S6N8_svasCk",
+          "name": "FormTextField",
+          "displayName": "FormTextField",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "6n3NPVrYMA9",
+          "name": "FormSelect",
+          "displayName": "FormSelect",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "b2dEO2ZnBW-",
+          "name": "FormSlider",
+          "displayName": "FormSlider",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "R5CV_reB4sL",
+          "name": "FormDatePicker",
+          "displayName": "FormDatePicker",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "FeDubJpI5XJ",
+          "name": "FormDropZone",
+          "displayName": "FormDropZone",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "mmTv5O6OW2R",
+          "name": "FormCheckbox",
+          "displayName": "FormCheckbox",
+          "componentImportPath": "./components/forms"
+        },
+        {
+          "id": "fwJH44izUKj",
+          "name": "ZuzaluPurchaseForm",
+          "displayName": "ZuzaluPurchaseForm",
+          "componentImportPath": "./components/zuzalu-purchase"
+        },
+        {
+          "id": "cDMlPhoTmZe",
+          "name": "FtcPurchaseForm",
+          "displayName": "FtcPurchaseForm",
+          "componentImportPath": "./components/ftc-purchase"
+        },
+        {
+          "id": "IWbGPN7DWCT",
+          "name": "Tooltip",
+          "displayName": "Tooltip",
+          "componentImportPath": "./components/widgets"
+        },
+        {
+          "id": "MjSKVPCHV7D",
+          "name": "Accordion",
+          "displayName": "Accordion",
+          "componentImportPath": "./components/widgets"
+        },
+        {
+          "id": "p7BhISTcftP",
+          "name": "Markdown",
+          "displayName": "Markdown",
+          "componentImportPath": "./components/widgets"
+        },
+        {
+          "id": "8YiYJekH6Om",
+          "name": "CircularProgress",
+          "displayName": "CircularProgress",
+          "componentImportPath": "@mui/material/CircularProgress"
+        },
+        {
+          "id": "47PVjBSrNAy",
+          "name": "SupabaseQuery",
+          "displayName": "SupabaseQuery",
+          "componentImportPath": "./components/supabase-query"
+        },
+        {
+          "id": "vUdBGM93V4s",
+          "name": "SupabaseToChart",
+          "displayName": "SupabaseToChart",
+          "componentImportPath": "./components/supabase-to-chart"
+        },
+        {
+          "id": "s87CVj0y-3N",
+          "name": "ClaimAllFractionsButton",
+          "displayName": "ClaimAllFractionsButton",
+          "componentImportPath": "./components/claim-all-fractions-button"
+        },
+        {
+          "id": "bNkEf2EtPki",
+          "name": "BurnFractionButton",
+          "displayName": "BurnFractionButton",
+          "componentImportPath": "./components/burn-fraction-button"
+        },
+        {
+          "id": "0-69lWRNcRP",
+          "name": "ZuzaluHypercertTreemap",
+          "displayName": "ZuzaluHypercertTreemap",
+          "componentImportPath": "./components/zuzalu-hypercert-treemap"
+        },
+        {
+          "id": "fSHlXxFVH0f",
+          "name": "GenericHypercertTreemap",
+          "displayName": "GenericHypercertTreemap",
+          "componentImportPath": "./components/generic-hypercert-treemap"
+        },
+        {
+          "id": "7mSH9Y0Vz3G",
+          "name": "ProjectBrowser",
+          "displayName": "ProjectBrowser",
+          "componentImportPath": "./components/project-browser"
+        },
+        {
+          "id": "z14hkdDBhUf",
+          "name": "Compz14HkdDBhUf",
+          "displayName": "ProjectsClientProvider",
+          "componentImportPath": ""
+        },
+        {
+          "id": "2-quGprI_0",
+          "name": "BlueprintCreateForm",
+          "displayName": "BlueprintCreateForm",
+          "componentImportPath": "./components/blueprint-create"
+        },
+        {
+          "id": "M6NHANZ8z9",
+          "name": "ContributionBlueprintCreate",
+          "displayName": "ContributionBlueprintCreate",
+          "componentImportPath": "./components/contribution-blueprint-create"
+        }
+      ]
+    }
+  ],
+  "globalVariants": {
+    "variantGroups": [
+      {
+        "id": "YmJitsN5EdO",
+        "name": "Screen",
+        "projectId": "fyzUiR9xFxM4i8qbFQTNzu",
+        "contextFilePath": "plasmic/hyperboards/PlasmicGlobalVariant__Screen.tsx"
+      }
+    ]
+  },
+  "wrapPagesWithGlobalContexts": true,
+  "nextjsConfig": {
+    "pagesDir": "../pages"
+  },
+  "cliVersion": "0.1.307",
+  "$schema": "https://unpkg.com/@plasmicapp/cli@0.1.307/dist/plasmic.schema.json"
+}
