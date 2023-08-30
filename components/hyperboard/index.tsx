@@ -7,14 +7,18 @@ export interface HyperboardProps {
 export const Hyperboard = (props: HyperboardProps) => {
   const ref = useRef<SVGElement | null | undefined>();
 
-  const width = 1000;
-  const height = 800;
+  const width = 1600;
+  const height = 900;
+
+  const maxWidthRatio = 0.6;
+  const maxHeightRatio = 0.6;
 
   useEffect(() => {
     d3.select(ref.current)
+      .attr("fill", "red")
       .attr("width", width)
       .attr("height", height)
-      .style("border", "1px solid black");
+      .attr("viewBox", `0 0 ${width} ${height}`);
   }, []);
 
   const formattedData = {
@@ -31,16 +35,55 @@ export const Hyperboard = (props: HyperboardProps) => {
   useEffect(() => {
     console.log("drawing", props.data);
     draw();
+    resizeLogos();
     alignLogos();
   }, []);
+
+  const resizeLogos = () => {
+    window.document.querySelectorAll(".company-logo").forEach((logo: any) => {
+      const parentHeight = parseFloat(
+        logo.parentElement?.getBoundingClientRect().height,
+      );
+
+      const parentWidth = parseFloat(
+        logo.parentElement?.getBoundingClientRect().width,
+      );
+
+      const maxHeight = parentHeight * maxHeightRatio;
+      const maxWidth = parentWidth * maxWidthRatio;
+
+      console.log("parentHeight", parentHeight);
+      console.log("maxHeight", maxHeight);
+
+      logo.setAttribute("height", maxHeight);
+      logo.setAttribute("width", maxWidth);
+
+      // logo.setAttribute("x", (x - width / 2).toString());
+      // logo.setAttribute("y", (y - height / 2).toString());
+
+      // logo.setAttribute(
+      //   "transform",
+      //   `translate(-${width / 2}, -${height / 2})`,
+      // );
+    });
+  };
 
   const alignLogos = () => {
     window.document.querySelectorAll(".company-logo").forEach((logo: any) => {
       const width = logo.getBoundingClientRect().width;
       const height = logo.getBoundingClientRect().height;
 
-      // logo.setAttribute("x", (x - width / 2).toString());
-      // logo.setAttribute("y", (y - height / 2).toString());
+      const parentX = logo.parentElement.getAttribute("x");
+      const parentWidth = logo.parentElement.getAttribute("width");
+
+      const newX = parseFloat(parentX) + parseFloat(parentWidth) / 2;
+      logo.setAttribute("x", newX);
+
+      const parentY = logo.parentElement.getAttribute("y");
+      const parentHeight = logo.parentElement.getAttribute("height");
+
+      const newY = parseFloat(parentY) + parseFloat(parentHeight) / 2;
+      logo.setAttribute("y", newY);
 
       logo.setAttribute(
         "transform",
@@ -53,20 +96,6 @@ export const Hyperboard = (props: HyperboardProps) => {
     // Append images as patterns
     const svg = d3.select(ref.current);
 
-    const defs = svg.append("defs");
-    for (const item of props.data) {
-      defs
-        .append("pattern")
-        .attr("id", item.id)
-        .attr("width", "60%")
-        .attr("height", "60%")
-        .append("image")
-        .attr("width", "60%")
-        .attr("height", "60%")
-        .attr("xlink:href", item.image)
-        .attr("preserveAspectRatio", "xMidYMid meet");
-    }
-
     // Give the data to this cluster layout:
     const root = d3.hierarchy(formattedData).sum(function (d) {
       return d.value;
@@ -78,13 +107,6 @@ export const Hyperboard = (props: HyperboardProps) => {
       .size([width, height])
       // @ts-ignore
       .paddingInner(3)(root);
-
-    const color = d3
-      .scaleOrdinal()
-      .domain(["boss1", "boss2", "boss3"])
-      .range(["#402D54", "#D18975", "#8FD175"]);
-
-    const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
 
     // Select the nodes
     const nodes = svg.selectAll("rect").data(root.leaves());
@@ -111,7 +133,9 @@ export const Hyperboard = (props: HyperboardProps) => {
       });
     gs.append("rect")
       // .attr("fill", "url(#a)")
-      .attr("opacity", "0.5")
+      .attr("fill", "black")
+      .attr("opacity", "1")
+      .attr("rx", 10)
       .attr("x", function (d) {
         // @ts-ignore
         return d.x0;
@@ -136,30 +160,25 @@ export const Hyperboard = (props: HyperboardProps) => {
       })
       .attr("x", function (d) {
         // @ts-ignore
-        const width = d.x1 - d.x0;
-        const imageWidth = width * 0.6;
-
-        // @ts-ignore
-        return d.x0 + width / 2;
-        // console.log(d);
-        // // @ts-ignore
-        // return d.x0;
+        return d.x0;
       })
       .attr("y", function (d) {
         // @ts-ignore
-        const height = d.y1 - d.y0;
-        // @ts-ignore
-        return d.y0 + height / 2;
-        // @ts-ignore
+        return d.y0;
       })
       .attr("width", function (d) {
         // @ts-ignore
         const width = d.x1 - d.x0;
-        return width * 0.6;
+        return width * maxWidthRatio;
+      })
+      .attr("max-height", function (d) {
+        // @ts-ignore
+        const height = d.y1 - d.y0;
+        return height * maxHeightRatio;
       })
       // .attr("height", "100%")
       // .attr("transform", "translate(-100, -100)")
-      .attr("preserveAspectRatio", "xMidYMid slice");
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     nodes.exit().remove();
 
@@ -176,26 +195,6 @@ export const Hyperboard = (props: HyperboardProps) => {
     //   .attr("preserveAspectRatio", "xMidYMid slice");
 
     // select node titles
-    const nodeText = svg.selectAll("text").data(root.leaves());
-
-    // add the text
-    nodeText
-      .enter()
-      .append("text")
-      .attr("x", function (d) {
-        // @ts-ignore
-        return d.x0 + 5;
-      }) // +10 to adjust position (more right)
-      .attr("y", function (d) {
-        // @ts-ignore
-        return d.y0 + 20;
-      }) // +20 to adjust position (lower)
-      .text(function (d) {
-        return d.data.name.replace("mister_", "");
-      })
-      .attr("font-size", "19px")
-      .attr("fill", "white");
-
     // select node titles
 
     // const nodeValues = svg.selectAll("vals").data(root.leaves());
@@ -248,7 +247,13 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   return (
-    <div className="chart">
+    <div
+      className="chart"
+      style={{
+        padding: 3,
+        backgroundImage: "url(/bg-1.png)",
+      }}
+    >
       {/*
       //@ts-ignore */}
       <svg ref={ref}></svg>

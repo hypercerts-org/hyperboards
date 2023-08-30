@@ -33,29 +33,49 @@ function Homepage() {
           {
             id: "a",
             name: "Test",
-            image:
-              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            image: "/logos/celo.svg",
             value: 2,
           },
           {
             id: "b",
             name: "Test",
-            image:
-              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            image: "/logos/filecoin-1.svg",
             value: 2,
           },
           {
             id: "c",
             name: "Test",
-            image:
-              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            image: "/logos/filecoin-2.svg",
             value: 1,
           },
           {
             id: "d",
             name: "Test",
-            image:
-              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            image: "/logos/open-ai.svg",
+            value: 1,
+          },
+          {
+            id: "e",
+            name: "Test",
+            image: "/logos/celo.svg",
+            value: 2,
+          },
+          {
+            id: "f",
+            name: "Test",
+            image: "/logos/filecoin-1.svg",
+            value: 2,
+          },
+          {
+            id: "g",
+            name: "Test",
+            image: "/logos/filecoin-2.svg",
+            value: 1,
+          },
+          {
+            id: "h",
+            name: "Test",
+            image: "/logos/open-ai.svg",
             value: 1,
           },
         ]}
