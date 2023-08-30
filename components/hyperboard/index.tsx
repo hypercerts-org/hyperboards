@@ -19,17 +19,35 @@ export const Hyperboard = (props: HyperboardProps) => {
 
   const formattedData = {
     name: "root",
+    image: "",
     value: 0,
     children: props.data.map((d) => ({
       name: d.name,
       value: d.value,
+      image: d.image,
     })),
   };
 
   useEffect(() => {
     console.log("drawing", props.data);
     draw();
+    alignLogos();
   }, []);
+
+  const alignLogos = () => {
+    window.document.querySelectorAll(".company-logo").forEach((logo: any) => {
+      const width = logo.getBoundingClientRect().width;
+      const height = logo.getBoundingClientRect().height;
+
+      // logo.setAttribute("x", (x - width / 2).toString());
+      // logo.setAttribute("y", (y - height / 2).toString());
+
+      logo.setAttribute(
+        "transform",
+        `translate(-${width / 2}, -${height / 2})`,
+      );
+    });
+  };
 
   const draw = () => {
     // Append images as patterns
@@ -46,7 +64,7 @@ export const Hyperboard = (props: HyperboardProps) => {
         .attr("width", "60%")
         .attr("height", "60%")
         .attr("xlink:href", item.image)
-        .attr("preserveAspectRatio", "xMidYMid slice");
+        .attr("preserveAspectRatio", "xMidYMid meet");
     }
 
     // Give the data to this cluster layout:
@@ -72,13 +90,9 @@ export const Hyperboard = (props: HyperboardProps) => {
     const nodes = svg.selectAll("rect").data(root.leaves());
 
     // draw rectangles
-    nodes
+    const gs = nodes
       .enter()
-      .append("rect")
-      .attr("fill", (x) => {
-        console.log(x);
-        return "url(#a)";
-      })
+      .append("g")
       .attr("x", function (d) {
         // @ts-ignore
         return d.x0;
@@ -94,14 +108,72 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", function (d) {
         // @ts-ignore
         return d.y1 - d.y0;
+      });
+    gs.append("rect")
+      // .attr("fill", "url(#a)")
+      .attr("opacity", "0.5")
+      .attr("x", function (d) {
+        // @ts-ignore
+        return d.x0;
       })
-      .style("stroke", "black")
-      // @ts-ignore
-      .style("opacity", function (d) {
-        return opacity(d.data.value);
+      .attr("y", function (d) {
+        // @ts-ignore
+        return d.y0;
+      })
+      .attr("width", function (d) {
+        // @ts-ignore
+        return d.x1 - d.x0;
+      })
+      .attr("height", function (d) {
+        // @ts-ignore
+        return d.y1 - d.y0;
       });
 
+    gs.append("image")
+      .attr("class", "company-logo")
+      .attr("xlink:href", function (d) {
+        return d.data.image;
+      })
+      .attr("x", function (d) {
+        // @ts-ignore
+        const width = d.x1 - d.x0;
+        const imageWidth = width * 0.6;
+
+        // @ts-ignore
+        return d.x0 + width / 2;
+        // console.log(d);
+        // // @ts-ignore
+        // return d.x0;
+      })
+      .attr("y", function (d) {
+        // @ts-ignore
+        const height = d.y1 - d.y0;
+        // @ts-ignore
+        return d.y0 + height / 2;
+        // @ts-ignore
+      })
+      .attr("width", function (d) {
+        // @ts-ignore
+        const width = d.x1 - d.x0;
+        return width * 0.6;
+      })
+      // .attr("height", "100%")
+      // .attr("transform", "translate(-100, -100)")
+      .attr("preserveAspectRatio", "xMidYMid slice");
+
     nodes.exit().remove();
+
+    // draw rectangles
+    // nodes
+    //   .enter()
+    //   .append("image")
+    //   .attr("xlink:href", function (d) {
+    //     return d.data.image;
+    //   })
+    //   .attr("x", 2)
+    //   .attr("width", "100px")
+    //   .attr("height", "100px")
+    //   .attr("preserveAspectRatio", "xMidYMid slice");
 
     // select node titles
     const nodeText = svg.selectAll("text").data(root.leaves());
