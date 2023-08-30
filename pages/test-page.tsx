@@ -3,9 +3,8 @@
 import * as React from "react";
 import * as ph from "@plasmicapp/react-web/lib/host";
 
-import { ScreenVariantProvider } from "../components/plasmic/hyperboards/PlasmicGlobalVariant__Screen";
-import { PlasmicHomepage } from "../components/plasmic/hyperboards/PlasmicHomepage";
 import { useRouter } from "next/router";
+import { Hyperboard } from "@/components/hyperboard";
 
 function Homepage() {
   // Use PlasmicHomepage to render this component as it was
@@ -29,7 +28,38 @@ function Homepage() {
       params={useRouter()?.query}
       query={useRouter()?.query}
     >
-      <PlasmicHomepage />
+      <Hyperboard
+        data={[
+          {
+            id: "a",
+            name: "Test",
+            image:
+              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            value: 2,
+          },
+          {
+            id: "b",
+            name: "Test",
+            image:
+              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            value: 2,
+          },
+          {
+            id: "c",
+            name: "Test",
+            image:
+              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            value: 1,
+          },
+          {
+            id: "d",
+            name: "Test",
+            image:
+              "https://img.freepik.com/free-vector/gradient-book-logo-with-slogan_23-2148832096.jpg?t=st=1693356627~exp=1693357227~hmac=a7d4c9eda4a0960eba551e457d5e1169771379b94461f5f7710ea3304ab9a6fc",
+            value: 1,
+          },
+        ]}
+      />
     </ph.PageParamsProvider>
   );
 }
