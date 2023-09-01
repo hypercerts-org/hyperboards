@@ -1,7 +1,9 @@
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
+import { HyperboardEntry } from "@/types/Hyperboard";
+import { Tile } from "@/components/hyperboard-html/Tile";
 export interface HyperboardProps {
-  data: { id: string; image: string; value: number; name: string }[];
+  data: HyperboardEntry[];
 }
 
 type Leaf = {
@@ -9,7 +11,7 @@ type Leaf = {
   x1: number;
   y0: number;
   y1: number;
-} & d3.HierarchyNode<{ image: string }>;
+} & d3.HierarchyNode<HyperboardEntry>;
 
 export const HyperboardHtml = (props: HyperboardProps) => {
   const ref = useRef<string>("");
@@ -33,9 +35,7 @@ export const HyperboardHtml = (props: HyperboardProps) => {
     image: "",
     value: 0,
     children: props.data.map((d) => ({
-      name: d.name,
-      value: d.value,
-      image: d.image,
+      ...d,
     })),
   };
 
@@ -90,7 +90,7 @@ export const HyperboardHtml = (props: HyperboardProps) => {
       style={{
         width: width + padding * 2,
         height: height + padding * 2,
-        padding: padding,
+        margin: padding,
         position: "relative",
         // backgroundImage: "url(/bg-1.png)",
       }}
@@ -99,8 +99,9 @@ export const HyperboardHtml = (props: HyperboardProps) => {
         console.log(leaf);
         return (
           <Tile
+            padding={2}
             key={index}
-            logo={leaf.data.image}
+            entry={leaf.data}
             width={leaf.x1 - leaf.x0}
             height={leaf.y1 - leaf.y0}
             top={leaf.y0}
@@ -112,39 +113,6 @@ export const HyperboardHtml = (props: HyperboardProps) => {
       {/*
       // @ts-ignore */}
       <svg ref={ref} display={"hidden"}></svg>
-    </div>
-  );
-};
-
-const Tile = ({
-  logo,
-  width,
-  height,
-  top,
-  left,
-}: {
-  logo: string;
-  width: number;
-  height: number;
-  top: number;
-  left: number;
-}) => {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        width,
-        height,
-        top,
-        left,
-        backgroundColor: "black",
-        borderRadius: 20,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <img src={logo} alt={logo} />
     </div>
   );
 };

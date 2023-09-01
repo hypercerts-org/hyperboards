@@ -5,54 +5,71 @@ import * as ph from "@plasmicapp/react-web/lib/host";
 
 import { useRouter } from "next/router";
 import { HyperboardHtml } from "@/components/hyperboard-html";
+import { HyperboardEntry } from "@/types/Hyperboard";
 
-const mockData = [
+const mockData: HyperboardEntry[] = [
   {
+    type: "company",
     id: "a",
     name: "Test",
     image: "/logos/celo.svg",
     value: 2,
   },
   {
+    type: "company",
     id: "b",
     name: "Test",
     image: "/logos/filecoin-1.svg",
     value: 2,
   },
   {
+    type: "company",
     id: "c",
     name: "Test",
     image: "/logos/filecoin-2.svg",
     value: 1,
   },
   {
+    type: "company",
     id: "d",
     name: "Test",
     image: "/logos/open-ai.svg",
     value: 1,
   },
   {
+    type: "company",
     id: "e",
     name: "Test",
     image: "/logos/celo.svg",
     value: 2,
   },
   {
+    type: "company",
     id: "f",
     name: "Test",
     image: "/logos/filecoin-1.svg",
     value: 2,
   },
   {
+    type: "company",
     id: "g",
     name: "Test",
     image: "/logos/filecoin-2.svg",
     value: 1,
   },
   {
+    type: "company",
     id: "h",
     name: "Test",
     image: "/logos/open-ai.svg",
+    value: 1,
+  },
+  {
+    type: "person",
+    id: "h",
+    firstName: "Laura",
+    lastName: "Lotti",
+    image: "/logos/person-1.png",
     value: 1,
   },
 ];
