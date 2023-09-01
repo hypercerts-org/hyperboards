@@ -4,7 +4,58 @@ import * as React from "react";
 import * as ph from "@plasmicapp/react-web/lib/host";
 
 import { useRouter } from "next/router";
-import { Hyperboard } from "@/components/hyperboard";
+import { HyperboardHtml } from "@/components/hyperboard-html";
+
+const mockData = [
+  {
+    id: "a",
+    name: "Test",
+    image: "/logos/celo.svg",
+    value: 2,
+  },
+  {
+    id: "b",
+    name: "Test",
+    image: "/logos/filecoin-1.svg",
+    value: 2,
+  },
+  {
+    id: "c",
+    name: "Test",
+    image: "/logos/filecoin-2.svg",
+    value: 1,
+  },
+  {
+    id: "d",
+    name: "Test",
+    image: "/logos/open-ai.svg",
+    value: 1,
+  },
+  {
+    id: "e",
+    name: "Test",
+    image: "/logos/celo.svg",
+    value: 2,
+  },
+  {
+    id: "f",
+    name: "Test",
+    image: "/logos/filecoin-1.svg",
+    value: 2,
+  },
+  {
+    id: "g",
+    name: "Test",
+    image: "/logos/filecoin-2.svg",
+    value: 1,
+  },
+  {
+    id: "h",
+    name: "Test",
+    image: "/logos/open-ai.svg",
+    value: 1,
+  },
+];
 
 function Homepage() {
   // Use PlasmicHomepage to render this component as it was
@@ -28,58 +79,7 @@ function Homepage() {
       params={useRouter()?.query}
       query={useRouter()?.query}
     >
-      <Hyperboard
-        data={[
-          {
-            id: "a",
-            name: "Test",
-            image: "/logos/celo.svg",
-            value: 2,
-          },
-          {
-            id: "b",
-            name: "Test",
-            image: "/logos/filecoin-1.svg",
-            value: 2,
-          },
-          {
-            id: "c",
-            name: "Test",
-            image: "/logos/filecoin-2.svg",
-            value: 1,
-          },
-          {
-            id: "d",
-            name: "Test",
-            image: "/logos/open-ai.svg",
-            value: 1,
-          },
-          {
-            id: "e",
-            name: "Test",
-            image: "/logos/celo.svg",
-            value: 2,
-          },
-          {
-            id: "f",
-            name: "Test",
-            image: "/logos/filecoin-1.svg",
-            value: 2,
-          },
-          {
-            id: "g",
-            name: "Test",
-            image: "/logos/filecoin-2.svg",
-            value: 1,
-          },
-          {
-            id: "h",
-            name: "Test",
-            image: "/logos/open-ai.svg",
-            value: 1,
-          },
-        ]}
-      />
+      <HyperboardHtml data={mockData} />
     </ph.PageParamsProvider>
   );
 }

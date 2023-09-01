@@ -9,13 +9,13 @@ export const Hyperboard = (props: HyperboardProps) => {
 
   const width = 1600;
   const height = 900;
+  const padding = 3;
 
   const maxWidthRatio = 0.6;
   const maxHeightRatio = 0.6;
 
   useEffect(() => {
     d3.select(ref.current)
-      .attr("fill", "red")
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", `0 0 ${width} ${height}`);
@@ -106,7 +106,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .treemap()
       .size([width, height])
       // @ts-ignore
-      .paddingInner(3)(root);
+      .paddingInner(padding)(root);
 
     // Select the nodes
     const nodes = svg.selectAll("rect").data(root.leaves());
@@ -250,7 +250,9 @@ export const Hyperboard = (props: HyperboardProps) => {
     <div
       className="chart"
       style={{
-        padding: 3,
+        width: width + padding * 2,
+        height: height + padding * 2,
+        padding: padding,
         backgroundImage: "url(/bg-1.png)",
       }}
     >
