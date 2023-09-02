@@ -68,7 +68,7 @@ const mockData: HyperboardEntry[] = [
     type: "person",
     id: "h",
     firstName: "Laura",
-    lastName: "Lotti",
+    lastName: "Laura",
     image: "/logos/person-1.png",
     value: 1,
   },

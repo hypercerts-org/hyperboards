@@ -2,6 +2,9 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard-html/Tile";
+import { useRegistry } from "@/hooks/registry";
+import { useSize } from "@chakra-ui/react-use-size";
+
 export interface HyperboardProps {
   data: HyperboardEntry[];
 }
@@ -14,21 +17,14 @@ type Leaf = {
 } & d3.HierarchyNode<HyperboardEntry>;
 
 export const HyperboardHtml = (props: HyperboardProps) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const ref = useRef<string>("");
 
-  const width = 1600;
-  const height = 900;
+  const dimensions = useSize(containerRef);
+
   const padding = 3;
 
-  const maxWidthRatio = 0.6;
-  const maxHeightRatio = 0.6;
-
-  useEffect(() => {
-    d3.select(ref.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`);
-  }, []);
+  const { data } = useRegistry("a");
 
   const formattedData = {
     name: "root",
@@ -40,15 +36,22 @@ export const HyperboardHtml = (props: HyperboardProps) => {
   };
 
   useEffect(() => {
-    console.log("drawing", props.data);
+    if (!dimensions) {
+      return;
+    }
+    d3.select(ref.current)
+      .attr("width", dimensions.width)
+      .attr("height", dimensions.height)
+      .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`);
     draw();
-  }, []);
+  }, [dimensions]);
 
   const [leaves, setLeaves] = useState<Leaf[]>([]);
 
-  const squares: React.ReactNode[] = [];
-
   const draw = () => {
+    if (!dimensions) {
+      return;
+    }
     // Append images as patterns
     const svg = d3.select(ref.current);
     const root = d3.hierarchy(formattedData).sum(function (d) {
@@ -57,19 +60,12 @@ export const HyperboardHtml = (props: HyperboardProps) => {
 
     // Give the data to this cluster layout:
 
-    console.log("the new root", root);
-
     // initialize treemap
     d3
       .treemap()
-      .size([width, height])
+      .size([dimensions.width, dimensions.height])
       // @ts-ignore
       .paddingInner(padding)(root);
-
-    root?.leaves().map((leave) => {
-      console.log(leave);
-      squares.push(<div>test</div>);
-    });
 
     // Select the nodes
     const nodes = svg.selectAll("rect").data(root.leaves());
@@ -79,24 +75,21 @@ export const HyperboardHtml = (props: HyperboardProps) => {
     nodes.exit().remove();
 
     setLeaves(root.leaves() as unknown as Leaf[]);
-    console.log("set leaves", leaves);
   };
-
-  console.log(squares);
 
   return (
     <div
+      ref={containerRef}
       className="chart"
       style={{
-        width: width + padding * 2,
-        height: height + padding * 2,
+        width: "100%",
+        height: ((dimensions?.width || 1) / 16) * 9,
         margin: padding,
         position: "relative",
-        // backgroundImage: "url(/bg-1.png)",
+        backgroundColor: "black",
       }}
     >
       {leaves.map((leaf, index) => {
-        console.log(leaf);
         return (
           <Tile
             padding={2}
@@ -109,10 +102,7 @@ export const HyperboardHtml = (props: HyperboardProps) => {
           />
         );
       })}
-      {squares}
-      {/*
-      // @ts-ignore */}
-      <svg ref={ref} display={"hidden"}></svg>
+      <svg ref={ref as unknown as string} display={"hidden"}></svg>
     </div>
   );
 };

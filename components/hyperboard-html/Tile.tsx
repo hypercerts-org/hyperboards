@@ -2,7 +2,9 @@ import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Flex, Image, Text } from "@chakra-ui/react";
 
-const borderRadius = 20;
+const borderRadius = 10;
+const logosAndText = "black";
+const background = "white";
 
 export const Tile = ({
   entry,
@@ -20,12 +22,25 @@ export const Tile = ({
     return (
       <Wrapper {...wrapperProps}>
         <Flex
+          color={"red"}
+          fill={"red"}
           width={"100%"}
           display="flex"
           alignItems="center"
           justifyContent="center"
+          filter={
+            "invert(0%) sepia(0%) saturate(1081%) hue-rotate(270deg) brightness(101%) contrast(106%)"
+          }
         >
-          <Image maxWidth={"60%"} src={entry.image} alt={entry.image} />
+          <Image
+            filter={
+              "invert(0%) sepia(0%) saturate(1081%) hue-rotate(270deg) brightness(101%) contrast(106%) !important"
+            }
+            className={"company-logo"}
+            maxWidth={"60%"}
+            src={entry.image}
+            alt={entry.image}
+          />
         </Flex>
       </Wrapper>
     );
@@ -33,6 +48,7 @@ export const Tile = ({
 
   if (entry.type === "person") {
     const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
+    console.log(layout);
     return (
       <Wrapper {...wrapperProps}>
         <Flex
@@ -42,20 +58,32 @@ export const Tile = ({
           justifyContent={"space-between"}
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
-            <Text color={"white"} fontSize={layout.font}>
+            <Text
+              lineHeight={"28px"}
+              fontSize={layout.font}
+              color={logosAndText}
+              fontFamily={"Switzer"}
+            >
               {entry.firstName}
             </Text>
-            <Text fontSize={layout.font} color={"white"}>
+            <Text
+              lineHeight={"28px"}
+              fontSize={layout.font}
+              color={logosAndText}
+            >
               {entry.lastName}
             </Text>
           </Flex>
           <Image
             borderTopRightRadius={borderRadius}
+            borderBottomLeftRadius={borderRadius}
             marginBottom={"auto"}
             src={entry.image}
             alt={"Test alt"}
-            height={layout.image}
-            width={layout.image}
+            height={`${layout.image}px`}
+            width={`${layout.image}px`}
+            maxWidth={`${layout.image}px`}
+            maxHeight={`${layout.image}px`}
           />
         </Flex>
       </Wrapper>
@@ -82,8 +110,11 @@ const Wrapper = ({
       height={height}
       top={top}
       left={left}
-      backgroundColor="black"
-      borderRadius={20}
+      backgroundColor={background}
+      borderRadius={borderRadius}
+      _hover={{
+        backgroundColor: "gray.100",
+      }}
     >
       {children}
     </Flex>
