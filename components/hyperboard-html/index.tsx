@@ -2,8 +2,9 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard-html/Tile";
-import { useRegistry } from "@/hooks/registry";
+import { useRegistryContents } from "@/hooks/registry";
 import { useSize } from "@chakra-ui/react-use-size";
+import { Flex } from "@chakra-ui/react";
 
 export interface HyperboardProps {
   data: HyperboardEntry[];
@@ -24,7 +25,7 @@ export const HyperboardHtml = (props: HyperboardProps) => {
 
   const padding = 3;
 
-  const { data } = useRegistry("a");
+  const { data } = useRegistryContents("ca74dcc4-8505-4a2a-b2ce-dc638579dc85");
 
   const formattedData = {
     name: "root",
@@ -78,31 +79,32 @@ export const HyperboardHtml = (props: HyperboardProps) => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="chart"
-      style={{
-        width: "100%",
-        height: ((dimensions?.width || 1) / 16) * 9,
-        margin: padding,
-        position: "relative",
-        backgroundColor: "black",
-      }}
-    >
-      {leaves.map((leaf, index) => {
-        return (
-          <Tile
-            padding={2}
-            key={index}
-            entry={leaf.data}
-            width={leaf.x1 - leaf.x0}
-            height={leaf.y1 - leaf.y0}
-            top={leaf.y0}
-            left={leaf.x0}
-          />
-        );
-      })}
-      <svg ref={ref as unknown as string} display={"hidden"}></svg>
-    </div>
+    <Flex width={"100%"} padding={"3px"} backgroundColor={"black"}>
+      <div
+        ref={containerRef}
+        className="chart"
+        style={{
+          width: "100%",
+          height: ((dimensions?.width || 1) / 16) * 9,
+          position: "relative",
+          backgroundColor: "black",
+        }}
+      >
+        {leaves.map((leaf, index) => {
+          return (
+            <Tile
+              padding={2}
+              key={index}
+              entry={leaf.data}
+              width={leaf.x1 - leaf.x0}
+              height={leaf.y1 - leaf.y0}
+              top={leaf.y0}
+              left={leaf.x0}
+            />
+          );
+        })}
+        <svg ref={ref as unknown as string} display={"hidden"}></svg>
+      </div>
+    </Flex>
   );
 };
