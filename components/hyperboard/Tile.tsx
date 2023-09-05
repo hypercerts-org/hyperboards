@@ -46,7 +46,7 @@ export const Tile = ({
     );
   }
 
-  if (entry.type === "person") {
+  if (entry.type === "person" || entry.type === "speaker") {
     const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
     console.log(layout);
     return (

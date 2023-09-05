@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
-import { HypercertClient } from "@hypercerts-org/sdk";
+import { ClaimToken, HypercertClient } from "@hypercerts-org/sdk";
 import _ from "lodash";
+import { HyperboardEntry } from "@/types/Hyperboard";
 
 const client = new HypercertClient({
   chainId: 5,
@@ -19,10 +20,19 @@ interface RegistryWithClaims {
 interface EntryDisplayData {
   image: string;
   address: string;
-  type: "person" | "company";
+  type: "person" | "company" | "speaker";
   firstName: string;
   lastName: string;
   name: string;
+}
+
+interface RegistryContentItem {
+  fractions: Pick<
+    ClaimToken,
+    "id" | "chainName" | "owner" | "tokenID" | "units"
+  >[];
+  displayData: EntryDisplayData;
+  totalValue: number;
 }
 
 export const useRegistryContents = (registryId: string) => {
@@ -48,7 +58,7 @@ export const useRegistryContents = (registryId: string) => {
         await getEntryDisplayData(ownerAddresses);
       const claimDisplayData = _.keyBy(
         claimDisplayDataResponse?.data || [],
-        (x) => x.address,
+        (x) => x.address.toLowerCase(),
       );
 
       // Group by owner, merge with display data and calculate total value of all fractions per owner
@@ -80,4 +90,18 @@ const getEntryDisplayData = async (addresses: string[]) => {
     .from("hyperboard-sponsor-metadata")
     .select<"*", EntryDisplayData>("*")
     .in("address", addresses);
+};
+
+export const registryContentItemToHyperboardEntry = (
+  item: RegistryContentItem,
+): HyperboardEntry => {
+  return {
+    type: item.displayData.type,
+    lastName: item.displayData.lastName,
+    firstName: item.displayData.firstName,
+    name: item.displayData.name,
+    image: item.displayData.image,
+    value: item.totalValue,
+    id: item.displayData.address,
+  };
 };

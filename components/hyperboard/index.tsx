@@ -2,12 +2,14 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard/Tile";
-import { useRegistryContents } from "@/hooks/registry";
 import { useSize } from "@chakra-ui/react-use-size";
-import { Flex } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 
 export interface HyperboardProps {
   data: HyperboardEntry[];
+  height: number;
+  label: string;
+  onClickLabel: () => void;
 }
 
 type Leaf = {
@@ -20,12 +22,11 @@ type Leaf = {
 export const Hyperboard = (props: HyperboardProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const ref = useRef<string>("");
-
   const dimensions = useSize(containerRef);
 
-  const padding = 3;
+  const [leaves, setLeaves] = useState<Leaf[]>([]);
 
-  const { data } = useRegistryContents("ca74dcc4-8505-4a2a-b2ce-dc638579dc85");
+  const padding = 3;
 
   const formattedData = {
     name: "root",
@@ -45,9 +46,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", dimensions.height)
       .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`);
     draw();
-  }, [dimensions]);
-
-  const [leaves, setLeaves] = useState<Leaf[]>([]);
+  }, [dimensions, props.data]);
 
   const draw = () => {
     if (!dimensions) {
@@ -64,6 +63,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     // initialize treemap
     d3
       .treemap()
+      .tile(d3.treemapSquarify.ratio(1 / 3))
       .size([dimensions.width, dimensions.height])
       // @ts-ignore
       .paddingInner(padding)(root);
@@ -79,13 +79,21 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   return (
-    <Flex width={"100%"} padding={"3px"} backgroundColor={"black"}>
+    <Flex
+      width={"100%"}
+      padding={"3px"}
+      backgroundColor={"black"}
+      flexDirection={"column"}
+    >
+      <Text onClick={props.onClickLabel} color={"white"}>
+        {props.label}
+      </Text>
       <div
         ref={containerRef}
         className="chart"
         style={{
           width: "100%",
-          height: ((dimensions?.width || 1) / 16) * 9,
+          height: props.height,
           position: "relative",
           backgroundColor: "black",
         }}

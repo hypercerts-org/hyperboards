@@ -15,4 +15,16 @@ export interface HyperboardPersonEntry {
   value: number;
 }
 
-export type HyperboardEntry = HyperboardCompanyEntry | HyperboardPersonEntry;
+export interface HyperboardSpeakerEntry {
+  type: "speaker";
+  id: string;
+  firstName: string;
+  lastName: string;
+  image: string;
+  value: number;
+}
+
+export type HyperboardEntry =
+  | HyperboardCompanyEntry
+  | HyperboardPersonEntry
+  | HyperboardSpeakerEntry;
