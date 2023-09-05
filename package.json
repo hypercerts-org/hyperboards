@@ -9,16 +9,43 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@hypercerts-org/sdk": "^0.5.0",
     "@plasmicapp/cli": "^0.1.307",
+    "@plasmicapp/loader-nextjs": "^1.0.309",
     "@plasmicapp/react-web": "^0.2.248",
+    "@plasmicpkgs/antd5": "^0.0.114",
+    "@plasmicpkgs/plasmic-basic-components": "^0.0.173",
+    "@plasmicpkgs/plasmic-embed-css": "^0.1.145",
+    "@plasmicpkgs/plasmic-nav": "^0.0.131",
+    "@plasmicpkgs/plasmic-query": "^0.0.177",
+    "@plasmicpkgs/plasmic-tabs": "^0.0.11",
+    "@plasmicpkgs/react-twitter-widgets": "^0.0.158",
+    "@rainbow-me/rainbowkit": "^1.0.10",
+    "@supabase/supabase-js": "^2.33.1",
+    "@tanstack/react-query": "^4.33.0",
+    "@tanstack/react-query-devtools": "^4.33.0",
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "d3": "^7.8.5",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "framer-motion": "^10.16.2",
+    "lodash": "^4.17.21",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.2.2"
+    "react-slick": "^0.29.0",
+    "slick-carousel": "^1.8.1",
+    "typescript": "5.2.2",
+    "viem": "^1.10.3",
+    "wagmi": "^1.4.1"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "prettier": "^3.0.3"
   }
 }

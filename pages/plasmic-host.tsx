@@ -1,5 +1,7 @@
-import * as React from 'react';
-import { PlasmicCanvasHost, registerComponent } from '@plasmicapp/react-web/lib/host';
+import * as React from "react";
+import { registerComponent } from "@plasmicapp/react-web/lib/host";
+import { FtcBoard } from "@/components/ftc-board";
+import { PlasmicCanvasHost } from "@plasmicapp/loader-nextjs";
 
 // You can register any code components that you want to use here; see
 // https://docs.plasmic.app/learn/code-components-ref/
@@ -13,3 +15,9 @@ import { PlasmicCanvasHost, registerComponent } from '@plasmicapp/react-web/lib/
 export default function PlasmicHost() {
   return <PlasmicCanvasHost />;
 }
+
+registerComponent(FtcBoard, {
+  name: "FtcBoard",
+  importPath: "./components/ftc-board",
+  props: {},
+});

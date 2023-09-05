@@ -3,9 +3,83 @@
 import * as React from "react";
 import * as ph from "@plasmicapp/react-web/lib/host";
 
-import { ScreenVariantProvider } from "../components/plasmic/hyperboards/PlasmicGlobalVariant__Screen";
-import { PlasmicHomepage } from "../components/plasmic/hyperboards/PlasmicHomepage";
 import { useRouter } from "next/router";
+import { Hyperboard } from "../components/hyperboard";
+import { HyperboardEntry } from "@/types/Hyperboard";
+import {
+  registryContentItemToHyperboardEntry,
+  useRegistryContents,
+} from "@/hooks/registry";
+import { Flex } from "@chakra-ui/react";
+import { useRef, useState } from "react";
+import { useSize } from "@chakra-ui/react-use-size";
+
+const mockData: HyperboardEntry[] = [
+  {
+    type: "company",
+    id: "a",
+    name: "Test",
+    image: "/logos/celo.svg",
+    value: 2,
+  },
+  {
+    type: "company",
+    id: "b",
+    name: "Test",
+    image: "/logos/filecoin-1.svg",
+    value: 2,
+  },
+  {
+    type: "company",
+    id: "c",
+    name: "Test",
+    image: "/logos/filecoin-2.svg",
+    value: 1,
+  },
+  {
+    type: "company",
+    id: "d",
+    name: "Test",
+    image: "/logos/open-ai.svg",
+    value: 1,
+  },
+  {
+    type: "company",
+    id: "e",
+    name: "Test",
+    image: "/logos/celo.svg",
+    value: 2,
+  },
+  {
+    type: "company",
+    id: "f",
+    name: "Test",
+    image: "/logos/filecoin-1.svg",
+    value: 2,
+  },
+  {
+    type: "company",
+    id: "g",
+    name: "Test",
+    image: "/logos/filecoin-2.svg",
+    value: 1,
+  },
+  {
+    type: "company",
+    id: "h",
+    name: "Test",
+    image: "/logos/open-ai.svg",
+    value: 1,
+  },
+  {
+    type: "person",
+    id: "h",
+    firstName: "Laura",
+    lastName: "Laura",
+    image: "/logos/person-1.png",
+    value: 1,
+  },
+];
 
 function Homepage() {
   // Use PlasmicHomepage to render this component as it was
@@ -24,12 +98,61 @@ function Homepage() {
   // variant context providers. These wrappers may be moved to
   // Next.js Custom App component
   // (https://nextjs.org/docs/advanced-features/custom-app).
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const dimensions = useSize(containerRef);
+
+  const [displayBoards, setDisplayBoards] = useState<
+    "sponsors" | "speakers" | "all"
+  >("all");
+
+  const { data } = useRegistryContents("c471dae2-c933-432c-abcc-84a57d809d44");
+  console.log(data);
+
+  const sponsors = Object.values(data || {}).filter(
+    (x) => x.displayData.type === "person" || x.displayData.type === "company",
+  );
+  const speakers = Object.values(data || {}).filter(
+    (x) => x.displayData.type === "speaker",
+  );
+
+  const height = ((dimensions?.width || 1) / 16) * 9;
+
   return (
     <ph.PageParamsProvider
       params={useRouter()?.query}
       query={useRouter()?.query}
     >
-      <PlasmicHomepage />
+      <Flex width={"100%"} ref={containerRef}>
+        {(displayBoards === "sponsors" || displayBoards === "all") && (
+          <Flex flexGrow={1}>
+            <Hyperboard
+              onClickLabel={() =>
+                setDisplayBoards((val) => (val === "all" ? "sponsors" : "all"))
+              }
+              label="Sponsors"
+              height={height}
+              data={sponsors.map((x) =>
+                registryContentItemToHyperboardEntry(x),
+              )}
+            />
+          </Flex>
+        )}
+        {(displayBoards === "speakers" || displayBoards === "all") && (
+          <Flex flexGrow={1}>
+            <Hyperboard
+              onClickLabel={() =>
+                setDisplayBoards((val) => (val === "all" ? "speakers" : "all"))
+              }
+              label="Speakers"
+              height={height}
+              data={speakers.map((x) =>
+                registryContentItemToHyperboardEntry(x),
+              )}
+            />
+          </Flex>
+        )}
+      </Flex>
     </ph.PageParamsProvider>
   );
 }
