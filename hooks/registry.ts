@@ -43,9 +43,9 @@ export const useRegistryContents = (registryId: string) => {
         .value();
 
       // Get display data for all owners and convert to dictionary
-      const ownerAddressess = _.uniq(fractions.map((x) => x.owner));
+      const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
       const claimDisplayDataResponse =
-        await getEntryDisplayData(ownerAddressess);
+        await getEntryDisplayData(ownerAddresses);
       const claimDisplayData = _.keyBy(
         claimDisplayDataResponse?.data || [],
         (x) => x.address,

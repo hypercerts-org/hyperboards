@@ -4,7 +4,7 @@ import * as React from "react";
 import * as ph from "@plasmicapp/react-web/lib/host";
 
 import { useRouter } from "next/router";
-import { HyperboardHtml } from "@/components/hyperboard-html";
+import { Hyperboard } from "../components/hyperboard";
 import { HyperboardEntry } from "@/types/Hyperboard";
 
 const mockData: HyperboardEntry[] = [
@@ -96,7 +96,7 @@ function Homepage() {
       params={useRouter()?.query}
       query={useRouter()?.query}
     >
-      <HyperboardHtml data={mockData} />
+      <Hyperboard data={mockData} />
     </ph.PageParamsProvider>
   );
 }
