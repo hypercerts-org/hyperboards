@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
-import { ClaimToken, HypercertClient } from "@hypercerts-org/sdk";
+import { ClaimToken } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
-
-const client = new HypercertClient({
-  chainId: 5,
-});
+import { client } from "@/lib/hypercert-client";
 
 interface RegistryWithClaims {
   id: string;
