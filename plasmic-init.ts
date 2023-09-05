@@ -1,6 +1,7 @@
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
 import { FtcBoard } from "@/components/ftc-board";
 import { ConnectButton } from "@/components/ConnectButton";
+import { Store } from "@/components/store";
 
 export const PLASMIC = initPlasmicLoader({
   projects: [
@@ -27,4 +28,8 @@ PLASMIC.registerComponent(ConnectButton, {
   props: {},
 });
 
-PLASMIC.registerComponent(S);
+PLASMIC.registerComponent(Store, {
+  name: "Store",
+  importPath: "./components/store",
+  props: {},
+});
