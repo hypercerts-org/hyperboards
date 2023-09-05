@@ -21,15 +21,15 @@ PLASMIC.registerComponent(FtcBoard, {
   importPath: "./components/ftc-board",
   props: {},
 });
-
-PLASMIC.registerComponent(ConnectButton, {
-  name: "ConnectButton",
-  importPath: "./components/connect-button",
-  props: {},
-});
-
-PLASMIC.registerComponent(Store, {
-  name: "Store",
-  importPath: "./components/store",
-  props: {},
-});
+//
+// PLASMIC.registerComponent(ConnectButton, {
+//   name: "ConnectButton",
+//   importPath: "./components/connect-button",
+//   props: {},
+// });
+//
+// PLASMIC.registerComponent(Store, {
+//   name: "Store",
+//   importPath: "./components/store",
+//   props: {},
+// });
