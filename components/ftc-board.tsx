@@ -4,7 +4,7 @@ import {
   registryContentItemToHyperboardEntry,
   useRegistryContents,
 } from "@/hooks/registry";
-import { Center, Flex } from "@chakra-ui/react";
+import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 
@@ -16,7 +16,9 @@ export const FtcBoard = () => {
     "sponsors" | "speakers" | "all"
   >("all");
 
-  const { data } = useRegistryContents("c471dae2-c933-432c-abcc-84a57d809d44");
+  const { data, isLoading } = useRegistryContents(
+    "c471dae2-c933-432c-abcc-84a57d809d44",
+  );
 
   const sponsors = Object.values(data || {}).filter(
     (x) => x.displayData.type === "person" || x.displayData.type === "company",
@@ -46,39 +48,61 @@ export const FtcBoard = () => {
       setSponsorWidth("0%");
     }
   }, [displayBoards]);
-  console.log("height", height);
 
   return (
     <Center width={"100%"} paddingX={"80px"}>
-      <Flex width={"100%"} ref={containerRef}>
-        <Flex
-          width={sponsorWidth}
-          transition={"width 0.5s ease-out"}
-          overflow={"hidden"}
-        >
-          <Hyperboard
-            onClickLabel={() =>
-              setDisplayBoards((val) => (val === "all" ? "sponsors" : "all"))
-            }
-            label="Sponsors"
-            height={height}
-            data={sponsors.map((x) => registryContentItemToHyperboardEntry(x))}
-          />
-        </Flex>
-        <Flex
-          width={speakerWidth}
-          transition={"width 0.5s ease-out"}
-          overflow={"hidden"}
-        >
-          <Hyperboard
-            onClickLabel={() =>
-              setDisplayBoards((val) => (val === "all" ? "speakers" : "all"))
-            }
-            label="Speakers"
-            height={height}
-            data={speakers.map((x) => registryContentItemToHyperboardEntry(x))}
-          />
-        </Flex>
+      <Flex
+        width={"100%"}
+        ref={containerRef}
+        overflow={"hidden"}
+        backgroundColor={"black"}
+      >
+        {isLoading ? (
+          <Center paddingY={"80px"} width={"100%"}>
+            <Spinner />
+          </Center>
+        ) : (
+          <>
+            <Flex
+              width={sponsorWidth}
+              minWidth={sponsorWidth}
+              transition={"all 0.5s ease-out"}
+              overflow={"hidden"}
+            >
+              <Hyperboard
+                onClickLabel={() =>
+                  setDisplayBoards((val) =>
+                    val === "all" ? "sponsors" : "all",
+                  )
+                }
+                label="Sponsors"
+                height={height}
+                data={sponsors.map((x) =>
+                  registryContentItemToHyperboardEntry(x),
+                )}
+              />
+            </Flex>
+            <Flex
+              width={speakerWidth}
+              minWidth={speakerWidth}
+              transition={"all 0.5s ease-out"}
+              overflow={"hidden"}
+            >
+              <Hyperboard
+                onClickLabel={() =>
+                  setDisplayBoards((val) =>
+                    val === "all" ? "speakers" : "all",
+                  )
+                }
+                label="Speakers"
+                height={height}
+                data={speakers.map((x) =>
+                  registryContentItemToHyperboardEntry(x),
+                )}
+              />
+            </Flex>
+          </>
+        )}
       </Flex>
     </Center>
   );

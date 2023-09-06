@@ -1,5 +1,21 @@
 @import url('https://fonts.cdnfonts.com/css/switzer');
 
+@font-face {
+  font-family: "Director-Regular";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url(/fonts/Director-regular.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "Director-Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url(/fonts/Director-Variable.woff2) format("woff2");
+}
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;

@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard/Tile";
 import { useSize } from "@chakra-ui/react-use-size";
@@ -38,15 +38,19 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
     if (!dimensions) {
       return;
     }
+    console.log("drawing", containerRef.current, dimensions);
     d3.select(ref.current)
       .attr("width", props.height)
       .attr("height", props.height)
       .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
-  }, [dimensions, props.data]);
+  }, [containerRef.current]);
 
   const draw = () => {
     if (!dimensions) {
@@ -79,6 +83,7 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   const ratio = dimensions ? dimensions.width / dimensions.height : 1;
+  console.log("dimensions", dimensions, ratio);
 
   return (
     <Flex
@@ -88,10 +93,26 @@ export const Hyperboard = (props: HyperboardProps) => {
       flexDirection={"column"}
       overflow={"hidden"}
       maxHeight={props.height}
+      minH={props.height}
     >
-      <Text onClick={props.onClickLabel} color={"white"}>
-        {props.label}
-      </Text>
+      <Flex>
+        <Text
+          textTransform={"uppercase"}
+          fontFamily={"Director-Variable"}
+          onClick={props.onClickLabel}
+          color={"white"}
+        >
+          {props.label}
+        </Text>
+        <Text
+          ml={6}
+          textTransform={"uppercase"}
+          fontFamily={"Director-Variable"}
+          color={"white"}
+        >
+          {props.data.length}
+        </Text>
+      </Flex>
       <div
         ref={containerRef}
         className="chart"

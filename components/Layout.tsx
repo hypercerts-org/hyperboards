@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { Box, Flex, Heading, HStack } from "@chakra-ui/react";
+import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
 
@@ -28,9 +28,15 @@ const Header = () => {
       backgroundColor={"grey.300"}
     >
       <HStack>
-        <Heading>Hyperboards</Heading>
-        <Link href={"/store"}>Store</Link>
-        <Link href={"/"}>Board</Link>
+        <Heading fontFamily="Switzer" size={"md"} mr={4}>
+          Hyperboards
+        </Heading>
+        <Link href={"/store"}>
+          <Text fontFamily={"Switzer"}>Store</Text>
+        </Link>
+        <Link href={"/"}>
+          <Text fontFamily={"Switzer"}>Board</Text>
+        </Link>
       </HStack>
       <Box ml={"auto"}>
         <ConnectButton />

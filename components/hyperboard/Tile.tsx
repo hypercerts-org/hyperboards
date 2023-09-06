@@ -38,6 +38,7 @@ export const Tile = ({
             }
             className={"company-logo"}
             maxWidth={"60%"}
+            maxHeight={"80%"}
             src={entry.image}
             alt={entry.image}
           />
@@ -99,6 +100,7 @@ export const Tile = ({
               fontSize={`${layout.font}px`}
               color={logosAndText}
               fontFamily={"Switzer"}
+              fontWeight={600}
             >
               {entry.firstName} {entry.lastName}
             </Text>
@@ -107,12 +109,16 @@ export const Tile = ({
                 fontSize={`${layout.font}px`}
                 color={logosAndText}
                 opacity={"50%"}
+                fontFamily={"Switzer"}
               >
                 {entry.companyName}
               </Text>
             )}
           </Flex>
           <Image
+            position={"absolute"}
+            right={0}
+            top={0}
             borderTopRightRadius={borderRadius}
             borderBottomLeftRadius={borderRadius}
             marginBottom={"auto"}
