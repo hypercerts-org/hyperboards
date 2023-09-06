@@ -13,8 +13,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  appName: "Hyperboards",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID!,
   chains,
 });
 

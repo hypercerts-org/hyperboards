@@ -21,10 +21,11 @@ export const FtcBoard = () => {
   );
 
   const sponsors = Object.values(data || {}).filter(
-    (x) => x.displayData.type === "person" || x.displayData.type === "company",
+    (x) =>
+      x.displayData?.type === "person" || x.displayData?.type === "company",
   );
   const speakers = Object.values(data || {}).filter(
-    (x) => x.displayData.type === "speaker",
+    (x) => x.displayData?.type === "speaker",
   );
 
   const height = ((dimensions?.width || 1) / 16) * 9;
