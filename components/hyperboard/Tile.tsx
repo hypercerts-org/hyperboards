@@ -110,6 +110,7 @@ export const Tile = ({
                 color={logosAndText}
                 opacity={"50%"}
                 fontFamily={"Switzer"}
+                noOfLines={1}
               >
                 {entry.companyName}
               </Text>

@@ -66,7 +66,7 @@ export const BuyHypercertTile = ({
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
               min={parseInt(offer.minUnitsPerTrade, 10)}
-              max={parseInt(offer.maxUnitsPerTrade, 10)}
+              max={parseInt(offer.fractionID.units, 10)}
               value={sliderValue}
               aria-label="buy fractions slider"
               onChange={(v) => setSliderValue(v)}
