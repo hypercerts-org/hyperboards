@@ -1,30 +1,9 @@
-export interface HyperboardCompanyEntry {
-  type: "company";
+export interface HyperboardEntry {
+  type: "speaker" | "company" | "person";
   id: string;
-  name: string;
-  image: string;
-  value: number;
-}
-
-export interface HyperboardPersonEntry {
-  type: "person";
-  id: string;
+  companyName?: string;
   firstName: string;
   lastName: string;
   image: string;
   value: number;
 }
-
-export interface HyperboardSpeakerEntry {
-  type: "speaker";
-  id: string;
-  firstName: string;
-  lastName: string;
-  image: string;
-  value: number;
-}
-
-export type HyperboardEntry =
-  | HyperboardCompanyEntry
-  | HyperboardPersonEntry
-  | HyperboardSpeakerEntry;

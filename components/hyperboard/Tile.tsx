@@ -46,9 +46,8 @@ export const Tile = ({
     );
   }
 
-  if (entry.type === "person" || entry.type === "speaker") {
+  if (entry.type === "person") {
     const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
-    console.log(layout);
     return (
       <Wrapper {...wrapperProps}>
         <Flex
@@ -59,20 +58,59 @@ export const Tile = ({
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
             <Text
-              lineHeight={"28px"}
-              fontSize={layout.font}
+              fontSize={`${layout.font}px`}
               color={logosAndText}
               fontFamily={"Switzer"}
             >
               {entry.firstName}
             </Text>
-            <Text
-              lineHeight={"28px"}
-              fontSize={layout.font}
-              color={logosAndText}
-            >
+            <Text fontSize={`${layout.font}px`} color={logosAndText}>
               {entry.lastName}
             </Text>
+          </Flex>
+          <Image
+            borderTopRightRadius={borderRadius}
+            borderBottomLeftRadius={borderRadius}
+            marginBottom={"auto"}
+            src={entry.image}
+            alt={"Test alt"}
+            height={`${layout.image}px`}
+            width={`${layout.image}px`}
+            maxWidth={`${layout.image}px`}
+            maxHeight={`${layout.image}px`}
+          />
+        </Flex>
+      </Wrapper>
+    );
+  }
+
+  if (entry.type === "speaker") {
+    const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
+    return (
+      <Wrapper {...wrapperProps}>
+        <Flex
+          width={"100%"}
+          position={"relative"}
+          height={"100%"}
+          justifyContent={"space-between"}
+        >
+          <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
+            <Text
+              fontSize={`${layout.font}px`}
+              color={logosAndText}
+              fontFamily={"Switzer"}
+            >
+              {entry.firstName} {entry.lastName}
+            </Text>
+            {entry.companyName && (
+              <Text
+                fontSize={`${layout.font}px`}
+                color={logosAndText}
+                opacity={"50%"}
+              >
+                {entry.companyName}
+              </Text>
+            )}
           </Flex>
           <Image
             borderTopRightRadius={borderRadius}
@@ -105,6 +143,7 @@ const Wrapper = ({
 } & React.PropsWithChildren) => {
   return (
     <Flex
+      overflow={"hidden"}
       position="absolute"
       width={width}
       height={height}
@@ -186,7 +225,7 @@ const getTileLayout = (width: number, height: number) => {
     if (width <= 220 && width > 150) {
       return {
         font: fontSmall,
-        image: fontMedium,
+        image: imageMedium,
       };
     }
 

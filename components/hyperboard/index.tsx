@@ -81,6 +81,7 @@ export const Hyperboard = (props: HyperboardProps) => {
   return (
     <Flex
       width={"100%"}
+      height={props.height}
       padding={"3px"}
       backgroundColor={"black"}
       flexDirection={"column"}

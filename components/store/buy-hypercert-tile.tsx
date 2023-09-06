@@ -41,9 +41,9 @@ export const BuyHypercertTile = ({
         description: "Transaction pending",
         status: "info",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        description: error.message,
+        description: error.message || "Something went wrong",
         status: "error",
       });
     }

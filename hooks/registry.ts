@@ -18,6 +18,7 @@ interface EntryDisplayData {
   image: string;
   address: string;
   type: "person" | "company" | "speaker";
+  companyName?: string;
   firstName: string;
   lastName: string;
   name: string;
@@ -94,9 +95,9 @@ export const registryContentItemToHyperboardEntry = (
 ): HyperboardEntry => {
   return {
     type: item.displayData.type,
+    companyName: item.displayData.companyName,
     lastName: item.displayData.lastName,
     firstName: item.displayData.firstName,
-    name: item.displayData.name,
     image: item.displayData.image,
     value: item.totalValue,
     id: item.displayData.address,
