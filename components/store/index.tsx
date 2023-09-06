@@ -11,7 +11,7 @@ export const Store = () => {
     <SimpleGrid columns={3} spacing={10}>
       {hypercerts.map((x) => (
         <GridItem key={x.claim!.id}>
-          <BuyHypercertTile claimId={x.claim!.id} />
+          <BuyHypercertTile metaData={x.metadata} offer={x.offer} />
         </GridItem>
       ))}
     </SimpleGrid>

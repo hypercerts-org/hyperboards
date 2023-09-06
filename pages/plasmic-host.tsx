@@ -3,6 +3,7 @@ import { registerComponent } from "@plasmicapp/react-web/lib/host";
 import { FtcBoard } from "@/components/ftc-board";
 import { PlasmicCanvasHost } from "@plasmicapp/loader-nextjs";
 import { PLASMIC } from "@/plasmic-init";
+import { Providers } from "@/components/providers";
 
 // You can register any code components that you want to use here; see
 // https://docs.plasmic.app/learn/code-components-ref/
@@ -14,7 +15,13 @@ import { PLASMIC } from "@/plasmic-init";
 // registerComponent(...)
 
 export default function PlasmicHost() {
-  return PLASMIC && <PlasmicCanvasHost />;
+  return (
+    PLASMIC && (
+      <Providers showReactQueryDevtools={false}>
+        <PlasmicCanvasHost />
+      </Providers>
+    )
+  );
 }
 
 registerComponent(FtcBoard, {

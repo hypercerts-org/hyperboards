@@ -1,44 +1,94 @@
 import {
+  Box,
   Button,
   Flex,
+  Image,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Text,
+  Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useAccount, useContractWrite } from "wagmi";
+import { HypercertMetadata } from "@hypercerts-org/sdk";
+import { Offer } from "@/hooks/store";
+import { parseInt } from "lodash";
+import { useBuyFraction } from "@/hooks/useBuyFraction";
 
-import IHypercertTrader from "../../abi/IHypercertTrader.json";
+export const BuyHypercertTile = ({
+  metaData,
+  offer,
+}: {
+  metaData: HypercertMetadata;
+  offer?: Offer;
+}) => {
+  const toast = useToast();
+  const buyFraction = useBuyFraction();
 
-export const BuyHypercertTile = ({ claimId }: { claimId: string }) => {
-  const { address } = useAccount();
-  const { write } = useContractWrite({
-    address: "0x689587461AA3103D3D7975c5e4B352Ab711C14C2",
-    abi: IHypercertTrader,
-    functionName: "buyUnits",
-    args: [address!, 0, 1, "0x0000000000000000000000000000000000000000", 1],
-    value: 1n,
-  });
+  const handleWrite = async () => {
+    try {
+      if (!offer) {
+        throw new Error("Cannot buy without offer");
+      }
+      await buyFraction({
+        offerId: offer.id,
+        numberOfUnitsToBuy: sliderValue,
+      });
 
-  const handleWrite = () => {
-    write();
+      toast({
+        description: "Transaction pending",
+        status: "info",
+      });
+    } catch (error) {
+      toast({
+        description: error.message,
+        status: "error",
+      });
+    }
   };
-  const [sliderValue, setSliderValue] = useState(10);
+  const [sliderValue, setSliderValue] = useState(
+    parseInt(offer?.minUnitsPerTrade || "0", 10),
+  );
+  const [showTooltip, setShowTooltip] = useState(false);
+
   return (
     <Flex flexDirection={"column"}>
-      {claimId}
-      <Slider
-        value={sliderValue}
-        aria-label="slider-ex-1"
-        onChange={(v) => setSliderValue(v)}
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>{" "}
-      <Button onClick={handleWrite}>BUY</Button>
+      <Image src={metaData?.image} alt={"Hypercert display image"} />
+      <Text>{metaData.name}</Text>
+      {!offer ? (
+        <div>Offer unknown</div>
+      ) : (
+        <>
+          <Box minHeight={"30px"}>
+            <Slider
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              min={parseInt(offer.minUnitsPerTrade, 10)}
+              max={parseInt(offer.maxUnitsPerTrade, 10)}
+              value={sliderValue}
+              aria-label="buy fractions slider"
+              onChange={(v) => setSliderValue(v)}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <Tooltip
+                hasArrow
+                bg="teal.500"
+                color="white"
+                placement="top"
+                isOpen={showTooltip}
+                label={`${sliderValue} units`}
+              >
+                <SliderThumb />
+              </Tooltip>
+            </Slider>
+          </Box>
+          <Button onClick={handleWrite}>BUY</Button>
+        </>
+      )}
     </Flex>
   );
 };
