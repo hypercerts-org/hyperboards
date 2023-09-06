@@ -42,9 +42,9 @@ export const Hyperboard = (props: HyperboardProps) => {
       return;
     }
     d3.select(ref.current)
-      .attr("width", dimensions.width)
-      .attr("height", dimensions.height)
-      .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`);
+      .attr("width", props.height)
+      .attr("height", props.height)
+      .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
   }, [dimensions, props.data]);
 
@@ -64,7 +64,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     d3
       .treemap()
       .tile(d3.treemapSquarify.ratio(1 / 3))
-      .size([dimensions.width, dimensions.height])
+      .size([dimensions.height, dimensions.height])
       // @ts-ignore
       .paddingInner(padding)(root);
 
@@ -78,13 +78,16 @@ export const Hyperboard = (props: HyperboardProps) => {
     setLeaves(root.leaves() as unknown as Leaf[]);
   };
 
+  const ratio = dimensions ? dimensions.width / dimensions.height : 1;
+
   return (
     <Flex
       width={"100%"}
-      height={props.height}
       padding={"3px"}
       backgroundColor={"black"}
       flexDirection={"column"}
+      overflow={"hidden"}
+      maxHeight={props.height}
     >
       <Text onClick={props.onClickLabel} color={"white"}>
         {props.label}
@@ -94,21 +97,23 @@ export const Hyperboard = (props: HyperboardProps) => {
         className="chart"
         style={{
           width: "100%",
-          height: props.height,
+          height: "100%",
+          overflow: "hidden",
           position: "relative",
           backgroundColor: "black",
         }}
       >
         {leaves.map((leaf, index) => {
+          const width = leaf.x1 - leaf.x0;
           return (
             <Tile
               padding={2}
               key={index}
               entry={leaf.data}
-              width={leaf.x1 - leaf.x0}
+              width={width * ratio}
               height={leaf.y1 - leaf.y0}
               top={leaf.y0}
-              left={leaf.x0}
+              left={leaf.x0 * ratio}
             />
           );
         })}

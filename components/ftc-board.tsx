@@ -4,7 +4,7 @@ import {
   registryContentItemToHyperboardEntry,
   useRegistryContents,
 } from "@/hooks/registry";
-import { Flex } from "@chakra-ui/react";
+import { Center, Flex } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 
@@ -46,39 +46,40 @@ export const FtcBoard = () => {
       setSponsorWidth("0%");
     }
   }, [displayBoards]);
-  console.log(height);
+  console.log("height", height);
 
   return (
-    <Flex width={"100%"} ref={containerRef}>
-      <Flex
-        width={sponsorWidth}
-        transition={"width 0.5s ease-out"}
-        overflow={"hidden"}
-        height={height}
-      >
-        <Hyperboard
-          onClickLabel={() =>
-            setDisplayBoards((val) => (val === "all" ? "sponsors" : "all"))
-          }
-          label="Sponsors"
-          height={height}
-          data={sponsors.map((x) => registryContentItemToHyperboardEntry(x))}
-        />
+    <Center width={"100%"} paddingX={"80px"}>
+      <Flex width={"100%"} ref={containerRef}>
+        <Flex
+          width={sponsorWidth}
+          transition={"width 0.5s ease-out"}
+          overflow={"hidden"}
+        >
+          <Hyperboard
+            onClickLabel={() =>
+              setDisplayBoards((val) => (val === "all" ? "sponsors" : "all"))
+            }
+            label="Sponsors"
+            height={height}
+            data={sponsors.map((x) => registryContentItemToHyperboardEntry(x))}
+          />
+        </Flex>
+        <Flex
+          width={speakerWidth}
+          transition={"width 0.5s ease-out"}
+          overflow={"hidden"}
+        >
+          <Hyperboard
+            onClickLabel={() =>
+              setDisplayBoards((val) => (val === "all" ? "speakers" : "all"))
+            }
+            label="Speakers"
+            height={height}
+            data={speakers.map((x) => registryContentItemToHyperboardEntry(x))}
+          />
+        </Flex>
       </Flex>
-      <Flex
-        width={speakerWidth}
-        transition={"width 0.5s ease-out"}
-        overflow={"hidden"}
-      >
-        <Hyperboard
-          onClickLabel={() =>
-            setDisplayBoards((val) => (val === "all" ? "speakers" : "all"))
-          }
-          label="Speakers"
-          height={height}
-          data={speakers.map((x) => registryContentItemToHyperboardEntry(x))}
-        />
-      </Flex>
-    </Flex>
+    </Center>
   );
 };
