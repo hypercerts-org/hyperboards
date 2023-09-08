@@ -8,7 +8,7 @@ import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 
-export const FtcBoard = () => {
+export const FtcBoard = ({ registryId }: { registryId: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
@@ -16,9 +16,7 @@ export const FtcBoard = () => {
     "sponsors" | "speakers" | "all"
   >("all");
 
-  const { data, isLoading } = useRegistryContents(
-    "c471dae2-c933-432c-abcc-84a57d809d44",
-  );
+  const { data, isLoading } = useRegistryContents(registryId);
 
   const sponsors = Object.values(data || {}).filter(
     (x) =>
@@ -57,6 +55,7 @@ export const FtcBoard = () => {
         ref={containerRef}
         overflow={"hidden"}
         backgroundColor={"black"}
+        aspectRatio={"16 / 9"}
       >
         {isLoading ? (
           <Center paddingY={"80px"} width={"100%"}>

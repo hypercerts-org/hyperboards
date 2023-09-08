@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard/Tile";
 import { useSize } from "@chakra-ui/react-use-size";
@@ -26,7 +26,7 @@ export const Hyperboard = (props: HyperboardProps) => {
 
   const [leaves, setLeaves] = useState<Leaf[]>([]);
 
-  const padding = 3;
+  const padding = 1;
 
   const formattedData = {
     name: "root",
@@ -88,30 +88,24 @@ export const Hyperboard = (props: HyperboardProps) => {
   return (
     <Flex
       width={"100%"}
-      padding={"3px"}
+      padding={"1px"}
       backgroundColor={"black"}
       flexDirection={"column"}
       overflow={"hidden"}
       maxHeight={props.height}
       minH={props.height}
     >
-      <Flex>
-        <Text
-          textTransform={"uppercase"}
-          fontFamily={"Director-Variable"}
-          onClick={props.onClickLabel}
-          color={"white"}
-        >
-          {props.label}
-        </Text>
-        <Text
-          ml={6}
-          textTransform={"uppercase"}
-          fontFamily={"Director-Variable"}
-          color={"white"}
-        >
-          {props.data.length}
-        </Text>
+      <Flex
+        paddingY={1}
+        pl={1}
+        onClick={props.onClickLabel}
+        cursor={"pointer"}
+        textTransform={"uppercase"}
+        color={"white"}
+        fontFamily={"Director-Variable"}
+      >
+        <Text>{props.label}</Text>
+        <Text ml={6}>{props.data.length}</Text>
       </Flex>
       <div
         ref={containerRef}

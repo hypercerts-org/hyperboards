@@ -33,6 +33,12 @@ interface RegistryContentItem {
   totalValue: number;
 }
 
+export const useListRegistries = () => {
+  return useQuery(["list-registries"], async () =>
+    supabase.from("registries-optimism").select("*").neq("hidden", true),
+  );
+};
+
 export const useRegistryContents = (registryId: string) => {
   return useQuery(["registry", registryId], async () => {
     return getRegistryWithClaims(registryId).then(async (registry) => {

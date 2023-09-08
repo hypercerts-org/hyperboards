@@ -2,7 +2,7 @@ import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Flex, Image, Text } from "@chakra-ui/react";
 
-const borderRadius = 10;
+const borderRadius = "8px";
 const logosAndText = "black";
 const background = "white";
 
