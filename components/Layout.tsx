@@ -31,12 +31,17 @@ const Header = () => {
         <Heading fontFamily="Switzer" size={"md"} mr={4}>
           Hyperboards
         </Heading>
-        <Link href={"/store"}>
-          <Text fontFamily={"Switzer"}>Store</Text>
-        </Link>
-        <Link href={"/"}>
-          <Text fontFamily={"Switzer"}>Board</Text>
-        </Link>
+        <HStack spacing={6}>
+          <Link href={"/store"}>
+            <Text fontFamily={"Switzer"}>Store</Text>
+          </Link>
+          <Link href={"/"}>
+            <Text fontFamily={"Switzer"}>Board</Text>
+          </Link>
+          <Link href={"/archive"}>
+            <Text fontFamily={"Switzer"}>Archive</Text>
+          </Link>
+        </HStack>
       </HStack>
       <Box ml={"auto"}>
         <ConnectButton />
