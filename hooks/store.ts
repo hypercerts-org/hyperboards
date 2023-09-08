@@ -79,21 +79,25 @@ export const useStoreHypercerts = () => {
         }
 
         return await Promise.all(
-          res.data.map(({ claimId }) =>
-            client.indexer.claimById(claimId).then(async (res) => {
-              // const metadata = await fetch(
-              //   `https://ipfs.io/ipfs/${res.claim?.uri}`,
-              // ).then((res) => res.json());
-              const metadata = await client.storage.getMetadata(
-                res.claim?.uri || "",
-              );
-              return {
-                claim: res.claim,
-                metadata,
-                offer: offers.find((x) => x.fractionID?.claim?.id === claimId),
-              };
-            }),
-          ),
+          res.data
+            .filter((x) => x.claimId)
+            .map(({ claimId }) =>
+              client.indexer.claimById(claimId!).then(async (res) => {
+                // const metadata = await fetch(
+                //   `https://ipfs.io/ipfs/${res.claim?.uri}`,
+                // ).then((res) => res.json());
+                const metadata = await client.storage.getMetadata(
+                  res.claim?.uri || "",
+                );
+                return {
+                  claim: res.claim,
+                  metadata,
+                  offer: offers.find(
+                    (x) => x.fractionID?.claim?.id === claimId,
+                  ),
+                };
+              }),
+            ),
         );
       });
   });
