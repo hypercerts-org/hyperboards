@@ -2,6 +2,23 @@ import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hypercert-client";
 import { Claim } from "@hypercerts-org/sdk";
+import { createPublicClient, getContract, http } from "viem";
+import { goerli } from "viem/chains";
+import { TRADER_CONTRACT } from "@/config";
+import IHypercertTrader from "@/abi/IHypercertTrader.json";
+
+export interface OfferFromContract {
+  id: string;
+  maxUnitsPerTrade: bigint;
+  minUnitsPerTrade: bigint;
+  status: 0 | 1;
+  unitsAvailable: bigint;
+  acceptedTokens: {
+    token: string;
+    minimumAmountPerUnit: bigint;
+  }[];
+  fractionID: bigint;
+}
 
 export interface Offer {
   id: string;
@@ -70,6 +87,10 @@ export const useStoreHypercerts = () => {
       .then((res) => res.json())
       .then((res) => res.data.offers as Offer[]);
 
+    const offersFromContract = await getOfferPrices(
+      offers.map((offer) => parseInt(offer.id.split("-")[1], 10)),
+    );
+
     return supabase
       .from("hypercerts-store")
       .select("*")
@@ -80,25 +101,62 @@ export const useStoreHypercerts = () => {
 
         return await Promise.all(
           res.data
-            .filter((x) => x.claimId)
-            .map(({ claimId }) =>
-              client.indexer.claimById(claimId!).then(async (res) => {
-                // const metadata = await fetch(
-                //   `https://ipfs.io/ipfs/${res.claim?.uri}`,
-                // ).then((res) => res.json());
-                const metadata = await client.storage.getMetadata(
-                  res.claim?.uri || "",
-                );
-                return {
-                  claim: res.claim,
-                  metadata,
-                  offer: offers.find(
-                    (x) => x.fractionID?.claim?.id === claimId,
-                  ),
-                };
-              }),
-            ),
+            .filter((x) => x.claimId !== null)
+            .map(async ({ claimId }) => {
+              const [claim, fractions] = await Promise.all([
+                client.indexer.claimById(claimId!).then(async (res) => {
+                  const metadata = await client.storage.getMetadata(
+                    res.claim?.uri || "",
+                  );
+                  return {
+                    claim: res.claim,
+                    metadata,
+                  };
+                }),
+                client.indexer
+                  .fractionsByClaim(claimId!)
+                  .then((res) => res.claimTokens),
+              ]);
+
+              return {
+                ...claim,
+                fractions,
+                offer: offers.find(
+                  (offer) => offer.fractionID.claim.id === claimId,
+                ),
+                offerFromContract: offersFromContract.find((offer) =>
+                  fractions
+                    .map((fraction) =>
+                      BigInt((fraction.id as string).split("-")[1]),
+                    )
+                    .includes(offer.fractionID),
+                ),
+              };
+            }),
         );
       });
   });
+};
+
+const getOfferPrices = async (offerIds: number[]) => {
+  const publicClient = createPublicClient({
+    chain: goerli,
+    transport: http(),
+    batch: {
+      multicall: true,
+    },
+  });
+
+  const contract = getContract({
+    address: TRADER_CONTRACT,
+    abi: IHypercertTrader,
+    publicClient,
+  });
+
+  return Promise.all(
+    offerIds.map(
+      (offerId) =>
+        contract.read.getOffer([offerId]) as Promise<OfferFromContract>,
+    ),
+  );
 };
