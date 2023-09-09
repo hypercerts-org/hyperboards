@@ -2,12 +2,14 @@ import { useAccount, useContractWrite } from "wagmi";
 import IHypercertTrader from "@/abi/IHypercertTrader.json";
 import { parseInt } from "lodash";
 import { useToast } from "@chakra-ui/react";
+import { TRADER_CONTRACT } from "@/config";
+import { OfferFromContract } from "@/hooks/store";
 
 export const useBuyFraction = () => {
   const { address } = useAccount();
   const toast = useToast();
   const { writeAsync } = useContractWrite({
-    address: "0x689587461AA3103D3D7975c5e4B352Ab711C14C2",
+    address: TRADER_CONTRACT,
     abi: IHypercertTrader,
     functionName: "buyUnits",
     onSettled: () => {
@@ -20,11 +22,13 @@ export const useBuyFraction = () => {
 
   return ({
     offerId,
+    offer,
     numberOfUnitsToBuy,
     paymentToken = "0x0000000000000000000000000000000000000000",
   }: {
     offerId: string;
-    numberOfUnitsToBuy: number;
+    offer: OfferFromContract;
+    numberOfUnitsToBuy: BigInt;
     paymentToken?: string;
   }) => {
     if (!address) {
@@ -37,9 +41,26 @@ export const useBuyFraction = () => {
       throw new Error("Cannot get order id");
     }
 
+    const acceptedToken = offer.acceptedTokens.find(
+      (acceptedToken) => acceptedToken.token === paymentToken,
+    );
+
+    if (!acceptedToken) {
+      throw new Error("invalid payment token specified");
+    }
+
+    const totalTransferValue =
+      numberOfUnitsToBuy.valueOf() * BigInt(acceptedToken.minimumAmountPerUnit);
+
     return writeAsync({
-      args: [address, orderId, numberOfUnitsToBuy, paymentToken, 1],
-      value: BigInt(numberOfUnitsToBuy),
+      args: [
+        address,
+        orderId,
+        numberOfUnitsToBuy,
+        paymentToken,
+        acceptedToken.minimumAmountPerUnit,
+      ],
+      value: totalTransferValue,
     });
   };
 };

@@ -13,27 +13,30 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { HypercertMetadata } from "@hypercerts-org/sdk";
-import { Offer } from "@/hooks/store";
-import { parseInt } from "lodash";
+import { Offer, OfferFromContract } from "@/hooks/store";
 import { useBuyFraction } from "@/hooks/useBuyFraction";
 
 export const BuyHypercertTile = ({
   metaData,
   offer,
+  offerFromContract,
 }: {
   metaData: HypercertMetadata;
   offer?: Offer;
+  offerFromContract?: OfferFromContract;
 }) => {
   const toast = useToast();
   const buyFraction = useBuyFraction();
 
   const handleWrite = async () => {
     try {
-      if (!offer) {
+      if (!offer || !offerFromContract) {
         throw new Error("Cannot buy without offer");
       }
+      console.log(offer);
       await buyFraction({
         offerId: offer.id,
+        offer: offerFromContract,
         numberOfUnitsToBuy: sliderValue,
       });
 
@@ -49,7 +52,7 @@ export const BuyHypercertTile = ({
     }
   };
   const [sliderValue, setSliderValue] = useState(
-    parseInt(offer?.minUnitsPerTrade || "0", 10),
+    offerFromContract?.minUnitsPerTrade || 0n,
   );
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -65,11 +68,11 @@ export const BuyHypercertTile = ({
             <Slider
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
-              min={parseInt(offer.minUnitsPerTrade, 10)}
-              max={parseInt(offer.fractionID.units, 10)}
-              value={sliderValue}
+              min={Number(offer.minUnitsPerTrade.toString())}
+              max={Number(offer.unitsAvailable.toString())}
+              value={Number(sliderValue.toString())}
               aria-label="buy fractions slider"
-              onChange={(v) => setSliderValue(v)}
+              onChange={(v) => setSliderValue(BigInt(v))}
             >
               <SliderTrack>
                 <SliderFilledTrack />
