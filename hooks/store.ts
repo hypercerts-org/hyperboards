@@ -94,6 +94,7 @@ export const useStoreHypercerts = () => {
     return supabase
       .from("hypercerts-store")
       .select("*")
+      .neq("hidden", true)
       .then(async (res) => {
         if (!res.data) {
           return;
