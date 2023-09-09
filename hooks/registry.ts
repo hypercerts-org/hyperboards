@@ -8,6 +8,7 @@ import { client } from "@/lib/hypercert-client";
 
 interface RegistryWithClaims {
   id: string;
+  name: string;
   "hyperboard-claims": {
     id: string;
     hypercert_id: string;
@@ -66,7 +67,7 @@ export const useRegistryContents = (registryId: string) => {
       );
 
       // Group by owner, merge with display data and calculate total value of all fractions per owner
-      return _.chain(fractions)
+      const content = _.chain(fractions)
         .groupBy((fraction) => fraction.owner)
         .mapValues((fractionsPerOwner, owner) => {
           return {
@@ -78,6 +79,11 @@ export const useRegistryContents = (registryId: string) => {
           };
         })
         .value();
+
+      return {
+        registry: registry.data,
+        content,
+      };
     });
   });
 };

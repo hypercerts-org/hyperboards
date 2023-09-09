@@ -1,6 +1,7 @@
 import { GridItem, SimpleGrid } from "@chakra-ui/react";
 import { BuyHypercertTile } from "@/components/store/buy-hypercert-tile";
 import { useStoreHypercerts } from "@/hooks/store";
+import _ from "lodash";
 
 export const Store = () => {
   const { data } = useStoreHypercerts();
@@ -15,6 +16,9 @@ export const Store = () => {
             metaData={x.metadata}
             offer={x.offer}
             offerFromContract={x.offerFromContract}
+            totalUnits={_.sum(
+              x.fractions.map((fraction) => parseInt(fraction.units)),
+            )}
           />
         </GridItem>
       ))}
