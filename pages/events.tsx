@@ -2,7 +2,7 @@ import { useListRegistries } from "@/hooks/registry";
 import Link from "next/link";
 import { Center, Heading, Spinner, VStack } from "@chakra-ui/react";
 
-const ArchivePage = () => {
+const EventsPage = () => {
   const { data, isLoading } = useListRegistries();
 
   if (isLoading) {
@@ -40,4 +40,4 @@ const ArchivePage = () => {
   );
 };
 
-export default ArchivePage;
+export default EventsPage;

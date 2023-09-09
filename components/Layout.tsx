@@ -38,8 +38,8 @@ const Header = () => {
           <Link href={"/"}>
             <Text fontFamily={"Switzer"}>Board</Text>
           </Link>
-          <Link href={"/archive"}>
-            <Text fontFamily={"Switzer"}>Archive</Text>
+          <Link href={"/events"}>
+            <Text fontFamily={"Switzer"}>Events</Text>
           </Link>
         </HStack>
       </HStack>
