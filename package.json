@@ -7,13 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "supabase:types": "supabase gen types typescript --project-id clagjjfinooizoqdkvqc > ./types/database.ts"
+    "supabase:init": "supabase init",
+    "supabase:start": "supabase start",
+    "supabase:types": "supabase gen types typescript --project-id clagjjfinooizoqdkvqc > ./types/database.ts",
+    "supabase:migration:new": "supabase migration new",
+    "supabase:migration:push": "supabase migration up"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@hypercerts-org/sdk": "^0.5.0",
+    "@hypercerts-org/sdk": "0.8.8",
     "@plasmicapp/cli": "^0.1.307",
     "@plasmicapp/loader-nextjs": "^1.0.309",
     "@plasmicapp/react-web": "^0.2.248",
@@ -41,7 +45,7 @@
     "react-dom": "18.2.0",
     "react-slick": "^0.29.0",
     "slick-carousel": "^1.8.1",
-    "supabase": "^1.93.0",
+    "supabase": "^1.106.1",
     "typescript": "5.2.2",
     "viem": "^1.10.3",
     "wagmi": "^1.4.1"
