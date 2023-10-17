@@ -1,4 +1,4 @@
-create extension citext
+create extension if not exists citext
 with
   schema extensions;
 
