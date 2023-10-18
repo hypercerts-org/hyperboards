@@ -1,4 +1,6 @@
 import { useAccount, useSignMessage } from "wagmi";
+import { getSupabaseAuthenticatedClient } from "@/lib/supabase";
+import { useToast } from "@chakra-ui/react";
 
 const fetchNonce = async (address: string) => {
   const res = await fetch("/api/auth/nonce", {
@@ -12,11 +14,7 @@ const fetchNonce = async (address: string) => {
   return nonce;
 };
 
-export const fetchLogin = async (
-  address: string,
-  signed: string,
-  nonce: string,
-) => {
+const fetchLogin = async (address: string, signed: string, nonce: string) => {
   const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
@@ -24,31 +22,15 @@ export const fetchLogin = async (
     },
     body: JSON.stringify({ address, signed, nonce }),
   });
-  const result = await res.json();
-  return result;
+  return await res.json();
 };
 
 export const readableMessageToSign = "Sign in to Hypercerts";
 
-const tokenName = "hyperboards-token";
-const storeToken = (token: string) => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(tokenName, token);
-};
-
-export const getToken = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  return window.localStorage.getItem(tokenName);
-};
-
-export const useLogin = () => {
+export const useGetAuthenticatedClient = () => {
   const { address } = useAccount();
+  const toast = useToast();
+
   const { signMessageAsync } = useSignMessage({
     onSuccess: (signature) => {
       console.log("Signature: ", signature);
@@ -66,6 +48,11 @@ export const useLogin = () => {
       nonce = await fetchNonce(address);
     } catch (e) {
       console.error("Error requesting nonce", e);
+      toast({
+        title: "Authentication failed",
+        status: "error",
+      });
+      return;
     }
 
     if (!nonce) {
@@ -80,19 +67,36 @@ export const useLogin = () => {
       });
     } catch (e) {
       console.error("Error signing message", e);
+      toast({
+        title: "Authentication failed",
+        description: "Please sign message",
+        status: "error",
+      });
+      return;
     }
 
     if (!signed) {
       throw new Error("Signed message not found");
     }
 
+    let token: string | undefined;
     try {
-      const result = await fetchLogin(address, signed, nonce);
+      const result = await fetchLogin(address, signed, nonce!);
       console.log("Result", result);
-      const token = result.token;
-      storeToken(token);
+      token = result.token;
     } catch (e) {
       console.error("Error logging in", e);
+      toast({
+        title: "Authentication failed",
+        status: "error",
+      });
+      return;
     }
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    return getSupabaseAuthenticatedClient(token);
   };
 };

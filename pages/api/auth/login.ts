@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { readableMessageToSign } from "@/hooks/useLogin";
+import { readableMessageToSign } from "@/hooks/useGetAuthenticatedClient";
 import { ethers } from "ethers";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
