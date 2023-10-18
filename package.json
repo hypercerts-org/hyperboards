@@ -11,7 +11,9 @@
     "supabase:start": "supabase start",
     "supabase:types": "supabase gen types typescript --project-id clagjjfinooizoqdkvqc > ./types/database.ts",
     "supabase:migration:new": "supabase migration new",
-    "supabase:migration:push": "supabase migration up"
+    "supabase:migration:push": "supabase migration up",
+    "supabase:migration:diff": "supabase db diff --schema public",
+    "supabase:migration:reset": "supabase db reset"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
