@@ -39,18 +39,12 @@ const config = createConfig({
   webSocketPublicClient,
   connectors,
 });
-const queryClient = new QueryClient();
 
 export const Providers = ({
   showReactQueryDevtools = true,
   children,
 }: PropsWithChildren<{ showReactQueryDevtools?: boolean }>) => {
-  const [client] = useState(() => {
-    return new HypercertClient({
-      chainId: 5,
-      nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN!,
-    });
-  });
+  const [queryClient] = React.useState(() => new QueryClient());
 
   return (
     <WagmiConfig config={config}>
@@ -115,7 +109,5 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const useHypercertClient = () => {
-  const client = React.useContext(HypercertClientContext);
-
-  return client;
+  return React.useContext(HypercertClientContext);
 };

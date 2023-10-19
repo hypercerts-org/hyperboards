@@ -36,7 +36,7 @@ interface RegistryContentItem {
 
 export const useListRegistries = () => {
   return useQuery(["list-registries"], async () =>
-    supabase.from("registries-optimism").select("*").neq("hidden", true),
+    supabase.from("registries").select("*").neq("hidden", true),
   );
 };
 
@@ -104,8 +104,8 @@ export const useRegistryContents = (registryId: string) => {
 
 const getRegistryWithClaims = async (registryId: string) =>
   supabase
-    .from("registries-optimism")
-    .select("*, hyperboard-claims ( * )")
+    .from("registries")
+    .select("*, hyperboard_claims ( * )")
     .eq("id", registryId)
     .single<RegistryWithClaims>();
 
