@@ -6,15 +6,6 @@ import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
 
-interface RegistryWithClaims {
-  id: string;
-  name: string;
-  "hyperboard-claims": {
-    id: string;
-    hypercert_id: string;
-  }[];
-}
-
 interface EntryDisplayData {
   image: string;
   address: string;
@@ -57,7 +48,7 @@ export const useRegistryContents = (registryId: string) => {
 
         // Create one big list of all fractions, for all hypercerts in registry
         const allFractions = await Promise.all(
-          registry.data["hyperboard-claims"].map((claim) => {
+          registry.data["claims"].map((claim) => {
             return client.indexer.fractionsByClaim(claim.hypercert_id);
           }),
         );
@@ -105,13 +96,13 @@ export const useRegistryContents = (registryId: string) => {
 const getRegistryWithClaims = async (registryId: string) =>
   supabase
     .from("registries")
-    .select("*, hyperboard_claims ( * )")
+    .select("*, claims ( * )")
     .eq("id", registryId)
-    .single<RegistryWithClaims>();
+    .single();
 
 const getEntryDisplayData = async (addresses: string[]) => {
   return supabase
-    .from("hyperboard-sponsor-metadata")
+    .from("sponsor_metadata")
     .select<"*", EntryDisplayData>("*")
     .in("address", addresses);
 };
