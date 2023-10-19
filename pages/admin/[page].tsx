@@ -3,11 +3,12 @@ import SimpleSidebar from "@/components/admin/sidebar";
 import { FiCompass, FiHome, FiTrendingUp } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
+import { RegistriesAdmin } from "@/components/admin/registries-admin";
 
 const SIDEBAR_ITEMS = [
-  { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards" },
-  { name: "Registries", icon: FiTrendingUp, href: "/admin/registries" },
-  { name: "Blueprints", icon: FiCompass, href: "/admin/blueprints" },
+  { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
+  { name: "Registries", icon: FiTrendingUp, href: "/admin/registries/" },
+  { name: "Blueprints", icon: FiCompass, href: "/admin/blueprints/" },
 ];
 
 const Admin = () => {
@@ -25,6 +26,7 @@ const Admin = () => {
         p="4"
       >
         {page === "hyperboards" && <HyperboardsAdmin />}
+        {page === "registries" && <RegistriesAdmin />}
       </Flex>
     </Flex>
   );

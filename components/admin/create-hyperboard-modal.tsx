@@ -1,14 +1,10 @@
-import {
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  ModalProps,
-} from "@chakra-ui/modal";
-import { Button, Flex, Modal, useToast } from "@chakra-ui/react";
+import { ModalProps } from "@chakra-ui/modal";
+import { useToast } from "@chakra-ui/react";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useAddress } from "@/hooks/useAddress";
+import { CreateOrUpdateHyperboardForm } from "@/components/forms/CreateOrUpdateHyperboardForm";
+import { GenericModal } from "@/components/GenericModal";
+import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 
 export const CreateHyperboardModal = ({
   ...modalProps
@@ -16,6 +12,8 @@ export const CreateHyperboardModal = ({
   const getClient = useGetAuthenticatedClient();
   const address = useAddress();
   const toast = useToast();
+
+  const { refetch } = useMyHyperboards();
 
   const onConfirm = async () => {
     if (!address) {
@@ -59,21 +57,13 @@ export const CreateHyperboardModal = ({
       status: "success",
     });
 
+    await refetch();
     modalProps.onClose();
   };
 
   return (
-    <Modal {...modalProps}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Create Hyperboard</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Flex>
-            <Button onClick={onConfirm}>Confirm</Button>
-          </Flex>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+    <GenericModal title="Create Hyperboard" {...modalProps}>
+      <CreateOrUpdateHyperboardForm onSubmitted={onConfirm} />
+    </GenericModal>
   );
 };

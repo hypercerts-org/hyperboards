@@ -16,6 +16,7 @@ import {
 import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 interface LinkItemProps {
   name: string;
@@ -88,6 +89,7 @@ interface NavItemProps extends FlexProps {
   href: string;
 }
 const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
+  const { asPath } = useRouter();
   return (
     <Link href={href}>
       <Box style={{ textDecoration: "none" }} _focus={{ boxShadow: "none" }}>
@@ -98,6 +100,7 @@ const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
           borderRadius="lg"
           role="group"
           cursor="pointer"
+          fontWeight={asPath === href ? "bold" : "normal"}
           _hover={{
             bg: "cyan.400",
             color: "white",
