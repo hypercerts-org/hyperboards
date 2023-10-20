@@ -60,6 +60,7 @@ export const RegistriesAdmin = () => {
                     setSelectedRegistry({
                       ...registry,
                       claims: registry.claims.map((claim) => ({
+                        claim_id: claim.id,
                         hypercert_id: claim.hypercert_id,
                       })),
                     });

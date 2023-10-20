@@ -15,6 +15,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { RegistryInsert } from "@/types/database-entities";
+import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
 
 export interface CreateOrUpdateHyperboardFormProps {
   onSubmitted: (values: CreateUpdateRegistryFormValues) => void;
@@ -24,7 +25,7 @@ export interface CreateOrUpdateHyperboardFormProps {
 const minimumCharacters = 40;
 
 export type CreateUpdateRegistryFormValues = RegistryInsert & {
-  claims: { hypercert_id: string }[];
+  claims: { claim_id?: string; hypercert_id: string }[];
 };
 
 export const CreateOrUpdateRegistryForm = ({
@@ -104,14 +105,24 @@ const ClaimsField = ({
     name: "claims",
   });
 
+  console.log(fields);
+
   return (
     <VStack alignItems={"flex-start"}>
       {fields.map((item, index) => (
         <HStack key={item.id}>
           <Input {...register(`claims.${index}.hypercert_id`)} />
-          <Button colorScheme="red" type="button" onClick={() => remove(index)}>
-            Delete
-          </Button>
+          {item.claim_id ? (
+            <DeleteClaimButton claimId={item.claim_id} />
+          ) : (
+            <Button
+              colorScheme="red"
+              type="button"
+              onClick={() => remove(index)}
+            >
+              Delete
+            </Button>
+          )}
         </HStack>
       ))}
       <Button type="button" onClick={() => append({ hypercert_id: "" })}>
