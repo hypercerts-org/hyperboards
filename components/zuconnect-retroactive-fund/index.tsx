@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputRightAddon,
   Text,
+  useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -21,6 +22,7 @@ import { requireEnv } from "@/config";
 import { parseEther } from "viem";
 import { supabase } from "@/lib/supabase";
 import { useAddress } from "@/hooks/useAddress";
+import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/more-information-modal";
 
 type FormValues = {
   amount: string;
@@ -28,7 +30,7 @@ type FormValues = {
   agreement: boolean;
 };
 
-const SAFE_ADDRESS = requireEnv(
+export const SAFE_ADDRESS = requireEnv(
   process.env.NEXT_PUBLIC_ZUZALU_DONATION_SAFE,
   "NEXT_PUBLIC_ZUZALU_DONATION_SAFE",
 );
@@ -36,6 +38,9 @@ const SAFE_ADDRESS = requireEnv(
 export const ZuconnectRetroactiveFund = () => {
   const toast = useToast();
   const address = useAddress();
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: true,
+  });
 
   const {
     handleSubmit,
@@ -96,12 +101,19 @@ export const ZuconnectRetroactiveFund = () => {
           Commit funds now and distribute them to your
           <br /> most valued experiences after the event
         </Text>
-        <Text fontSize={"lg"} textDecoration={"underline"}>
+        <Text
+          fontSize={"lg"}
+          textDecoration={"underline"}
+          cursor={"pointer"}
+          onClick={onOpen}
+        >
           More information
         </Text>
         <FormControl isInvalid={!!errors.amount} w={"fit-content"} py={"16px"}>
           <InputGroup>
             <Input
+              bg={"white"}
+              border={"none"}
               defaultValue={0}
               isDisabled={isSubmitting}
               placeholder={"Amount"}
@@ -122,6 +134,8 @@ export const ZuconnectRetroactiveFund = () => {
           <FormControl isInvalid={!!errors.email}>
             <Input
               type="email"
+              bg={"white"}
+              border={"none"}
               isDisabled={isSubmitting}
               placeholder={"Email"}
               {...register("email", {
@@ -133,17 +147,27 @@ export const ZuconnectRetroactiveFund = () => {
         </VStack>
         <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
           <Flex alignItems={"center"}>
-            <Checkbox mr={2} {...register("agreement", { required: true })} />
-            <Text>I agree to the Terms & Conditions</Text>
+            <Checkbox
+              bg={"white"}
+              mr={2}
+              {...register("agreement", { required: true })}
+            />
+            <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
           </Flex>
         </FormControl>
         <HStack>
           <ConnectButton />
-          <Button colorScheme="green" type={"submit"} isDisabled={!isValid}>
+          <Button
+            bg={"#41645F"}
+            color={"white"}
+            type={"submit"}
+            isDisabled={!isValid}
+          >
             Confirm
           </Button>
         </HStack>
       </VStack>
+      <MoreInformationModal isOpen={isOpen} onClose={onClose} />
     </form>
   );
 };

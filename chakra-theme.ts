@@ -7,6 +7,7 @@ export const chakraTheme: ThemeOverride = extendTheme({
   },
   fontSizes: {
     lg: "24px",
+    md: "18px",
   },
   lineHeights: {
     base: "1",
@@ -15,6 +16,16 @@ export const chakraTheme: ThemeOverride = extendTheme({
     Button: {
       baseStyle: {
         borderRadius: "0",
+      },
+    },
+    Input: {
+      baseStyle: {
+        field: {
+          borderRadius: "0",
+        },
+        addon: {
+          borderRadius: "0",
+        },
       },
     },
   },

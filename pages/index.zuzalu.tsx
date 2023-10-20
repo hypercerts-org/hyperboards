@@ -40,7 +40,7 @@ export const ZuconnectRetroactiveFundPage = () => {
       <RainbowKitProvider chains={chains}>
         <QueryClientProvider client={queryClient}>
           <ChakraProvider theme={chakraTheme}>
-            <Center>
+            <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"}>
               <ZuconnectRetroactiveFund />;
             </Center>
           </ChakraProvider>
