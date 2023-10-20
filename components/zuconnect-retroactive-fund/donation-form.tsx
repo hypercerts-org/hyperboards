@@ -87,6 +87,7 @@ export const DonationForm = () => {
 
   const onSubmit = async () => {
     if (!address) {
+      console.log("no address");
       return;
     }
 
