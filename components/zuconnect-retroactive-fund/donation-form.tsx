@@ -27,6 +27,7 @@ import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/tran
 import { useRouter } from "next/router";
 import { ZuzaluConnectButton } from "@/components/zuconnect-retroactive-fund/connect-button";
 import { useQuery } from "@tanstack/react-query";
+import { AwaitTransactionModal } from "@/components/zuconnect-retroactive-fund/await-transaction-modal";
 
 type FormValues = {
   amount: string;
@@ -42,7 +43,18 @@ export const SAFE_ADDRESS = requireEnv(
 export const DonationForm = () => {
   const toast = useToast();
   const address = useAddress();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const {
+    isOpen: moreInfoModalOpen,
+    onClose: moreInfoOnClose,
+    onOpen: moreInfoOnOpen,
+  } = useDisclosure();
+
+  const {
+    isOpen: transactionIsOpen,
+    onOpen: transactionOnOpen,
+    onClose: transactionOnClose,
+  } = useDisclosure();
+
   const { data: ethPrice } = useCurrentEthPrice();
 
   const { push } = useRouter();
@@ -70,12 +82,20 @@ export const DonationForm = () => {
       return;
     }
 
+    transactionOnOpen();
     const { amount, email } = getValues();
 
     try {
       await addEmailToDonationList(address, email, amount);
     } catch (e) {
       console.log(e);
+      toast({
+        title: "Error",
+        description: "There was an error adding your email to the list",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -85,6 +105,13 @@ export const DonationForm = () => {
       txHash = await sendDonation();
     } catch (e) {
       console.log(e);
+      toast({
+        title: "Error",
+        description: "There was an error sending your donation",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -96,6 +123,7 @@ export const DonationForm = () => {
       isClosable: true,
     });
 
+    transactionOnClose();
     await push(`/?page=thank-you&txHash=${txHash}`);
   };
 
@@ -116,7 +144,7 @@ export const DonationForm = () => {
               fontSize={"lg"}
               textDecoration={"underline"}
               cursor={"pointer"}
-              onClick={onOpen}
+              onClick={moreInfoOnOpen}
             >
               More information
             </Text>
@@ -193,7 +221,14 @@ export const DonationForm = () => {
         </form>
       </Box>
       <TransactionHistory />
-      <MoreInformationModal isOpen={isOpen} onClose={onClose} />
+      <AwaitTransactionModal
+        isOpen={transactionIsOpen}
+        onClose={transactionOnClose}
+      />
+      <MoreInformationModal
+        isOpen={moreInfoModalOpen}
+        onClose={moreInfoOnClose}
+      />
     </Box>
   );
 };
@@ -210,7 +245,7 @@ const useSendDonation = ({ amount }: { amount: string }) => {
       console.log(data);
       toast({
         title: "Transaction sent",
-        description: "Your donation has been sent",
+        description: "Your donation is pending",
         status: "success",
         duration: 5000,
         isClosable: true,
