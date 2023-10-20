@@ -28,9 +28,11 @@ import { useRouter } from "next/router";
 import { ZuzaluConnectButton } from "@/components/zuconnect-retroactive-fund/connect-button";
 import { useQuery } from "@tanstack/react-query";
 import { AwaitTransactionModal } from "@/components/zuconnect-retroactive-fund/await-transaction-modal";
+import { toPrecision } from "@chakra-ui/utils";
+import { isValidEmail } from "@/utils/validation";
 
 type FormValues = {
-  amount: string;
+  amount: number;
   email: string;
   agreement: boolean;
 };
@@ -67,9 +69,15 @@ export const DonationForm = () => {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      amount: "0",
+      amount: 0,
     },
+    reValidateMode: "onBlur",
   });
+
+  const handleEmailValidation = (email: string) => {
+    const isValid = isValidEmail(email);
+    return isValid;
+  };
 
   const amount = watch("amount");
 
@@ -96,6 +104,7 @@ export const DonationForm = () => {
         duration: 5000,
         isClosable: true,
       });
+      transactionOnClose();
       return;
     }
 
@@ -112,6 +121,7 @@ export const DonationForm = () => {
         duration: 5000,
         isClosable: true,
       });
+      transactionOnClose();
       return;
     }
 
@@ -148,64 +158,64 @@ export const DonationForm = () => {
             >
               More information
             </Text>
-            <FormControl
-              isInvalid={!!errors.amount}
-              w={"fit-content"}
-              py={"16px"}
-            >
-              <InputGroup>
-                <Input
-                  bg={"white"}
-                  border={"none"}
-                  defaultValue={0}
-                  isDisabled={isSubmitting}
-                  placeholder={"Amount"}
-                  {...register("amount", {
-                    required: "This is required",
-                    min: {
-                      value: 0.01,
-                      message: "Minimum amount is 0.01",
-                    },
-                  })}
-                />
-                <InputRightAddon>ETH</InputRightAddon>
-              </InputGroup>
-              <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
-              {ethPrice && (
-                <Text fontSize={"md"} mt={2}>
-                  ≈ $
-                  {!isNaN(parseFloat(amount))
-                    ? ethPrice * parseFloat(amount)
-                    : 0}
-                </Text>
-              )}
-            </FormControl>
-            <VStack>
-              <Text fontSize={"md"}>To notify you about the next steps</Text>
-              <FormControl isInvalid={!!errors.email}>
-                <Input
-                  type="email"
-                  bg={"white"}
-                  border={"none"}
-                  isDisabled={isSubmitting}
-                  placeholder={"Email"}
-                  {...register("email", {
-                    required: "An email address is required",
-                  })}
-                />
-                <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            <VStack spacing={6}>
+              <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
+                <InputGroup>
+                  <Input
+                    bg={"white"}
+                    border={"none"}
+                    defaultValue={0}
+                    type={"number"}
+                    isDisabled={isSubmitting}
+                    placeholder={"Amount"}
+                    {...register("amount", {
+                      required: "This is required",
+                      valueAsNumber: true,
+                      min: {
+                        value: 0.01,
+                        message: "Minimum amount is 0.01",
+                      },
+                    })}
+                  />
+                  <InputRightAddon>ETH</InputRightAddon>
+                </InputGroup>
+                <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+                {ethPrice && (
+                  <Text fontSize={"md"} mt={2}>
+                    ≈ ${!isNaN(amount) ? toPrecision(ethPrice * amount, 2) : 0}
+                  </Text>
+                )}
+              </FormControl>
+              <VStack w={"100%"}>
+                <Text fontSize={"md"}>To notify you about the next steps</Text>
+                <FormControl isInvalid={!!errors.email}>
+                  <Input
+                    type="email"
+                    bg={"white"}
+                    border={"none"}
+                    isDisabled={isSubmitting}
+                    placeholder={"Email"}
+                    {...register("email", {
+                      required: "An email address is required",
+                      validate: handleEmailValidation,
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.email?.message || "Invalid email"}
+                  </FormErrorMessage>
+                </FormControl>
+              </VStack>
+              <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
+                <Flex alignItems={"center"}>
+                  <Checkbox
+                    bg={"white"}
+                    mr={2}
+                    {...register("agreement", { required: true })}
+                  />
+                  <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
+                </Flex>
               </FormControl>
             </VStack>
-            <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
-              <Flex alignItems={"center"}>
-                <Checkbox
-                  bg={"white"}
-                  mr={2}
-                  {...register("agreement", { required: true })}
-                />
-                <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
-              </Flex>
-            </FormControl>
             <HStack>
               <ZuzaluConnectButton />
               <Button
@@ -233,9 +243,14 @@ export const DonationForm = () => {
   );
 };
 
-const useSendDonation = ({ amount }: { amount: string }) => {
+const useSendDonation = ({ amount }: { amount: number }) => {
   const toast = useToast();
-  const valueInWei = parseEther(amount);
+  let valueInWei = parseEther("0");
+  try {
+    valueInWei = parseEther(amount.toString());
+  } catch (e) {
+    console.log(e);
+  }
   const publicClient = usePublicClient();
 
   const { sendTransactionAsync } = useSendTransaction({
@@ -263,12 +278,12 @@ const useSendDonation = ({ amount }: { amount: string }) => {
 const addEmailToDonationList = (
   address: string,
   email: string,
-  amount: string,
+  amount: number,
 ) =>
   supabase.from("zuzalu_donations").insert({
     address,
     email,
-    amount,
+    amount: amount.toString(),
   });
 
 const useCurrentEthPrice = () => {
