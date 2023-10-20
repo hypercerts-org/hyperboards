@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Checkbox,
   Flex,
@@ -23,6 +24,7 @@ import { parseEther } from "viem";
 import { supabase } from "@/lib/supabase";
 import { useAddress } from "@/hooks/useAddress";
 import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/more-information-modal";
+import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/transaction-history";
 
 type FormValues = {
   amount: string;
@@ -38,9 +40,7 @@ export const SAFE_ADDRESS = requireEnv(
 export const ZuconnectRetroactiveFund = () => {
   const toast = useToast();
   const address = useAddress();
-  const { isOpen, onClose, onOpen } = useDisclosure({
-    defaultIsOpen: true,
-  });
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   const {
     handleSubmit,
@@ -91,84 +91,93 @@ export const ZuconnectRetroactiveFund = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack textAlign={"center"} spacing={6}>
-        <Heading textTransform={"uppercase"} fontSize={48}>
-          Zuconnect
-          <br /> Retroactive Fund
-        </Heading>
-        <Text fontSize={"lg"}>
-          Commit funds now and distribute them to your
-          <br /> most valued experiences after the event
-        </Text>
-        <Text
-          fontSize={"lg"}
-          textDecoration={"underline"}
-          cursor={"pointer"}
-          onClick={onOpen}
-        >
-          More information
-        </Text>
-        <FormControl isInvalid={!!errors.amount} w={"fit-content"} py={"16px"}>
-          <InputGroup>
-            <Input
-              bg={"white"}
-              border={"none"}
-              defaultValue={0}
-              isDisabled={isSubmitting}
-              placeholder={"Amount"}
-              {...register("amount", {
-                required: "This is required",
-                min: {
-                  value: 0.01,
-                  message: "Minimum amount is 0.01",
-                },
-              })}
-            />
-            <InputRightAddon>ETH</InputRightAddon>
-          </InputGroup>
-          <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
-        </FormControl>
-        <VStack>
-          <Text fontSize={"md"}>To notify you about the next steps</Text>
-          <FormControl isInvalid={!!errors.email}>
-            <Input
-              type="email"
-              bg={"white"}
-              border={"none"}
-              isDisabled={isSubmitting}
-              placeholder={"Email"}
-              {...register("email", {
-                required: "An email address is required",
-              })}
-            />
-            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-          </FormControl>
-        </VStack>
-        <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
-          <Flex alignItems={"center"}>
-            <Checkbox
-              bg={"white"}
-              mr={2}
-              {...register("agreement", { required: true })}
-            />
-            <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
-          </Flex>
-        </FormControl>
-        <HStack>
-          <ConnectButton />
-          <Button
-            bg={"#41645F"}
-            color={"white"}
-            type={"submit"}
-            isDisabled={!isValid}
-          >
-            Confirm
-          </Button>
-        </HStack>
-      </VStack>
+    <Box>
+      <Box mb={12}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <VStack textAlign={"center"} spacing={6}>
+            <Heading textTransform={"uppercase"} fontSize={48}>
+              Zuconnect
+              <br /> Retroactive Fund
+            </Heading>
+            <Text fontSize={"lg"}>
+              Commit funds now and distribute them to your
+              <br /> most valued experiences after the event
+            </Text>
+            <Text
+              fontSize={"lg"}
+              textDecoration={"underline"}
+              cursor={"pointer"}
+              onClick={onOpen}
+            >
+              More information
+            </Text>
+            <FormControl
+              isInvalid={!!errors.amount}
+              w={"fit-content"}
+              py={"16px"}
+            >
+              <InputGroup>
+                <Input
+                  bg={"white"}
+                  border={"none"}
+                  defaultValue={0}
+                  isDisabled={isSubmitting}
+                  placeholder={"Amount"}
+                  {...register("amount", {
+                    required: "This is required",
+                    min: {
+                      value: 0.01,
+                      message: "Minimum amount is 0.01",
+                    },
+                  })}
+                />
+                <InputRightAddon>ETH</InputRightAddon>
+              </InputGroup>
+              <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+            </FormControl>
+            <VStack>
+              <Text fontSize={"md"}>To notify you about the next steps</Text>
+              <FormControl isInvalid={!!errors.email}>
+                <Input
+                  type="email"
+                  bg={"white"}
+                  border={"none"}
+                  isDisabled={isSubmitting}
+                  placeholder={"Email"}
+                  {...register("email", {
+                    required: "An email address is required",
+                  })}
+                />
+                <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+              </FormControl>
+            </VStack>
+            <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
+              <Flex alignItems={"center"}>
+                <Checkbox
+                  bg={"white"}
+                  mr={2}
+                  {...register("agreement", { required: true })}
+                />
+                <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
+              </Flex>
+            </FormControl>
+            <HStack>
+              <ConnectButton />
+              <Button
+                bg={"#41645F"}
+                color={"white"}
+                type={"submit"}
+                isDisabled={!isValid}
+              >
+                Confirm
+              </Button>
+            </HStack>
+          </VStack>
+        </form>
+      </Box>
+      <TransactionHistory />
       <MoreInformationModal isOpen={isOpen} onClose={onClose} />
-    </form>
+    </Box>
   );
 };
 

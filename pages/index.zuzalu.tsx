@@ -8,6 +8,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { chakraTheme } from "@/chakra-theme";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
@@ -44,6 +45,7 @@ export const ZuconnectRetroactiveFundPage = () => {
               <ZuconnectRetroactiveFund />;
             </Center>
           </ChakraProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </RainbowKitProvider>
     </WagmiConfig>
