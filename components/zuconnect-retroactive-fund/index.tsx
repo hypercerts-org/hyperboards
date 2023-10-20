@@ -10,26 +10,79 @@ import {
   InputGroup,
   InputRightAddon,
   Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import { usePublicClient, useSendTransaction } from "wagmi";
+import { requireEnv } from "@/config";
+import { parseEther } from "viem";
+import { supabase } from "@/lib/supabase";
+import { useAddress } from "@/hooks/useAddress";
 
 type FormValues = {
-  amount: number;
+  amount: string;
   email: string;
   agreement: boolean;
 };
 
+const SAFE_ADDRESS = requireEnv(
+  process.env.NEXT_PUBLIC_ZUZALU_DONATION_SAFE,
+  "NEXT_PUBLIC_ZUZALU_DONATION_SAFE",
+);
+
 export const ZuconnectRetroactiveFund = () => {
+  const toast = useToast();
+  const address = useAddress();
+
   const {
     handleSubmit,
     register,
-    formState: { isValid, errors },
-  } = useForm<FormValues>();
+    formState: { isValid, errors, isSubmitting },
+    getValues,
+    watch,
+  } = useForm<FormValues>({
+    defaultValues: {
+      amount: "0",
+    },
+  });
+
+  const amount = watch("amount");
+
+  const sendDonation = useSendDonation({
+    amount,
+  });
+
   const onSubmit = async () => {
-    console.log("Submitted");
+    if (!address) {
+      return;
+    }
+
+    const { amount, email } = getValues();
+
+    try {
+      await addEmailToDonationList(address, email, amount);
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
+    try {
+      await sendDonation();
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
+    toast({
+      title: "Transaction confirmed",
+      description: "Your donation has been confirmed",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -45,10 +98,10 @@ export const ZuconnectRetroactiveFund = () => {
           <InputGroup>
             <Input
               defaultValue={0}
+              isDisabled={isSubmitting}
               placeholder={"Amount"}
               {...register("amount", {
                 required: "This is required",
-                valueAsNumber: true,
                 min: {
                   value: 0.01,
                   message: "Minimum amount is 0.01",
@@ -64,6 +117,7 @@ export const ZuconnectRetroactiveFund = () => {
           <FormControl isInvalid={!!errors.email}>
             <Input
               type="email"
+              isDisabled={isSubmitting}
               placeholder={"Email"}
               {...register("email", {
                 required: "An email address is required",
@@ -88,3 +142,40 @@ export const ZuconnectRetroactiveFund = () => {
     </form>
   );
 };
+
+const useSendDonation = ({ amount }: { amount: string }) => {
+  const toast = useToast();
+  const valueInWei = parseEther(amount);
+  const publicClient = usePublicClient();
+
+  const { sendTransactionAsync } = useSendTransaction({
+    to: SAFE_ADDRESS,
+    value: valueInWei,
+    onSuccess: async (data) => {
+      console.log(data);
+      toast({
+        title: "Transaction sent",
+        description: "Your donation has been sent",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+  });
+
+  return async () => {
+    const hash = await sendTransactionAsync();
+    await publicClient.waitForTransactionReceipt(hash);
+  };
+};
+
+const addEmailToDonationList = (
+  address: string,
+  email: string,
+  amount: string,
+) =>
+  supabase.from("zuzalu_donations").insert({
+    address,
+    email,
+    amount,
+  });

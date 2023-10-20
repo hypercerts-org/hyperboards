@@ -58,7 +58,7 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "hyperboard_claims_registry_id_fkey"
+            foreignKeyName: "claims_registry_id_fkey"
             columns: ["registry_id"]
             referencedRelation: "registries"
             referencedColumns: ["id"]
@@ -201,6 +201,27 @@ export interface Database {
           created_at?: string
           email?: string | null
           id?: string | null
+        }
+        Relationships: []
+      }
+      zuzalu_donations: {
+        Row: {
+          address: string
+          created_at: string
+          email: string
+          id: number
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          email: string
+          id?: number
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          email?: string
+          id?: number
         }
         Relationships: []
       }
