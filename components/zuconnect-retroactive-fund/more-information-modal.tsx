@@ -13,7 +13,7 @@ import {
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
-import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/index";
+import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-form";
 
 export const MoreInformationModal = ({
   ...modalProps

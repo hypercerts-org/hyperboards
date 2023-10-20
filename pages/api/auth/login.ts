@@ -63,7 +63,8 @@ export default async function handler(
 
   // 3. verify the nonce included in the request matches what's
   // already in public.users table for that address
-  const userNonce = user.auth.genNonce;
+  // @ts-ignore
+  const userNonce = user.auth?.genNonce;
   if (userNonce !== nonce) {
     return res.status(401).json({ error: "Invalid nonce" });
   }
