@@ -1,5 +1,5 @@
 import { ZuconnectRetroactiveFund } from "@/components/zuconnect-retroactive-fund";
-import { Center, ChakraProvider } from "@chakra-ui/react";
+import { Box, Center, ChakraProvider } from "@chakra-ui/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { goerli, mainnet } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -42,7 +42,9 @@ export const ZuconnectRetroactiveFundPage = () => {
         <QueryClientProvider client={queryClient}>
           <ChakraProvider theme={chakraTheme}>
             <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"}>
-              <ZuconnectRetroactiveFund />;
+              <Box maxW={"550px"}>
+                <ZuconnectRetroactiveFund />;
+              </Box>
             </Center>
           </ChakraProvider>
           <ReactQueryDevtools initialIsOpen={false} />

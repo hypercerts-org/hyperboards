@@ -1,5 +1,4 @@
 import { useTransactionHistory } from "@/hooks/useTransactionHistory";
-import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/index";
 import React from "react";
 import {
   Text,
@@ -11,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useEnsName } from "wagmi";
 import { formatAddress } from "@/utils/formatting";
+import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-form";
 
 export const TransactionHistory = () => {
   const { data } = useTransactionHistory(SAFE_ADDRESS);
