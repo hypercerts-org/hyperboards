@@ -26,6 +26,7 @@ import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/mo
 import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/transaction-history";
 import { useRouter } from "next/router";
 import { ZuzaluConnectButton } from "@/components/zuconnect-retroactive-fund/connect-button";
+import { useQuery } from "@tanstack/react-query";
 
 type FormValues = {
   amount: string;
@@ -42,6 +43,7 @@ export const DonationForm = () => {
   const toast = useToast();
   const address = useAddress();
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const { data: ethPrice } = useCurrentEthPrice();
 
   const { push } = useRouter();
 
@@ -141,6 +143,14 @@ export const DonationForm = () => {
                 <InputRightAddon>ETH</InputRightAddon>
               </InputGroup>
               <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+              {ethPrice && (
+                <Text fontSize={"md"} mt={2}>
+                  ≈ $
+                  {!isNaN(parseFloat(amount))
+                    ? ethPrice * parseFloat(amount)
+                    : 0}
+                </Text>
+              )}
             </FormControl>
             <VStack>
               <Text fontSize={"md"}>To notify you about the next steps</Text>
@@ -225,3 +235,14 @@ const addEmailToDonationList = (
     email,
     amount,
   });
+
+const useCurrentEthPrice = () => {
+  return useQuery(["current-eth-price"], async () =>
+    fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+      { method: "GET" },
+    )
+      .then((res) => res.json() as Promise<{ ethereum: { usd: number } }>)
+      .then((res) => res.ethereum.usd),
+  );
+};
