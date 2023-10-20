@@ -87,14 +87,19 @@ export const ZuconnectRetroactiveFund = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack>
-        <Heading>Zuconnect Retroactive Fund</Heading>
-        <Text>
-          Commit funds now and distribute them to your most valued experiences
-          after the event
+      <VStack textAlign={"center"} spacing={6}>
+        <Heading textTransform={"uppercase"} fontSize={48}>
+          Zuconnect
+          <br /> Retroactive Fund
+        </Heading>
+        <Text fontSize={"lg"}>
+          Commit funds now and distribute them to your
+          <br /> most valued experiences after the event
         </Text>
-        <Text textDecoration={"underline"}>More information</Text>
-        <FormControl isInvalid={!!errors.amount} w={"fit-content"}>
+        <Text fontSize={"lg"} textDecoration={"underline"}>
+          More information
+        </Text>
+        <FormControl isInvalid={!!errors.amount} w={"fit-content"} py={"16px"}>
           <InputGroup>
             <Input
               defaultValue={0}
@@ -113,7 +118,7 @@ export const ZuconnectRetroactiveFund = () => {
           <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
         </FormControl>
         <VStack>
-          <Text>To notify you about the next steps</Text>
+          <Text fontSize={"md"}>To notify you about the next steps</Text>
           <FormControl isInvalid={!!errors.email}>
             <Input
               type="email"
@@ -128,13 +133,13 @@ export const ZuconnectRetroactiveFund = () => {
         </VStack>
         <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
           <Flex alignItems={"center"}>
-            <Checkbox mr={2} {...register("agreement", { required: true })} />{" "}
+            <Checkbox mr={2} {...register("agreement", { required: true })} />
             <Text>I agree to the Terms & Conditions</Text>
           </Flex>
         </FormControl>
         <HStack>
           <ConnectButton />
-          <Button type={"submit"} isDisabled={!isValid}>
+          <Button colorScheme="green" type={"submit"} isDisabled={!isValid}>
             Confirm
           </Button>
         </HStack>
