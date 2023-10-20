@@ -16,7 +16,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { usePublicClient, useSendTransaction } from "wagmi";
 import { requireEnv } from "@/config";
@@ -26,6 +25,7 @@ import { useAddress } from "@/hooks/useAddress";
 import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/more-information-modal";
 import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/transaction-history";
 import { useRouter } from "next/router";
+import { ZuzaluConnectButton } from "@/components/zuconnect-retroactive-fund/connect-button";
 
 type FormValues = {
   amount: string;
@@ -169,7 +169,7 @@ export const DonationForm = () => {
               </Flex>
             </FormControl>
             <HStack>
-              <ConnectButton />
+              <ZuzaluConnectButton />
               <Button
                 bg={"#41645F"}
                 color={"white"}

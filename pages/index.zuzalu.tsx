@@ -43,7 +43,7 @@ export const ZuconnectRetroactiveFundPage = () => {
           <ChakraProvider theme={chakraTheme}>
             <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"}>
               <Box maxW={"550px"}>
-                <ZuconnectRetroactiveFund />;
+                <ZuconnectRetroactiveFund />
               </Box>
             </Center>
           </ChakraProvider>
