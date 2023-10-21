@@ -173,6 +173,7 @@ export const DonationForm = () => {
                       type={"number"}
                       isDisabled={isSubmitting}
                       placeholder={"Amount"}
+                      step={"any"}
                       {...register("amount", {
                         required: "This is required",
                         valueAsNumber: true,
