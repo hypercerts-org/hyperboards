@@ -2,6 +2,7 @@ import { Heading, VStack, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/transaction-history";
 import Link from "next/link";
+import Head from "next/head";
 
 export const ThankYou = () => {
   const { query } = useRouter();
@@ -9,6 +10,9 @@ export const ThankYou = () => {
   const txHash = query["txHash"];
   return (
     <>
+      <Head>
+        <title>Thank you - Zuconnect Retroactive Fund</title>
+      </Head>
       <VStack spacing={6} textAlign={"center"} mb={12}>
         <Heading textTransform={"uppercase"} fontSize={48}>
           Thank you

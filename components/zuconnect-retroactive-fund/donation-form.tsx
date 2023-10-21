@@ -30,6 +30,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AwaitTransactionModal } from "@/components/zuconnect-retroactive-fund/await-transaction-modal";
 import { toPrecision } from "@chakra-ui/utils";
 import { isValidEmail } from "@/utils/validation";
+import Head from "next/head";
 
 type FormValues = {
   amount: number;
@@ -75,8 +76,7 @@ export const DonationForm = () => {
   });
 
   const handleEmailValidation = (email: string) => {
-    const isValid = isValidEmail(email);
-    return isValid;
+    return isValidEmail(email);
   };
 
   const amount = watch("amount");
@@ -139,108 +139,118 @@ export const DonationForm = () => {
   };
 
   return (
-    <Box>
-      <Box mb={12}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <VStack textAlign={"center"} spacing={6}>
-            <Heading textTransform={"uppercase"} fontSize={48}>
-              Zuconnect
-              <br /> Retroactive Fund
-            </Heading>
-            <Text fontSize={"lg"}>
-              Commit funds now and distribute them to your
-              <br /> most valued experiences after the event
-            </Text>
-            <Text
-              fontSize={"lg"}
-              textDecoration={"underline"}
-              cursor={"pointer"}
-              onClick={moreInfoOnOpen}
-            >
-              More information
-            </Text>
-            <VStack spacing={6}>
-              <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
-                <InputGroup>
-                  <Input
-                    bg={"white"}
-                    border={"none"}
-                    defaultValue={0}
-                    type={"number"}
-                    isDisabled={isSubmitting}
-                    placeholder={"Amount"}
-                    {...register("amount", {
-                      required: "This is required",
-                      valueAsNumber: true,
-                      min: {
-                        value: 0.01,
-                        message: "Minimum amount is 0.01",
-                      },
-                    })}
-                  />
-                  <InputRightAddon>ETH</InputRightAddon>
-                </InputGroup>
-                <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
-                {ethPrice && (
-                  <Text fontSize={"md"} mt={2}>
-                    ≈ ${!isNaN(amount) ? toPrecision(ethPrice * amount, 2) : 0}
+    <>
+      <Head>
+        <title>Donate - Zuconnect Retroactive Fund</title>
+      </Head>
+      <Box>
+        <Box mb={12}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <VStack textAlign={"center"} spacing={6}>
+              <Heading textTransform={"uppercase"} fontSize={48}>
+                Zuconnect
+                <br /> Retroactive Fund
+              </Heading>
+              <Text fontSize={"lg"}>
+                Commit funds now and distribute them to your
+                <br /> most valued experiences after the event
+              </Text>
+              <Text
+                fontSize={"lg"}
+                textDecoration={"underline"}
+                cursor={"pointer"}
+                onClick={moreInfoOnOpen}
+              >
+                More information
+              </Text>
+              <VStack spacing={6}>
+                <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
+                  <InputGroup>
+                    <Input
+                      bg={"white"}
+                      border={"none"}
+                      defaultValue={0}
+                      type={"number"}
+                      isDisabled={isSubmitting}
+                      placeholder={"Amount"}
+                      {...register("amount", {
+                        required: "This is required",
+                        valueAsNumber: true,
+                        min: {
+                          value: 0.01,
+                          message: "Minimum amount is 0.01",
+                        },
+                      })}
+                    />
+                    <InputRightAddon>ETH</InputRightAddon>
+                  </InputGroup>
+                  <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+                  {ethPrice && (
+                    <Text fontSize={"md"} mt={2}>
+                      ≈ $
+                      {!isNaN(amount) ? toPrecision(ethPrice * amount, 2) : 0}
+                    </Text>
+                  )}
+                </FormControl>
+                <VStack w={"100%"}>
+                  <Text fontSize={"md"}>
+                    To notify you about the next steps
                   </Text>
-                )}
-              </FormControl>
-              <VStack w={"100%"}>
-                <Text fontSize={"md"}>To notify you about the next steps</Text>
-                <FormControl isInvalid={!!errors.email}>
-                  <Input
-                    type="email"
-                    bg={"white"}
-                    border={"none"}
-                    isDisabled={isSubmitting}
-                    placeholder={"Email"}
-                    {...register("email", {
-                      required: "An email address is required",
-                      validate: handleEmailValidation,
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors.email?.message || "Invalid email"}
-                  </FormErrorMessage>
+                  <FormControl isInvalid={!!errors.email}>
+                    <Input
+                      type="email"
+                      bg={"white"}
+                      border={"none"}
+                      isDisabled={isSubmitting}
+                      placeholder={"Email"}
+                      {...register("email", {
+                        required: "An email address is required",
+                        validate: handleEmailValidation,
+                      })}
+                    />
+                    <FormErrorMessage>
+                      {errors.email?.message || "Invalid email"}
+                    </FormErrorMessage>
+                  </FormControl>
+                </VStack>
+                <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
+                  <Flex alignItems={"center"}>
+                    <Checkbox
+                      bg={"white"}
+                      mr={2}
+                      {...register("agreement", { required: true })}
+                    />
+                    <Text fontSize={"md"}>
+                      I agree to the Terms & Conditions
+                    </Text>
+                  </Flex>
                 </FormControl>
               </VStack>
-              <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
-                <Flex alignItems={"center"}>
-                  <Checkbox
-                    bg={"white"}
-                    mr={2}
-                    {...register("agreement", { required: true })}
-                  />
-                  <Text fontSize={"md"}>I agree to the Terms & Conditions</Text>
-                </Flex>
-              </FormControl>
+              <HStack>
+                <ZuzaluConnectButton />
+                <Button
+                  bg={"#41645F"}
+                  color={"white"}
+                  type={"submit"}
+                  isDisabled={!isValid}
+                >
+                  Confirm
+                </Button>
+              </HStack>
             </VStack>
-            <HStack>
-              <ZuzaluConnectButton />
-              <Button
-                bg={"#41645F"}
-                color={"white"}
-                type={"submit"}
-                isDisabled={!isValid}
-              >
-                Confirm
-              </Button>
-            </HStack>
-          </VStack>
-        </form>
+          </form>
+        </Box>
+        <TransactionHistory />
+        <AwaitTransactionModal
+          isOpen={transactionIsOpen}
+          onClose={transactionOnClose}
+        />
+        <MoreInformationModal
+          isOpen={moreInfoModalOpen}
+          onClose={moreInfoOnClose}
+        />
       </Box>
-      <TransactionHistory />
-      <AwaitTransactionModal
-        isOpen={transactionIsOpen}
-        onClose={transactionOnClose}
-      />
-      <MoreInformationModal
-        isOpen={moreInfoModalOpen}
-        onClose={moreInfoOnClose}
-      />
-    </Box>
+    </>
   );
 };
 
