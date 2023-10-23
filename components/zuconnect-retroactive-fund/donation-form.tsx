@@ -153,11 +153,11 @@ export const DonationForm = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
               <Heading textTransform={"uppercase"} fontSize={48}>
-                Zuconnect
+                ZuConnect
                 <br /> Retroactive Fund
               </Heading>
-              <Text fontSize={"lg"}>
-                Commit funds now and distribute them to your most valued
+              <Text fontSize={"base"}>
+                Commit funds now and distribute them to your <br /> most valued
                 experiences after the event
               </Text>
               <Text
@@ -169,7 +169,6 @@ export const DonationForm = () => {
               </Text>
               <VStack spacing={6}>
                 <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
-                  <FormLabel>Amount (min. 0.01 ETH)</FormLabel>
                   <InputGroup>
                     <Input
                       bg={"white"}
@@ -177,7 +176,7 @@ export const DonationForm = () => {
                       defaultValue={0}
                       type={"number"}
                       isDisabled={isSubmitting}
-                      placeholder={"Amount"}
+                      placeholder={"Amount (min. 0.01 ETH)"}
                       step={"any"}
                       {...register("amount", {
                         required: "This is required",
