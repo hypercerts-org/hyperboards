@@ -7,30 +7,37 @@ import {
   Spinner,
   VStack,
   Divider,
+  Center,
 } from "@chakra-ui/react";
 import { useEnsName } from "wagmi";
 import { formatAddress } from "@/utils/formatting";
 import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-form";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export const TransactionHistory = () => {
-  const { data } = useTransactionHistory(SAFE_ADDRESS);
+  const { data, isLoading } = useTransactionHistory(SAFE_ADDRESS);
+  const isMobile = useIsMobile();
+
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner color="#41645F" />
+      </Center>
+    );
+  }
 
   if (!data) {
-    return <Spinner color="#41645F" />;
+    return null;
   }
 
   return (
-    <VStack spacing={6}>
+    <VStack spacing={6} px={isMobile ? 2 : 0}>
       <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
         Contributors
       </Heading>
       <Flex justifyContent={"space-between"} width={"100%"}>
-        <Text fontWeight={600} fontSize={"lg"}>
-          Contributor
-        </Text>
-        <Text fontWeight={600} fontSize={"lg"}>
-          ETH
-        </Text>
+        <Text fontWeight={600}>Contributor</Text>
+        <Text fontWeight={600}>ETH</Text>
       </Flex>
       <VStack
         divider={<Divider color={"#C3C3C3"} size={"md"} m={"0px !important"} />}

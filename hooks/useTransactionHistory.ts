@@ -3,7 +3,7 @@ import { toHex } from "viem";
 
 const START_BLOCK = 9898972;
 const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI;
-const baseURL = `https://eth-goerli.alchemyapi.io/v2/${apiKey}`;
+const baseURL = `https://eth-mainnet.alchemyapi.io/v2/${apiKey}`;
 
 const fetchHistoryToAddress = (address: string) =>
   fetch(baseURL, {

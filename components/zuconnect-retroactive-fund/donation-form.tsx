@@ -5,6 +5,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  FormLabel,
   Heading,
   HStack,
   Input,
@@ -31,6 +32,7 @@ import { AwaitTransactionModal } from "@/components/zuconnect-retroactive-fund/a
 import { toPrecision } from "@chakra-ui/utils";
 import { isValidEmail } from "@/utils/validation";
 import Head from "next/head";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type FormValues = {
   amount: number;
@@ -44,6 +46,7 @@ export const SAFE_ADDRESS = requireEnv(
 );
 
 export const DonationForm = () => {
+  const isMobile = useIsMobile();
   const toast = useToast();
   const address = useAddress();
   const {
@@ -72,7 +75,7 @@ export const DonationForm = () => {
     defaultValues: {
       amount: 0,
     },
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const handleEmailValidation = (email: string) => {
@@ -84,6 +87,8 @@ export const DonationForm = () => {
   const sendDonation = useSendDonation({
     amount,
   });
+
+  console.log("form errors", errors);
 
   const onSubmit = async () => {
     if (!address) {
@@ -143,8 +148,8 @@ export const DonationForm = () => {
       <Head>
         <title>Donate - Zuconnect Retroactive Fund</title>
       </Head>
-      <Box>
-        <Box mb={12}>
+      <Box px={isMobile ? 2 : 0}>
+        <Box mb={"80px"}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
               <Heading textTransform={"uppercase"} fontSize={48}>
@@ -152,11 +157,10 @@ export const DonationForm = () => {
                 <br /> Retroactive Fund
               </Heading>
               <Text fontSize={"lg"}>
-                Commit funds now and distribute them to your
-                <br /> most valued experiences after the event
+                Commit funds now and distribute them to your most valued
+                experiences after the event
               </Text>
               <Text
-                fontSize={"lg"}
                 textDecoration={"underline"}
                 cursor={"pointer"}
                 onClick={moreInfoOnOpen}
@@ -165,6 +169,7 @@ export const DonationForm = () => {
               </Text>
               <VStack spacing={6}>
                 <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
+                  <FormLabel>Amount (min. 0.01 ETH)</FormLabel>
                   <InputGroup>
                     <Input
                       bg={"white"}
@@ -222,7 +227,14 @@ export const DonationForm = () => {
                       {...register("agreement", { required: true })}
                     />
                     <Text fontSize={"md"}>
-                      I agree to the Terms & Conditions
+                      I agree to the{" "}
+                      <a
+                        style={{ textDecoration: "underline" }}
+                        href="https://hypercerts.org/terms"
+                        target="_blank"
+                      >
+                        Terms & Conditions
+                      </a>
                     </Text>
                   </Flex>
                 </FormControl>
@@ -242,15 +254,15 @@ export const DonationForm = () => {
           </form>
         </Box>
         <TransactionHistory />
-        <AwaitTransactionModal
-          isOpen={transactionIsOpen}
-          onClose={transactionOnClose}
-        />
-        <MoreInformationModal
-          isOpen={moreInfoModalOpen}
-          onClose={moreInfoOnClose}
-        />
       </Box>
+      <AwaitTransactionModal
+        isOpen={transactionIsOpen}
+        onClose={transactionOnClose}
+      />
+      <MoreInformationModal
+        isOpen={moreInfoModalOpen}
+        onClose={moreInfoOnClose}
+      />
     </>
   );
 };

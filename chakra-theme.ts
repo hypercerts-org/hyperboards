@@ -7,7 +7,6 @@ export const chakraTheme: ThemeOverride = extendTheme({
   },
   fontSizes: {
     lg: "24px",
-    md: "18px",
   },
   lineHeights: {
     base: "1",
