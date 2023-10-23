@@ -64,7 +64,7 @@ export const MoreInformationModal = ({
               <OrderedList spacing={2} mt={1}>
                 <ListItem>Funders commit ETH to the retroactive fund</ListItem>
                 <ListItem>
-                  Contributors organize experiences at Zuconnect with the
+                  Contributors organize experiences at ZuConnect with the
                   potential of receiving funds retroactively
                 </ListItem>
                 <ListItem>
@@ -117,10 +117,10 @@ export const MoreInformationModal = ({
             </Box>
             <Box>
               <Text>
-                <u>Safe to store funds</u>
+                <u>Multi-sig that stores the funds</u>
               </Text>
               <UnorderedList spacing={2} mt={1}>
-                <ListItem>Safe address: {SAFE_ADDRESS}</ListItem>
+                <ListItem>Address: {SAFE_ADDRESS}</ListItem>
                 <ListItem>
                   Signer 1: Vitalik Buterin, vitalik.eth,
                   0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
@@ -130,7 +130,11 @@ export const MoreInformationModal = ({
                   0x510e221C48ee37DAfc0d3802b43679Cf5d78561f
                 </ListItem>
                 <ListItem>
-                  Signer 3: Holke Brammer, hypercerts.holke.eth, (Director,
+                  Signer 3: Gary Sheng (Community organizer, Zuzalu),
+                  0x2a81C13F9366395c8FD1EA24912294230d062Db3
+                </ListItem>
+                <ListItem>
+                  Signer 4: Holke Brammer, hypercerts.holke.eth, (Director,
                   Hypercerts Foundation),
                   0x676703E18b2d03Aa36d6A3124B4F58716dBf61dB
                 </ListItem>
