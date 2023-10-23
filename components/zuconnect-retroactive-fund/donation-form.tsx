@@ -156,7 +156,7 @@ export const DonationForm = () => {
                 ZuConnect
                 <br /> Retroactive Fund
               </Heading>
-              <Text fontSize={"base"}>
+              <Text fontSize={"lg"}>
                 Commit funds now and distribute them to your <br /> most valued
                 experiences after the event
               </Text>
