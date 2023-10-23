@@ -173,7 +173,6 @@ export const DonationForm = () => {
                     <Input
                       bg={"white"}
                       border={"none"}
-                      defaultValue={0}
                       type={"number"}
                       isDisabled={isSubmitting}
                       placeholder={"Amount (min. 0.01 ETH)"}
