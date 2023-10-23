@@ -5,7 +5,6 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
   Input,
@@ -72,9 +71,7 @@ export const DonationForm = () => {
     getValues,
     watch,
   } = useForm<FormValues>({
-    defaultValues: {
-      amount: 0,
-    },
+    defaultValues: {},
     reValidateMode: "onChange",
   });
 
@@ -87,8 +84,6 @@ export const DonationForm = () => {
   const sendDonation = useSendDonation({
     amount,
   });
-
-  console.log("form errors", errors);
 
   const onSubmit = async () => {
     if (!address) {
@@ -122,7 +117,7 @@ export const DonationForm = () => {
       console.log(e);
       toast({
         title: "Error",
-        description: "There was an error sending your donation",
+        description: "There was an error sending your transaction",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -133,7 +128,7 @@ export const DonationForm = () => {
 
     toast({
       title: "Transaction confirmed",
-      description: "Your donation has been confirmed",
+      description: "Your transaction has been confirmed",
       status: "success",
       duration: 5000,
       isClosable: true,
@@ -268,10 +263,12 @@ export const DonationForm = () => {
 const useSendDonation = ({ amount }: { amount: number }) => {
   const toast = useToast();
   let valueInWei = parseEther("0");
-  try {
-    valueInWei = parseEther(amount.toString());
-  } catch (e) {
-    console.log(e);
+  if (!isNaN(amount)) {
+    try {
+      valueInWei = parseEther(amount.toString());
+    } catch (e) {
+      console.log(e);
+    }
   }
   const publicClient = usePublicClient();
 

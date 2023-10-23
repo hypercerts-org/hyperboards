@@ -27,7 +27,6 @@ export const MoreInformationModal = ({
   const hasRef = !!ref.current;
 
   useEffect(() => {
-    console.log("running", ref);
     if (typeof window === "undefined") {
       return;
     }
