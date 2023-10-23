@@ -51,15 +51,15 @@ export const MoreInformationModal = ({
             alignItems={"flex-start"}
           >
             <Text textDecoration={"underline"} textAlign={"center"} w={"100%"}>
-              Zuconnect Retroactive Fund
+              <b>ZuConnect Retroactive Fund</b>
             </Text>
             <Text>
-              <u>Goal:</u> We fund and reward the experiences that the community
+              <b>Goal:</b> We fund and reward the experiences that the community
               valued most
             </Text>
             <Box>
               <Text>
-                <u>Steps</u>
+                <b>Steps</b>
               </Text>
               <OrderedList spacing={2} mt={1}>
                 <ListItem>Funders commit ETH to the retroactive fund</ListItem>
@@ -99,7 +99,7 @@ export const MoreInformationModal = ({
             </Text>
             <Box>
               <Text pb={0} mb={0}>
-                <u>Please note</u>
+                <b>Please note</b>
               </Text>
               <UnorderedList mt={1} spacing={2}>
                 <ListItem>
@@ -117,7 +117,7 @@ export const MoreInformationModal = ({
             </Box>
             <Box>
               <Text>
-                <u>Multi-sig that stores the funds</u>
+                <b>Multi-sig that stores the funds</b>
               </Text>
               <UnorderedList spacing={2} mt={1}>
                 <ListItem>Address: {SAFE_ADDRESS}</ListItem>
@@ -141,7 +141,7 @@ export const MoreInformationModal = ({
               </UnorderedList>
             </Box>
             <Text>
-              <u>Contact:</u> zuzalu [at] hypercerts.org
+              <b>Contact:</b> zuzalu [at] hypercerts.org
             </Text>
             <Button
               mx={"auto"}
