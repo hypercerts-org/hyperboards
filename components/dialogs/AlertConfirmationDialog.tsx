@@ -16,8 +16,16 @@ export function AlertDialog({
   isOpen,
   onClose,
   title,
-}: { onConfirm: () => void; title: string } & Omit<ModalProps, "children">) {
+}: { onConfirm: () => Promise<void>; title: string } & Omit<
+  ModalProps,
+  "children"
+>) {
   const cancelRef = useRef<FocusableElement>(null);
+
+  const onClickConfirm = async () => {
+    await onConfirm();
+    onClose();
+  };
 
   return (
     <ChakraAlertDialog
@@ -37,7 +45,7 @@ export function AlertDialog({
 
           <AlertDialogFooter>
             <Button onClick={onClose}>Cancel</Button>
-            <Button colorScheme="red" onClick={onConfirm} ml={3}>
+            <Button colorScheme="red" onClick={onClickConfirm} ml={3}>
               Delete
             </Button>
           </AlertDialogFooter>

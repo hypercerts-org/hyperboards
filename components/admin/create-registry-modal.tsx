@@ -2,11 +2,9 @@ import { ModalProps } from "@chakra-ui/modal";
 import { useToast } from "@chakra-ui/react";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useAddress } from "@/hooks/useAddress";
-import { CreateOrUpdateHyperboardForm } from "@/components/forms/CreateOrUpdateHyperboardForm";
 import { GenericModal } from "@/components/GenericModal";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 import { useMyRegistries } from "@/hooks/useMyRegistries";
-import { ClaimInsert, RegistryInsert } from "@/types/database-entities";
+import { ClaimInsert } from "@/types/database-entities";
 import {
   CreateOrUpdateRegistryForm,
   CreateUpdateRegistryFormValues,
@@ -89,6 +87,7 @@ export const CreateRegistryModal = ({
       registry_id: insertedRegistry.id,
       hypercert_id,
       chain_id: chainId,
+      admin_id: address,
     }));
 
     const { error: insertClaimsError } = await supabase

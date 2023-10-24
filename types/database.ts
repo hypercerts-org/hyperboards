@@ -36,6 +36,7 @@ export interface Database {
     Tables: {
       claims: {
         Row: {
+          admin_id: string
           chain_id: number
           created_at: string
           hypercert_id: string
@@ -43,6 +44,7 @@ export interface Database {
           registry_id: string
         }
         Insert: {
+          admin_id: string
           chain_id: number
           created_at?: string
           hypercert_id: string
@@ -50,6 +52,7 @@ export interface Database {
           registry_id: string
         }
         Update: {
+          admin_id?: string
           chain_id?: number
           created_at?: string
           hypercert_id?: string
@@ -207,18 +210,21 @@ export interface Database {
       zuzalu_donations: {
         Row: {
           address: string
+          amount: string | null
           created_at: string
           email: string
           id: number
         }
         Insert: {
           address: string
+          amount?: string | null
           created_at?: string
           email: string
           id?: number
         }
         Update: {
           address?: string
+          amount?: string | null
           created_at?: string
           email?: string
           id?: number
