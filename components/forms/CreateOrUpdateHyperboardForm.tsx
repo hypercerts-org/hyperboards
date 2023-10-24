@@ -6,10 +6,11 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { HyperboardInsert } from "@/types/database-entities";
+import { RegistrySelector } from "@/components/admin/registry-selector";
 
 export interface CreateOrUpdateHyperboardFormValues {
   name: string;
+  registries: { id: string }[];
 }
 
 export interface CreateOrUpdateHyperboardFormProps {
@@ -25,7 +26,8 @@ export const CreateOrUpdateHyperboardForm = ({
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<HyperboardInsert>({
+    setValue,
+  } = useForm<CreateOrUpdateHyperboardFormValues>({
     defaultValues: initialValues,
   });
   return (
@@ -46,6 +48,17 @@ export const CreateOrUpdateHyperboardForm = ({
         <FormErrorMessage>
           {errors.name && errors.name.message}
         </FormErrorMessage>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Registries</FormLabel>
+        <RegistrySelector
+          onChange={(value) =>
+            setValue(
+              "registries",
+              value.map(({ value }) => ({ id: value })),
+            )
+          }
+        />
       </FormControl>
       <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
         Submit

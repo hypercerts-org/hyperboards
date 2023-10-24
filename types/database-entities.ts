@@ -11,3 +11,8 @@ export type RegistryInsert =
 
 export type ClaimEntity = Database["public"]["Tables"]["claims"]["Row"];
 export type ClaimInsert = Database["public"]["Tables"]["claims"]["Insert"];
+
+export type HyperboardRegistryEntity =
+  Database["public"]["Tables"]["hyperboard_registries"]["Row"];
+export type HyperboardRegistryInsert =
+  Database["public"]["Tables"]["hyperboard_registries"]["Insert"];

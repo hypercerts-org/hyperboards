@@ -72,17 +72,17 @@ export interface Database {
         Row: {
           created_at: string | null
           hyperboard_id: string
-          registries_id: string
+          registry_id: string
         }
         Insert: {
           created_at?: string | null
           hyperboard_id: string
-          registries_id: string
+          registry_id: string
         }
         Update: {
           created_at?: string | null
           hyperboard_id?: string
-          registries_id?: string
+          registry_id?: string
         }
         Relationships: [
           {
@@ -92,8 +92,8 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "hyperboard_registries_registries_id_fkey"
-            columns: ["registries_id"]
+            foreignKeyName: "hyperboard_registries_registry_id_fkey"
+            columns: ["registry_id"]
             referencedRelation: "registries"
             referencedColumns: ["id"]
           }
