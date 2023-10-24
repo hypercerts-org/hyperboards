@@ -11,7 +11,10 @@ export const useMyHyperboards = () => {
       if (!address) {
         throw new Error("No address found");
       }
-      return supabase.from("hyperboards").select("*").eq("admin_id", address);
+      return supabase
+        .from("hyperboards")
+        .select("*, registries (*)")
+        .eq("admin_id", address);
     },
     {
       enabled: !!address,

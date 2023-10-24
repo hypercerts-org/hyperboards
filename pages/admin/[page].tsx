@@ -4,6 +4,7 @@ import { FiCompass, FiHome, FiTrendingUp } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
+import { headerHeight } from "@/components/Layout";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
@@ -16,15 +17,9 @@ const Admin = () => {
   const page = router.query["page"];
 
   return (
-    <Flex width={"100%"} height={"100%"}>
+    <Flex width={"100%"} height={`calc(100vh - ${headerHeight})`}>
       <SimpleSidebar linkItems={SIDEBAR_ITEMS} />
-      <Flex
-        width={"100%"}
-        minHeight={"100%"}
-        bg={useColorModeValue("gray.100", "gray.900")}
-        ml={{ base: 0, md: 60 }}
-        p="4"
-      >
+      <Flex width={"100%"} bg={useColorModeValue("gray.100", "gray.900")} p="4">
         {page === "hyperboards" && <HyperboardsAdmin />}
         {page === "registries" && <RegistriesAdmin />}
       </Flex>

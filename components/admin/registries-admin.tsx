@@ -57,46 +57,46 @@ export const RegistriesAdmin = () => {
         </Button>
         {data?.data?.map((registry) => (
           <Card key={registry.id} p={4} width={"100%"}>
-            <HStack justifyContent={"space-between"}>
-              <VStack alignItems={"flex-start"}>
+            <VStack alignItems={"flex-start"}>
+              <HStack justifyContent={"space-between"} width={"100%"}>
                 <Heading>{registry.name}</Heading>
-                <TableContainer>
-                  <Table variant={"striped"} colorScheme="blue" size={"sm"}>
-                    <Thead>
-                      <Tr>
-                        <Th>Name</Th>
-                        <Th>Chain</Th>
-                        <Th>Owner</Th>
-                        <Th>External url</Th>
-                        <Th>Description</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {registry.claims.map((claim) => (
-                        <ClaimRow key={claim.id} {...claim} />
-                      ))}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              </VStack>
-              <HStack>
-                <IconButton
-                  onClick={() => {
-                    setSelectedRegistry({
-                      ...registry,
-                      claims: registry.claims.map((claim) => ({
-                        claim_id: claim.id,
-                        hypercert_id: claim.hypercert_id,
-                      })),
-                    });
-                    createOnOpen();
-                  }}
-                  aria-label="Edit registry"
-                  icon={<AiFillEdit />}
-                />
-                <DeleteRegistryButton registryId={registry.id} />
+                <HStack>
+                  <IconButton
+                    onClick={() => {
+                      setSelectedRegistry({
+                        ...registry,
+                        claims: registry.claims.map((claim) => ({
+                          claim_id: claim.id,
+                          hypercert_id: claim.hypercert_id,
+                        })),
+                      });
+                      createOnOpen();
+                    }}
+                    aria-label="Edit registry"
+                    icon={<AiFillEdit />}
+                  />
+                  <DeleteRegistryButton registryId={registry.id} />
+                </HStack>
               </HStack>
-            </HStack>
+              <TableContainer>
+                <Table variant={"striped"} colorScheme="blue" size={"sm"}>
+                  <Thead>
+                    <Tr>
+                      <Th>Name</Th>
+                      <Th>Chain</Th>
+                      <Th>Owner</Th>
+                      <Th>External url</Th>
+                      <Th>Description</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {registry.claims.map((claim) => (
+                      <ClaimRow key={claim.id} {...claim} />
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </VStack>
           </Card>
         ))}
       </VStack>
