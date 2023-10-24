@@ -5,8 +5,16 @@ import {
   Heading,
   HStack,
   IconButton,
+  TableContainer,
+  Td,
+  Tr,
+  Table,
   useDisclosure,
   VStack,
+  Thead,
+  Tbody,
+  Th,
+  Link,
 } from "@chakra-ui/react";
 import { useMyRegistries } from "@/hooks/useMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
@@ -14,6 +22,10 @@ import { useState } from "react";
 import { AiFillEdit } from "react-icons/ai";
 import { CreateUpdateRegistryFormValues } from "@/components/forms/CreateOrUpdateRegistryForm";
 import { DeleteRegistryButton } from "@/components/admin/delete-registry-button";
+import { ClaimEntity } from "@/types/database-entities";
+import { useHypercertById } from "@/hooks/useHypercertById";
+import { formatAddress } from "@/utils/formatting";
+import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
 
 export const RegistriesAdmin = () => {
   const {
@@ -22,7 +34,7 @@ export const RegistriesAdmin = () => {
     onOpen: createOnOpen,
   } = useDisclosure();
 
-  const { data, refetch } = useMyRegistries();
+  const { data } = useMyRegistries();
 
   const [selectedRegistry, setSelectedRegistry] =
     useState<CreateUpdateRegistryFormValues>();
@@ -33,7 +45,7 @@ export const RegistriesAdmin = () => {
   };
 
   return (
-    <Flex direction={"column"}>
+    <Flex direction={"column"} width={"100%"}>
       <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
         <Button
           variant={"solid"}
@@ -48,11 +60,24 @@ export const RegistriesAdmin = () => {
             <HStack justifyContent={"space-between"}>
               <VStack alignItems={"flex-start"}>
                 <Heading>{registry.name}</Heading>
-                {registry.claims.map((claim) => (
-                  <Heading key={claim.id} size={"sm"}>
-                    {claim.hypercert_id}
-                  </Heading>
-                ))}
+                <TableContainer>
+                  <Table variant={"striped"} colorScheme="blue" size={"sm"}>
+                    <Thead>
+                      <Tr>
+                        <Th>Name</Th>
+                        <Th>Chain</Th>
+                        <Th>Owner</Th>
+                        <Th>External url</Th>
+                        <Th>Description</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {registry.claims.map((claim) => (
+                        <ClaimRow key={claim.id} {...claim} />
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               </VStack>
               <HStack>
                 <IconButton
@@ -81,5 +106,42 @@ export const RegistriesAdmin = () => {
         initialValues={selectedRegistry}
       />
     </Flex>
+  );
+};
+
+const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
+  const { data } = useHypercertById(hypercert_id);
+
+  if (!data) {
+    return <div>Hypercert not found</div>;
+  }
+
+  return (
+    <Tr>
+      <Td>
+        <Link
+          href={`https://hypercerts.org/app/view#claimId=${hypercert_id}`}
+          target={"_blank"}
+          textDecoration={"underline"}
+        >
+          {data.metadata.name}
+        </Link>
+      </Td>
+      <Td>{chain_id}</Td>
+      <Td>{formatAddress(data.owner)}</Td>
+      <Td>
+        <Link
+          href={data.metadata.external_url}
+          target={"_blank"}
+          textDecoration={"underline"}
+        >
+          {data.metadata.external_url}
+        </Link>
+      </Td>
+      <Td>{data.metadata.description}</Td>
+      <Td>
+        <DeleteClaimButton size="xs" claimId={id} />
+      </Td>
+    </Tr>
   );
 };

@@ -4,7 +4,13 @@ import { AiFillDelete } from "react-icons/ai";
 import { AlertDialog } from "@/components/dialogs/AlertConfirmationDialog";
 import { useDeleteClaim } from "@/hooks/useDeleteClaim";
 
-export const DeleteClaimButton = ({ claimId }: { claimId: string }) => {
+export const DeleteClaimButton = ({
+  claimId,
+  size = "md",
+}: {
+  claimId: string;
+  size?: string;
+}) => {
   const { refetch } = useMyRegistries();
   const { onClose, onOpen, isOpen } = useDisclosure();
 
@@ -40,6 +46,7 @@ export const DeleteClaimButton = ({ claimId }: { claimId: string }) => {
         icon={<AiFillDelete />}
         colorScheme="red"
         onClick={onOpen}
+        size={size}
       />
       <AlertDialog
         title="Delete claim"

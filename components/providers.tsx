@@ -7,7 +7,7 @@ import {
   WagmiConfig,
   WalletClient,
 } from "wagmi";
-import { goerli } from "viem/chains";
+import { goerli, optimism } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -18,7 +18,7 @@ import { HypercertClient } from "@hypercerts-org/sdk";
 import { providers } from "ethers";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [goerli],
+  [goerli, optimism],
   [
     alchemyProvider({
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI!,
