@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { headerHeight } from "@/components/Layout";
+import { BlueprintsAdmin } from "@/components/admin/blueprints-admin";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
@@ -22,6 +23,7 @@ const Admin = () => {
       <Flex width={"100%"} bg={useColorModeValue("gray.100", "gray.900")} p="4">
         {page === "hyperboards" && <HyperboardsAdmin />}
         {page === "registries" && <RegistriesAdmin />}
+        {page === "blueprints" && <BlueprintsAdmin />}
       </Flex>
     </Flex>
   );
