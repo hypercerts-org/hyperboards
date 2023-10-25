@@ -55,12 +55,14 @@ export const HyperboardsAdmin = () => {
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
+                      <Th>Chain ID</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
                     {hyperboard.registries.map((registry) => (
                       <Tr key={registry.id}>
                         <Td>{registry.name}</Td>
+                        <Td>{registry.chain_id}</Td>
                         <Td>
                           <RemoveRegistryFromHyperboardButton
                             size={"sm"}

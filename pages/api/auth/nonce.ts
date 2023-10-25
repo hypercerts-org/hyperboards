@@ -19,14 +19,19 @@ export default async function handler(
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { error } = await supabase.from("users").upsert({
-    address: address.toLowerCase(),
-    auth: {
-      genNonce: nonce,
-      lastAuth: new Date().toISOString(),
-      lastAuthStatus: "pending",
-    },
-  });
+  const { data, error } = await supabase
+    .from("users")
+    .update({
+      auth: {
+        genNonce: nonce,
+        lastAuth: new Date().toISOString(),
+        lastAuthStatus: "pending",
+      },
+    })
+    .eq("address", address)
+    .select();
+
+  console.log("update nonce for", address, data);
 
   if (error) {
     console.log("Error updating nonce", error);

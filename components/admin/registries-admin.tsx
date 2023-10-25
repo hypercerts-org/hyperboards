@@ -20,7 +20,7 @@ import { useMyRegistries } from "@/hooks/useMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
 import { useState } from "react";
 import { AiFillEdit } from "react-icons/ai";
-import { CreateUpdateRegistryFormValues } from "@/components/forms/CreateOrUpdateRegistryForm";
+import { CreateUpdateRegistryFormValues } from "@/components/forms/create-or-update-registry-form";
 import { DeleteRegistryButton } from "@/components/admin/delete-registry-button";
 import { ClaimEntity } from "@/types/database-entities";
 import { useHypercertById } from "@/hooks/useHypercertById";

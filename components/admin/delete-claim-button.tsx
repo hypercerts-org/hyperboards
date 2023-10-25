@@ -1,7 +1,7 @@
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
 import { useMyRegistries } from "@/hooks/useMyRegistries";
 import { AiFillDelete } from "react-icons/ai";
-import { AlertDialog } from "@/components/dialogs/AlertConfirmationDialog";
+import { AlertDialog } from "@/components/dialogs/alert-confirmation-dialog";
 import { useDeleteClaim } from "@/hooks/useDeleteClaim";
 
 export const DeleteClaimButton = ({

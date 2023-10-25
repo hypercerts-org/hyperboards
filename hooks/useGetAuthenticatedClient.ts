@@ -1,8 +1,10 @@
-import { useAccount, useSignMessage } from "wagmi";
+import { useSignMessage } from "wagmi";
 import { getSupabaseAuthenticatedClient } from "@/lib/supabase";
 import { useToast } from "@chakra-ui/react";
+import { useAddress } from "@/hooks/useAddress";
+import { useRouter } from "next/router";
 
-const fetchNonce = async (address: string) => {
+export const fetchNonce = async (address: string) => {
   const res = await fetch("/api/auth/nonce", {
     method: "POST",
     headers: {
@@ -14,22 +16,21 @@ const fetchNonce = async (address: string) => {
   return nonce;
 };
 
-const fetchLogin = async (address: string, signed: string, nonce: string) => {
-  const res = await fetch("/api/auth/login", {
+const fetchLogin = async (address: string, signed: string, nonce: string) =>
+  fetch("/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ address, signed, nonce }),
   });
-  return await res.json();
-};
 
 export const readableMessageToSign = "Sign in to Hypercerts";
 
 export const useGetAuthenticatedClient = () => {
-  const { address } = useAccount();
+  const address = useAddress();
   const toast = useToast();
+  const { push } = useRouter();
 
   const { signMessageAsync } = useSignMessage({
     onSuccess: (signature) => {
@@ -81,9 +82,14 @@ export const useGetAuthenticatedClient = () => {
 
     let token: string | undefined;
     try {
-      const result = await fetchLogin(address, signed, nonce!);
-      console.log("Result", result);
-      token = result.token;
+      const result = await fetchLogin(address, signed, nonce);
+
+      if (result.status === 307) {
+        const redirectResponse = await result.json();
+        await push(redirectResponse.redirectUrl);
+        return;
+      }
+      token = (await result.json()).token;
     } catch (e) {
       console.error("Error logging in", e);
       toast({

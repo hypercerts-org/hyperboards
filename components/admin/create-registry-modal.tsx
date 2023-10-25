@@ -8,7 +8,7 @@ import { ClaimInsert } from "@/types/database-entities";
 import {
   CreateOrUpdateRegistryForm,
   CreateUpdateRegistryFormValues,
-} from "@/components/forms/CreateOrUpdateRegistryForm";
+} from "@/components/forms/create-or-update-registry-form";
 import { useChainId } from "wagmi";
 
 export const CreateRegistryModal = ({

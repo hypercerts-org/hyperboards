@@ -1,6 +1,6 @@
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
 import { AiFillDelete } from "react-icons/ai";
-import { AlertDialog } from "@/components/dialogs/AlertConfirmationDialog";
+import { AlertDialog } from "@/components/dialogs/alert-confirmation-dialog";
 import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 import { useDeleteHyperboard } from "@/hooks/useDeleteHyperboard";
 

@@ -6,9 +6,13 @@ import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 import jwt from "jsonwebtoken";
 
-type Data = {
-  token: string;
-};
+type Data =
+  | {
+      token: string;
+    }
+  | {
+      redirectUrl: string;
+    };
 
 export default async function handler(
   req: NextApiRequest,
@@ -75,29 +79,7 @@ export default async function handler(
   // need to create a user in the auth.users table
   const newNonce = Math.floor(Math.random() * 1000000);
   if (!user.id) {
-    const { data: authUser, error } = await supabase.auth.admin.createUser({
-      email: "info@jips.dev",
-      user_metadata: { address: lowerCaseAddress },
-      email_confirm: true,
-    });
-
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-
-    // 5. insert response into public.users table with id
-    await supabase
-      .from("users")
-      .update({
-        auth: {
-          genNonce: newNonce, // update the nonce, so it can't be reused
-          lastAuth: new Date().toISOString(),
-          lastAuthStatus: "success",
-        },
-        id: authUser.user.id,
-      })
-      .eq("address", lowerCaseAddress); // primary key
-    userId = authUser.user.id;
+    return res.status(307).json({ redirectUrl: "/register" });
   } else {
     // Otherwise just update the nonce
     await supabase

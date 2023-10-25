@@ -102,18 +102,21 @@ export interface Database {
       hyperboards: {
         Row: {
           admin_id: string
+          chain_id: number
           created_at: string | null
           id: string
           name: string
         }
         Insert: {
           admin_id: string
+          chain_id: number
           created_at?: string | null
           id?: string
           name: string
         }
         Update: {
           admin_id?: string
+          chain_id?: number
           created_at?: string | null
           id?: string
           name?: string
@@ -193,7 +196,7 @@ export interface Database {
         }
         Insert: {
           address: string
-          auth: Json
+          auth?: Json
           created_at?: string
           email?: string | null
           id?: string | null

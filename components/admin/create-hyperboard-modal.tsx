@@ -5,10 +5,11 @@ import { useAddress } from "@/hooks/useAddress";
 import {
   CreateOrUpdateHyperboardForm,
   CreateOrUpdateHyperboardFormValues,
-} from "@/components/forms/CreateOrUpdateHyperboardForm";
+} from "@/components/forms/create-or-update-hyperboard-form";
 import { GenericModal } from "@/components/GenericModal";
 import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 import { useAddRegistriesToHyperboard } from "@/hooks/useAddRegistriesToHyperboard";
+import { useChainId } from "wagmi";
 
 export const CreateHyperboardModal = ({
   ...modalProps
@@ -16,6 +17,7 @@ export const CreateHyperboardModal = ({
   const getClient = useGetAuthenticatedClient();
   const address = useAddress();
   const toast = useToast();
+  const chainId = useChainId();
 
   const { refetch } = useMyHyperboards();
   const { mutateAsync: addRegistriesToHyperboard } =
@@ -38,10 +40,15 @@ export const CreateHyperboardModal = ({
       return;
     }
 
+    if (!chainId) {
+      return;
+    }
+
     const { data: insertedHyperboard, error } = await supabase
       .from("hyperboards")
       .insert({
         name: values.name,
+        chain_id: chainId,
         admin_id: address,
       })
       .select();
@@ -69,21 +76,23 @@ export const CreateHyperboardModal = ({
       return;
     }
 
-    try {
-      await addRegistriesToHyperboard({
-        hyperboardId: insertedHyperboardId,
-        registryIds: values.registries.map(({ id }) => id),
-      });
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: "Error",
-        description: "Could not add registries to hyperboard",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
+    if (values.registries?.length) {
+      try {
+        await addRegistriesToHyperboard({
+          hyperboardId: insertedHyperboardId,
+          registryIds: values.registries.map(({ id }) => id),
+        });
+      } catch (e) {
+        console.error(e);
+        toast({
+          title: "Error",
+          description: "Could not add registries to hyperboard",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
     }
 
     toast({
