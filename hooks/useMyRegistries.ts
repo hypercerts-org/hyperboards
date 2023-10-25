@@ -13,7 +13,7 @@ export const useMyRegistries = () => {
       }
       return supabase
         .from("registries")
-        .select("*, claims ( * )")
+        .select("*, claims ( * ), blueprints ( * )")
         .eq("admin_id", address);
     },
     {

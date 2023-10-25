@@ -15,6 +15,7 @@ import {
   Tbody,
   Th,
   Link,
+  TableCaption,
 } from "@chakra-ui/react";
 import { useMyRegistries } from "@/hooks/useMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
@@ -26,6 +27,7 @@ import { ClaimEntity } from "@/types/database-entities";
 import { useHypercertById } from "@/hooks/useHypercertById";
 import { formatAddress } from "@/utils/formatting";
 import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
+import { DeleteBlueprintButton } from "@/components/admin/delete-blueprint-button";
 
 export const RegistriesAdmin = () => {
   const {
@@ -78,8 +80,9 @@ export const RegistriesAdmin = () => {
                   <DeleteRegistryButton registryId={registry.id} />
                 </HStack>
               </HStack>
-              <TableContainer>
+              <TableContainer width={"100%"}>
                 <Table variant={"striped"} colorScheme="blue" size={"sm"}>
+                  <TableCaption placement={"top"}>Claims</TableCaption>
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
@@ -92,6 +95,39 @@ export const RegistriesAdmin = () => {
                   <Tbody>
                     {registry.claims.map((claim) => (
                       <ClaimRow key={claim.id} {...claim} />
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+              <TableContainer width={"100%"}>
+                <Table variant={"striped"} colorScheme="blue" size={"sm"}>
+                  <TableCaption placement={"top"}>Blueprints</TableCaption>
+                  <Thead>
+                    <Tr>
+                      <Th>Name</Th>
+                      <Th>Minter address</Th>
+                      <Th>Created on</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {registry.blueprints.map((blueprint) => (
+                      <Tr key={blueprint.id}>
+                        <Td>
+                          {/*
+                            // @ts-ignore */}
+                          {blueprint.form_values.name || "No name"}
+                        </Td>
+                        <Td>{formatAddress(blueprint.minter_address)}</Td>
+                        <Td>
+                          {new Date(blueprint.created_at).toLocaleDateString()}
+                        </Td>
+                        <Td>
+                          <DeleteBlueprintButton
+                            size="xs"
+                            blueprintId={blueprint.id}
+                          />
+                        </Td>
+                      </Tr>
                     ))}
                   </Tbody>
                 </Table>
