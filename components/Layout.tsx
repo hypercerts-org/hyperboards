@@ -3,6 +3,8 @@ import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
 
+export const headerHeight = "80px";
+
 export const Layout = ({ children }: PropsWithChildren) => {
   return (
     <Flex
@@ -13,7 +15,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
     >
       <Header />
       {children}
-      <Footer />
+      {/*<Footer />*/}
     </Flex>
   );
 };
@@ -22,7 +24,7 @@ const Header = () => {
   return (
     <Flex
       width={"100%"}
-      height={"80px"}
+      height={headerHeight}
       alignItems={"center"}
       paddingX={"40px"}
       backgroundColor={"grey.300"}
@@ -50,10 +52,10 @@ const Header = () => {
   );
 };
 
-const Footer = () => {
-  return (
-    <Flex width={"100%"} marginTop={"auto"}>
-      Footer
-    </Flex>
-  );
-};
+// const Footer = () => {
+//   return (
+//     <Flex width={"100%"} marginTop={"auto"}>
+//       Footer
+//     </Flex>
+//   );
+// };
