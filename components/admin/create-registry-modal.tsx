@@ -10,6 +10,7 @@ import {
   CreateUpdateRegistryFormValues,
 } from "@/components/forms/create-or-update-registry-form";
 import { useChainId } from "wagmi";
+import { useCreateClaims } from "@/hooks/useCreateClaims";
 
 export const CreateRegistryModal = ({
   initialValues,
@@ -23,6 +24,7 @@ export const CreateRegistryModal = ({
   const chainId = useChainId();
 
   const { refetch } = useMyRegistries();
+  const { mutateAsync: createClaims } = useCreateClaims();
 
   const onConfirm = async ({
     claims,
@@ -83,22 +85,21 @@ export const CreateRegistryModal = ({
       status: "success",
     });
 
-    const claimInserts: ClaimInsert[] = claims.map(({ hypercert_id }) => ({
-      registry_id: insertedRegistry.id,
-      hypercert_id,
-      chain_id: chainId,
-      admin_id: address,
-    }));
-
-    const { error: insertClaimsError } = await supabase
-      .from("claims")
-      .insert(claimInserts)
-      .select();
-
-    if (insertClaimsError) {
+    try {
+      const claimInserts: ClaimInsert[] = claims.map(({ hypercert_id }) => ({
+        registry_id: insertedRegistry.id,
+        hypercert_id,
+        chain_id: chainId,
+        admin_id: address,
+      }));
+      await createClaims({
+        claims: claimInserts,
+      });
+    } catch (insertClaimsError) {
+      console.error(insertClaimsError);
       toast({
         title: "Error",
-        description: insertClaimsError.message,
+        description: "Something went wrong with creating claims",
         status: "error",
         duration: 9000,
         isClosable: true,

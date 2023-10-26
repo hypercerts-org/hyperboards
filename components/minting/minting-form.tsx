@@ -40,9 +40,11 @@ const useMintingForm = (initialValues?: MintingFormValues) =>
 export const MintingForm = ({
   onSubmit,
   initialValues,
+  buttonLabel = "Submit",
 }: {
   onSubmit: (values: MintingFormValues) => void;
   initialValues?: MintingFormValues;
+  buttonLabel?: string;
 }) => {
   const {
     register,
@@ -99,7 +101,7 @@ export const MintingForm = ({
             <Input {...register("contributors")} />
             <FormErrorMessage>{errors.contributors?.message}</FormErrorMessage>
           </FormControl>
-          <Button type={"submit"}>Submit</Button>
+          <Button type={"submit"}>{buttonLabel}</Button>
         </VStack>
       </Flex>
     </form>

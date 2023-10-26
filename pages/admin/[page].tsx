@@ -6,11 +6,13 @@ import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { headerHeight } from "@/components/Layout";
 import { BlueprintsAdmin } from "@/components/admin/blueprints-admin";
+import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
   { name: "Registries", icon: FiTrendingUp, href: "/admin/registries/" },
   { name: "Blueprints", icon: FiCompass, href: "/admin/blueprints/" },
+  { name: "My blueprints", icon: FiCompass, href: "/admin/my-blueprints/" },
 ];
 
 const Admin = () => {
@@ -21,9 +23,11 @@ const Admin = () => {
     <Flex width={"100%"} height={`calc(100vh - ${headerHeight})`}>
       <SimpleSidebar linkItems={SIDEBAR_ITEMS} />
       <Flex width={"100%"} bg={useColorModeValue("gray.100", "gray.900")} p="4">
+        {page === undefined && <HyperboardsAdmin />}
         {page === "hyperboards" && <HyperboardsAdmin />}
         {page === "registries" && <RegistriesAdmin />}
         {page === "blueprints" && <BlueprintsAdmin />}
+        {page === "my-blueprints" && <MyBlueprintsAdmin />}
       </Flex>
     </Flex>
   );
