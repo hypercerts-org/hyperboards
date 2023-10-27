@@ -19,6 +19,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useCreateClaims } from "@/hooks/useCreateClaims";
 import { useDeleteBlueprint } from "@/hooks/useDeleteBlueprint";
 import { useInteractionModal } from "@/components/interaction-modal";
+import { useAddress } from "@/hooks/useAddress";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -106,7 +107,13 @@ const constructClaimIdFromContractReceipt = (receipt: ContractReceipt) => {
   return `${contractId}-${tokenId}`;
 };
 
-export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
+export const BlueprintMinter = ({
+  blueprintId,
+  onComplete,
+}: {
+  blueprintId: number;
+  onComplete?: () => void;
+}) => {
   const { data: blueprint, isLoading } = useBlueprintById(blueprintId);
   const ref = useRef<HTMLDivElement | null>(null);
   const toast = useToast();
@@ -114,8 +121,20 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
   const { mutateAsync: createClaims } = useCreateClaims();
   const { mutateAsync: deleteBlueprint } = useDeleteBlueprint();
   const { onOpen, setStep, onClose } = useInteractionModal();
+  const address = useAddress();
 
   const onMint = async (values: MintingFormValues) => {
+    if (!address) {
+      toast({
+        title: "Error",
+        description: "Address not found",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     if (!blueprint?.data?.registries) {
       toast({
         title: "Error",
@@ -223,6 +242,7 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
             registry_id: blueprint.data.registry_id,
             admin_id: blueprint.data.admin_id,
             chain_id: blueprint.data.registries.chain_id,
+            owner_id: address,
           },
         ],
       });
@@ -269,6 +289,8 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
       onClose();
       return;
     }
+
+    onComplete?.();
   };
 
   if (isLoading) {

@@ -19,7 +19,7 @@ import { BlueprintMinter } from "@/components/minting/blueprint-minter";
 
 export const MyBlueprintsAdmin = () => {
   const { data, isLoading } = useMyBlueprints();
-  const { query } = useRouter();
+  const { query, push } = useRouter();
 
   if (isLoading) {
     return <Spinner />;
@@ -37,7 +37,10 @@ export const MyBlueprintsAdmin = () => {
       <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
         <Card p={4} w={"100%"}>
           {blueprintId ? (
-            <BlueprintMinter blueprintId={parsedBluePrintId} />
+            <BlueprintMinter
+              blueprintId={parsedBluePrintId}
+              onComplete={() => push("/admin/my-claims/")}
+            />
           ) : (
             <TableContainer width={"100%"} height={"100%"}>
               <Table variant={"striped"} colorScheme="blue" size={"sm"}>

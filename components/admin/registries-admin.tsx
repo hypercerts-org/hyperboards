@@ -172,7 +172,7 @@ export const RegistriesAdmin = () => {
   );
 };
 
-const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
+export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
   const { data, isLoading } = useHypercertById(hypercert_id);
 
   if (isLoading) {

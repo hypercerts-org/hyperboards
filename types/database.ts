@@ -81,6 +81,7 @@ export interface Database {
           created_at: string
           hypercert_id: string
           id: string
+          owner_id: string
           registry_id: string
         }
         Insert: {
@@ -89,6 +90,7 @@ export interface Database {
           created_at?: string
           hypercert_id: string
           id?: string
+          owner_id: string
           registry_id: string
         }
         Update: {
@@ -97,6 +99,7 @@ export interface Database {
           created_at?: string
           hypercert_id?: string
           id?: string
+          owner_id?: string
           registry_id?: string
         }
         Relationships: [

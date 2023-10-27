@@ -6,6 +6,7 @@ import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { headerHeight } from "@/components/Layout";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
+import { MyClaimsAdmin } from "@/components/admin/my-claims-admin";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
@@ -25,6 +26,7 @@ const Admin = () => {
         {page === undefined && <HyperboardsAdmin />}
         {page === "hyperboards" && <HyperboardsAdmin />}
         {page === "registries" && <RegistriesAdmin />}
+        {page === "my-claims" && <MyClaimsAdmin />}
         {page === "my-blueprints" && <MyBlueprintsAdmin />}
       </Flex>
     </Flex>
