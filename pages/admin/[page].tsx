@@ -5,13 +5,12 @@ import { useRouter } from "next/router";
 import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { headerHeight } from "@/components/Layout";
-import { BlueprintsAdmin } from "@/components/admin/blueprints-admin";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
   { name: "Registries", icon: FiTrendingUp, href: "/admin/registries/" },
-  { name: "Blueprints", icon: FiCompass, href: "/admin/blueprints/" },
+  { name: "My claims", icon: FiCompass, href: "/admin/my-claims/" },
   { name: "My blueprints", icon: FiCompass, href: "/admin/my-blueprints/" },
 ];
 
@@ -26,7 +25,6 @@ const Admin = () => {
         {page === undefined && <HyperboardsAdmin />}
         {page === "hyperboards" && <HyperboardsAdmin />}
         {page === "registries" && <RegistriesAdmin />}
-        {page === "blueprints" && <BlueprintsAdmin />}
         {page === "my-blueprints" && <MyBlueprintsAdmin />}
       </Flex>
     </Flex>

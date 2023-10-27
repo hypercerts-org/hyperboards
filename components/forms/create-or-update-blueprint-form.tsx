@@ -25,8 +25,10 @@ interface FormValues {
 
 export const CreateOrUpdateBlueprintForm = ({
   registryId,
+  onComplete,
 }: {
   registryId?: string;
+  onComplete?: () => void;
 }) => {
   const address = useAddress();
   const { data: registryData } = useFetchRegistryById(registryId);
@@ -103,8 +105,9 @@ export const CreateOrUpdateBlueprintForm = ({
       });
     }
 
-    // Validate form values
+    onComplete?.();
   };
+
   return (
     <VStack>
       <FormControl isInvalid={!!errors.address}>

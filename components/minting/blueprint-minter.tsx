@@ -18,6 +18,7 @@ import { ContractReceipt } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useCreateClaims } from "@/hooks/useCreateClaims";
 import { useDeleteBlueprint } from "@/hooks/useDeleteBlueprint";
+import { useInteractionModal } from "@/components/interaction-modal";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -112,6 +113,7 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
   const client = useHypercertClient();
   const { mutateAsync: createClaims } = useCreateClaims();
   const { mutateAsync: deleteBlueprint } = useDeleteBlueprint();
+  const { onOpen, setStep, onClose } = useInteractionModal();
 
   const onMint = async (values: MintingFormValues) => {
     if (!blueprint?.data?.registries) {
@@ -135,6 +137,28 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
       });
       return;
     }
+
+    const steps = [
+      {
+        title: "Generate image",
+        description: "Generating image",
+      },
+      {
+        title: "Minting",
+        description: "Minting",
+      },
+      {
+        title: "Adding to registry",
+        description: "Adding to registry",
+      },
+      {
+        title: "Deleting blueprint",
+        description: "Deleting blueprint",
+      },
+    ];
+
+    onOpen(steps);
+    setStep("Generate image");
     const image = await exportAsImage(ref);
 
     if (!image) {
@@ -145,11 +169,13 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
       return;
     }
 
     let contractReceipt: ContractReceipt | undefined;
 
+    setStep("Minting");
     try {
       const claimData = formValuesToHypercertMetadata(values, image);
       const mintResult = await client.mintClaim(
@@ -167,6 +193,7 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
       return;
     }
 
@@ -183,9 +210,11 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
       return;
     }
 
+    setStep("Adding to registry");
     try {
       await createClaims({
         claims: [
@@ -213,9 +242,11 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
       return;
     }
 
+    setStep("Deleting blueprint");
     try {
       await deleteBlueprint(blueprintId);
       toast({
@@ -225,6 +256,7 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
     } catch (e) {
       console.log(e);
       toast({
@@ -234,6 +266,7 @@ export const BlueprintMinter = ({ blueprintId }: { blueprintId: number }) => {
         duration: 9000,
         isClosable: true,
       });
+      onClose();
       return;
     }
   };
