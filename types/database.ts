@@ -34,6 +34,46 @@ export interface Database {
   }
   public: {
     Tables: {
+      blueprints: {
+        Row: {
+          admin_id: string
+          created_at: string
+          form_values: Json
+          id: number
+          minter_address: string
+          registry_id: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          form_values: Json
+          id?: number
+          minter_address: string
+          registry_id: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          form_values?: Json
+          id?: number
+          minter_address?: string
+          registry_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blueprints_admin_id_fkey"
+            columns: ["admin_id"]
+            referencedRelation: "users"
+            referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "blueprints_registry_id_fkey"
+            columns: ["registry_id"]
+            referencedRelation: "registries"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       claims: {
         Row: {
           admin_id: string
@@ -41,6 +81,7 @@ export interface Database {
           created_at: string
           hypercert_id: string
           id: string
+          owner_id: string
           registry_id: string
         }
         Insert: {
@@ -49,6 +90,7 @@ export interface Database {
           created_at?: string
           hypercert_id: string
           id?: string
+          owner_id: string
           registry_id: string
         }
         Update: {
@@ -57,6 +99,7 @@ export interface Database {
           created_at?: string
           hypercert_id?: string
           id?: string
+          owner_id?: string
           registry_id?: string
         }
         Relationships: [

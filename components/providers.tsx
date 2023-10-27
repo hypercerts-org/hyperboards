@@ -16,6 +16,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HypercertClient } from "@hypercerts-org/sdk";
 import { providers } from "ethers";
+import { InteractionDialogProvider } from "@/components/interaction-modal";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, optimism],
@@ -51,7 +52,9 @@ export const Providers = ({
       <RainbowKitProvider chains={chains}>
         <HypercertClientProvider>
           <QueryClientProvider client={queryClient}>
-            <ChakraProvider>{children}</ChakraProvider>
+            <ChakraProvider>
+              <InteractionDialogProvider>{children}</InteractionDialogProvider>
+            </ChakraProvider>
             {showReactQueryDevtools && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}
@@ -95,6 +98,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
     const hypercertClient = new HypercertClient({
       chainId,
       nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN!,
+      web3StorageToken: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN!,
       operator,
     });
 

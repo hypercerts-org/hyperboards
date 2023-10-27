@@ -10,6 +10,8 @@ import {
   CreateUpdateRegistryFormValues,
 } from "@/components/forms/create-or-update-registry-form";
 import { useChainId } from "wagmi";
+import { useCreateClaims } from "@/hooks/useCreateClaims";
+import { useHypercertClient } from "@/components/providers";
 
 export const CreateRegistryModal = ({
   initialValues,
@@ -21,13 +23,26 @@ export const CreateRegistryModal = ({
   const address = useAddress();
   const toast = useToast();
   const chainId = useChainId();
+  const client = useHypercertClient();
 
   const { refetch } = useMyRegistries();
+  const { mutateAsync: createClaims } = useCreateClaims();
 
   const onConfirm = async ({
     claims,
     ...registry
   }: CreateUpdateRegistryFormValues) => {
+    if (!client) {
+      toast({
+        title: "Error",
+        description: "Client not initialized",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     if (!address) {
       toast({
         title: "Error",
@@ -83,22 +98,30 @@ export const CreateRegistryModal = ({
       status: "success",
     });
 
-    const claimInserts: ClaimInsert[] = claims.map(({ hypercert_id }) => ({
-      registry_id: insertedRegistry.id,
-      hypercert_id,
-      chain_id: chainId,
-      admin_id: address,
-    }));
-
-    const { error: insertClaimsError } = await supabase
-      .from("claims")
-      .insert(claimInserts)
-      .select();
-
-    if (insertClaimsError) {
+    try {
+      const claimInserts: ClaimInsert[] = await Promise.all(
+        claims.map(async ({ hypercert_id }) => {
+          const claim = await client.indexer.claimById(hypercert_id);
+          if (!claim.claim) {
+            throw new Error("Claim not found");
+          }
+          return {
+            registry_id: insertedRegistry.id,
+            hypercert_id,
+            chain_id: chainId,
+            admin_id: address,
+            owner_id: claim.claim.owner,
+          };
+        }),
+      );
+      await createClaims({
+        claims: claimInserts,
+      });
+    } catch (insertClaimsError) {
+      console.error(insertClaimsError);
       toast({
         title: "Error",
-        description: insertClaimsError.message,
+        description: "Something went wrong with creating claims",
         status: "error",
         duration: 9000,
         isClosable: true,

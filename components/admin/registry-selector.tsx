@@ -1,5 +1,8 @@
 import AsyncSelect from "react-select/async";
 import { supabase } from "@/lib/supabase";
+import { useAddress } from "@/hooks/useAddress";
+import { Props } from "react-select";
+import React, { forwardRef } from "react";
 
 const getRegistryOptions = async (name: string) => {
   return supabase
@@ -10,6 +13,39 @@ const getRegistryOptions = async (name: string) => {
       return data?.map(({ id, name }) => ({ value: id, label: name })) || [];
     });
 };
+
+const getMyRegistryOptions = async (address: string, name: string) => {
+  return supabase
+    .from("registries")
+    .select("id, name")
+    .eq("admin_id", address)
+    .ilike("name", `%${name}%`)
+    .then(({ data }) => {
+      return (
+        data?.map(({ id, name }) => ({
+          value: id as string,
+          label: name as string,
+        })) || []
+      );
+    });
+};
+
+export const SingleRegistrySelector = forwardRef(
+  function SingleRegistrySelectorRef(
+    props: Omit<Props, "ref">,
+    ref: React.Ref<any>,
+  ) {
+    const address = useAddress();
+    return (
+      <AsyncSelect
+        {...props}
+        ref={ref}
+        loadOptions={(name) => getMyRegistryOptions(address || "", name)}
+        defaultOptions
+      />
+    );
+  },
+);
 
 export const RegistrySelector = ({
   onChange,
