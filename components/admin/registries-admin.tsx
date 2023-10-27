@@ -16,6 +16,8 @@ import {
   Th,
   Link,
   TableCaption,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { useMyRegistries } from "@/hooks/useMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
@@ -28,12 +30,19 @@ import { useHypercertById } from "@/hooks/useHypercertById";
 import { formatAddress } from "@/utils/formatting";
 import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
 import { DeleteBlueprintButton } from "@/components/admin/delete-blueprint-button";
+import { CreateBlueprintModal } from "@/components/admin/create-blueprint-modal";
 
 export const RegistriesAdmin = () => {
   const {
     isOpen: createIsOpen,
     onClose: createOnClose,
     onOpen: createOnOpen,
+  } = useDisclosure();
+
+  const {
+    isOpen: createBlueprintIsOpen,
+    onClose: createBlueprintOnClose,
+    onOpen: createBlueprintOnOpen,
   } = useDisclosure();
 
   const { data } = useMyRegistries();
@@ -132,6 +141,16 @@ export const RegistriesAdmin = () => {
                   </Tbody>
                 </Table>
               </TableContainer>
+              <Center width={"100%"} pt={4}>
+                <Button
+                  onClick={() => {
+                    setSelectedRegistry(registry);
+                    createBlueprintOnOpen();
+                  }}
+                >
+                  Create Blueprint
+                </Button>
+              </Center>
             </VStack>
           </Card>
         ))}
@@ -141,15 +160,37 @@ export const RegistriesAdmin = () => {
         onClose={onModalClose}
         initialValues={selectedRegistry}
       />
+      <CreateBlueprintModal
+        isOpen={createBlueprintIsOpen}
+        onClose={() => {
+          createBlueprintOnClose();
+          setSelectedRegistry(undefined);
+        }}
+        registryId={selectedRegistry?.id}
+      />
     </Flex>
   );
 };
 
 const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
-  const { data } = useHypercertById(hypercert_id);
+  const { data, isLoading } = useHypercertById(hypercert_id);
+
+  if (isLoading) {
+    return (
+      <Tr>
+        <Td>
+          <Spinner size={"xs"} />
+        </Td>
+      </Tr>
+    );
+  }
 
   if (!data) {
-    return <div>Hypercert not found</div>;
+    return (
+      <Tr>
+        <Td>Hypercert not found</Td>
+      </Tr>
+    );
   }
 
   return (

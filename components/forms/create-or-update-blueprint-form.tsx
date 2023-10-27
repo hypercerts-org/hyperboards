@@ -15,6 +15,8 @@ import { useAddress } from "@/hooks/useAddress";
 import { useHypercertClient } from "@/components/providers";
 import { useCreateBlueprint } from "@/hooks/useCreateBlueprint";
 import { SingleRegistrySelector } from "@/components/admin/registry-selector";
+import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
+import { useEffect } from "react";
 
 interface FormValues {
   address: string;
@@ -22,15 +24,18 @@ interface FormValues {
 }
 
 export const CreateOrUpdateBlueprintForm = ({
-  onSubmit,
+  registryId,
 }: {
-  onSubmit: (values: any) => void;
+  registryId?: string;
 }) => {
   const address = useAddress();
+  const { data: registryData } = useFetchRegistryById(registryId);
+
   const {
     control,
     register,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     reValidateMode: "onBlur",
@@ -38,6 +43,16 @@ export const CreateOrUpdateBlueprintForm = ({
       address,
     },
   });
+
+  useEffect(() => {
+    if (registryData?.data) {
+      setValue("registryId", {
+        value: registryData.data.id,
+        label: registryData.data.name,
+      });
+    }
+  }, [registryData?.data, setValue]);
+
   const toast = useToast();
   const client = useHypercertClient();
   const { mutateAsync } = useCreateBlueprint();
@@ -71,7 +86,7 @@ export const CreateOrUpdateBlueprintForm = ({
     }
 
     try {
-      const data = await mutateAsync({
+      await mutateAsync({
         ...values,
         address,
         registryId: registryId.value,
@@ -80,7 +95,6 @@ export const CreateOrUpdateBlueprintForm = ({
         title: "Blueprint created",
         status: "success",
       });
-      onSubmit({ ...values, address, data });
     } catch (e) {
       console.error(e);
       toast({
@@ -104,7 +118,6 @@ export const CreateOrUpdateBlueprintForm = ({
       </FormControl>
       <FormControl isInvalid={!!errors.registryId}>
         <FormLabel>Registry ID</FormLabel>
-        {/*<SingleRegistrySelector {...register("registryId")} />*/}
         <Controller
           control={control}
           render={(props) => <SingleRegistrySelector {...props.field} />}
