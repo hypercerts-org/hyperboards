@@ -7,12 +7,18 @@ import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { headerHeight } from "@/components/Layout";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 import { MyClaimsAdmin } from "@/components/admin/my-claims-admin";
+import { DefaultSponsorMetadataAdmin } from "@/components/admin/default-sponsor-metadata-admin";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },
   { name: "Registries", icon: FiTrendingUp, href: "/admin/registries/" },
   { name: "My claims", icon: FiCompass, href: "/admin/my-claims/" },
   { name: "My blueprints", icon: FiCompass, href: "/admin/my-blueprints/" },
+  {
+    name: "Default metadata",
+    icon: FiCompass,
+    href: "/admin/default-sponsor-metadata/",
+  },
 ];
 
 const Admin = () => {
@@ -28,6 +34,7 @@ const Admin = () => {
         {page === "registries" && <RegistriesAdmin />}
         {page === "my-claims" && <MyClaimsAdmin />}
         {page === "my-blueprints" && <MyBlueprintsAdmin />}
+        {page === "default-sponsor-metadata" && <DefaultSponsorMetadataAdmin />}
       </Flex>
     </Flex>
   );
