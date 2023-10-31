@@ -111,6 +111,36 @@ export interface Database {
           }
         ]
       }
+      default_sponsor_metadata: {
+        Row: {
+          address: string
+          companyName: string | null
+          created_at: string
+          firstName: string | null
+          image: string
+          lastName: string | null
+          type: string
+        }
+        Insert: {
+          address: string
+          companyName?: string | null
+          created_at?: string
+          firstName?: string | null
+          image: string
+          lastName?: string | null
+          type: string
+        }
+        Update: {
+          address?: string
+          companyName?: string | null
+          created_at?: string
+          firstName?: string | null
+          image?: string
+          lastName?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
       hyperboard_registries: {
         Row: {
           created_at: string | null
@@ -193,39 +223,6 @@ export interface Database {
           hidden?: boolean
           id?: string
           name?: string
-        }
-        Relationships: []
-      }
-      sponsor_metadata: {
-        Row: {
-          address: string
-          companyName: string | null
-          created_at: string
-          firstName: string | null
-          id: string
-          image: string
-          lastName: string | null
-          type: string
-        }
-        Insert: {
-          address: string
-          companyName?: string | null
-          created_at?: string
-          firstName?: string | null
-          id?: string
-          image: string
-          lastName?: string | null
-          type: string
-        }
-        Update: {
-          address?: string
-          companyName?: string | null
-          created_at?: string
-          firstName?: string | null
-          id?: string
-          image?: string
-          lastName?: string | null
-          type?: string
         }
         Relationships: []
       }

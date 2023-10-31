@@ -16,3 +16,8 @@ export type HyperboardRegistryEntity =
   Database["public"]["Tables"]["hyperboard_registries"]["Row"];
 export type HyperboardRegistryInsert =
   Database["public"]["Tables"]["hyperboard_registries"]["Insert"];
+
+export type DefaultSponsorMetadataEntity =
+  Database["public"]["Tables"]["default_sponsor_metadata"]["Row"];
+export type DefaultSponsorMetadataInsert =
+  Database["public"]["Tables"]["default_sponsor_metadata"]["Insert"];
