@@ -13,7 +13,8 @@
     "supabase:migration:new": "supabase migration new",
     "supabase:migration:push": "supabase migration up",
     "supabase:migration:diff": "supabase db diff --schema public",
-    "supabase:migration:reset": "supabase db reset"
+    "supabase:migration:reset": "supabase db reset",
+    "snaplet:restore": "snaplet snapshot restore --no-reset"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
@@ -58,11 +59,13 @@
     "wagmi": "^1.4.1"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^0.18.1",
     "@types/d3": "^7.4.0",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "snaplet": "^0.72.2"
   }
 }
