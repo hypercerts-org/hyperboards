@@ -13,7 +13,7 @@ export const useMyHyperboards = () => {
       }
       return supabase
         .from("hyperboards")
-        .select("*, registries (*)")
+        .select("*, registries!hyperboard_registries (*)")
         .eq("admin_id", address);
     },
     {
