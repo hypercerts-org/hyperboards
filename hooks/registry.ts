@@ -5,6 +5,8 @@ import { ClaimToken } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
+import { useToast } from "@chakra-ui/react";
+import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 
 interface EntryDisplayData {
   image: string;
@@ -31,85 +33,106 @@ export const useListRegistries = () => {
   );
 };
 
-export const useRegistryContents = (registryId: string) => {
+export const useHyperboardContents = (hyperboardId: string) => {
+  const toast = useToast();
   const client = useHypercertClient();
 
   return useQuery(
-    ["registry", registryId],
+    ["hyperboard-contents", hyperboardId],
     async () => {
-      return getRegistryWithClaims(registryId).then(async (registry) => {
-        if (!registry?.data) {
-          return null;
-        }
+      if (!client) {
+        toast({
+          title: "Error",
+          description: "No client found",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return null;
+      }
 
-        if (!client) {
-          return null;
-        }
+      const { data: hyperboardData, error: hyperboardContentsError } =
+        await supabase
+          .from("hyperboards")
+          .select(
+            "*, hyperboard_registries ( *, registries ( *, claims ( * ) ) )",
+          )
+          .eq("id", hyperboardId)
+          .single();
 
-        // Create one big list of all fractions, for all hypercerts in registry
-        const allFractions = await Promise.all(
-          registry.data["claims"].map((claim) => {
-            return client.indexer.fractionsByClaim(claim.hypercert_id);
-          }),
-        );
-        const fractions = _.chain(allFractions)
-          .flatMap((res) => res.claimTokens)
-          .value();
+      if (hyperboardContentsError) {
+        toast({
+          title: "Error",
+          description: hyperboardContentsError.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
 
-        // Get display data for all owners and convert to dictionary
-        const ownerAddresses = _.uniq(
-          fractions.map((x) => x.owner),
-        ) as string[];
-        const claimDisplayDataResponse =
-          await getEntryDisplayData(ownerAddresses);
-        const claimDisplayData = _.keyBy(
-          claimDisplayDataResponse?.data || [],
-          (x) => x.address.toLowerCase(),
-        );
+      // Create one big list of all fractions, for all hypercerts in registry
+      const claimIds = _.flatMap(
+        hyperboardData?.hyperboard_registries,
+        (x) => x.registries?.claims.map((y) => y.hypercert_id),
+      ).filter((x) => !!x) as string[];
 
-        // Group by owner, merge with display data and calculate total value of all fractions per owner
-        const content = _.chain(fractions)
-          .groupBy((fraction) => fraction.owner)
-          .mapValues((fractionsPerOwner, owner) => {
-            return {
-              fractions: fractionsPerOwner,
-              displayData: claimDisplayData[owner],
-              totalValue: _.sum(
-                fractionsPerOwner.map((x) => parseInt(x.units, 10)),
-              ),
-            };
-          })
-          .value();
+      // Get display data for all owners and convert to dictionary
+      const allFractions = await Promise.all(
+        claimIds.map((claimId) => {
+          return client.indexer.fractionsByClaim(claimId);
+        }),
+      );
 
-        return {
-          registry: registry.data,
-          content,
-        };
-      });
+      const fractions = _.chain(allFractions)
+        .flatMap((res) => res.claimTokens)
+        .value();
+      const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
+      console.log("ownerAddresses", ownerAddresses);
+      const claimDisplayDataResponse =
+        await getEntryDisplayData(ownerAddresses);
+      const claimDisplayData = _.keyBy(
+        claimDisplayDataResponse?.data || [],
+        (x) => x.address.toLowerCase(),
+      );
+
+      console.log("claimDisplayData", claimDisplayData);
+
+      // Group by owner, merge with display data and calculate total value of all fractions per owner
+      const content = _.chain(fractions)
+        .groupBy((fraction) => fraction.owner)
+        .mapValues((fractionsPerOwner, owner) => {
+          return {
+            fractions: fractionsPerOwner,
+            displayData: claimDisplayData[owner],
+            totalValue: _.sum(
+              fractionsPerOwner.map((x) => parseInt(x.units, 10)),
+            ),
+          };
+        })
+        .value();
+
+      return {
+        content,
+        hyperboard: hyperboardData,
+      };
     },
     {
-      enabled: !!registryId && !!client,
+      enabled: !!hyperboardId && !!client,
     },
   );
 };
 
-const getRegistryWithClaims = async (registryId: string) =>
-  supabase
-    .from("registries")
-    .select("*, claims ( * )")
-    .eq("id", registryId)
-    .single();
-
 const getEntryDisplayData = async (addresses: string[]) => {
   return supabase
-    .from("sponsor_metadata")
-    .select<"*", EntryDisplayData>("*")
+    .from("default_sponsor_metadata")
+    .select("*")
     .in("address", addresses);
 };
 
-export const registryContentItemToHyperboardEntry = (
-  item: RegistryContentItem,
-): HyperboardEntry => {
+export const registryContentItemToHyperboardEntry = (item: {
+  displayData: DefaultSponsorMetadataEntity;
+  totalValue: number;
+}): HyperboardEntry => {
   return {
     type: item.displayData.type,
     companyName: item.displayData.companyName,

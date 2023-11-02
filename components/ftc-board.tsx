@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useSize } from "@chakra-ui/react-use-size";
 import {
   registryContentItemToHyperboardEntry,
-  useRegistryContents,
+  useHyperboardContents,
 } from "@/hooks/registry";
 import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 import Head from "next/head";
 
-export const FtcBoard = ({ registryId }: { registryId: string }) => {
+export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
@@ -17,7 +17,7 @@ export const FtcBoard = ({ registryId }: { registryId: string }) => {
     "sponsors" | "speakers" | "all"
   >("all");
 
-  const { data: results, isLoading } = useRegistryContents(registryId);
+  const { data: results, isLoading } = useHyperboardContents(hyperboardId);
 
   const data = results?.content || {};
 
@@ -54,7 +54,7 @@ export const FtcBoard = ({ registryId }: { registryId: string }) => {
   return (
     <>
       <Head>
-        <title>Hyperboards - {results?.registry.name || "Loading"}</title>
+        <title>Hyperboards - {results?.hyperboard?.name || "Loading"}</title>
       </Head>
       <Center width={"100%"} paddingX={"80px"}>
         <Flex

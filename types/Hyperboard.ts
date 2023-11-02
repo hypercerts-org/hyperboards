@@ -1,9 +1,9 @@
 export interface HyperboardEntry {
-  type: "speaker" | "company" | "person";
+  type: string;
   id: string;
-  companyName?: string;
-  firstName: string;
-  lastName: string;
+  companyName: string | null;
+  firstName: string | null;
+  lastName: string | null;
   image: string;
   value: number;
 }
