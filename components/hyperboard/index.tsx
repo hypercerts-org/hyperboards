@@ -9,7 +9,7 @@ export interface HyperboardProps {
   data: HyperboardEntry[];
   height: number;
   label: string;
-  onClickLabel: () => void;
+  onClickLabel: (registryId: string) => void;
 }
 
 type Leaf = {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSize } from "@chakra-ui/react-use-size";
 import {
   registryContentItemToHyperboardEntry,
@@ -13,48 +13,30 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
-  const [displayBoards, setDisplayBoards] = useState<
-    "sponsors" | "speakers" | "all"
-  >("all");
+  const [selectedRegistry, setSelectedRegistry] = useState<string>();
 
-  const { data: results, isLoading } = useHyperboardContents(hyperboardId);
-
-  const data = results?.content || {};
-
-  const sponsors = Object.values(data).filter(
-    (x) =>
-      x.displayData?.type === "person" || x.displayData?.type === "company",
-  );
-  const speakers = Object.values(data || {}).filter(
-    (x) => x.displayData?.type === "speaker",
-  );
+  const { data, isLoading } = useHyperboardContents(hyperboardId);
+  const results = data?.results;
+  const hyperboard = data?.hyperboard;
 
   const height = ((dimensions?.width || 1) / 16) * 9;
+  const widthPerBoard = `${100 / (results?.length || 1)}%`;
 
-  const [speakerWidth, setSpeakerWidth] = useState("50%");
-  const [sponsorWidth, setSponsorWidth] = useState("50%");
-
-  useEffect(() => {
-    if (displayBoards === "all") {
-      setSpeakerWidth("50%");
-      setSponsorWidth("50%");
+  const getWidth = (registryId: string) => {
+    if (selectedRegistry === registryId) {
+      return "100%";
     }
 
-    if (displayBoards === "sponsors") {
-      setSpeakerWidth("0%");
-      setSponsorWidth("100%");
+    if (selectedRegistry && selectedRegistry !== registryId) {
+      return "0%";
     }
-
-    if (displayBoards === "speakers") {
-      setSpeakerWidth("100%");
-      setSponsorWidth("0%");
-    }
-  }, [displayBoards]);
+    return widthPerBoard;
+  };
 
   return (
     <>
       <Head>
-        <title>Hyperboards - {results?.hyperboard?.name || "Loading"}</title>
+        <title>Hyperboards - {hyperboard?.name || "Loading"}</title>
       </Head>
       <Center width={"100%"} paddingX={"80px"}>
         <Flex
@@ -70,44 +52,31 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
             </Center>
           ) : (
             <>
-              <Flex
-                width={sponsorWidth}
-                minWidth={sponsorWidth}
-                transition={"all 0.5s ease-out"}
-                overflow={"hidden"}
-              >
-                <Hyperboard
-                  onClickLabel={() =>
-                    setDisplayBoards((val) =>
-                      val === "all" ? "sponsors" : "all",
-                    )
-                  }
-                  label="Sponsors"
-                  height={height}
-                  data={sponsors.map((x) =>
-                    registryContentItemToHyperboardEntry(x),
-                  )}
-                />
-              </Flex>
-              <Flex
-                width={speakerWidth}
-                minWidth={speakerWidth}
-                transition={"all 0.5s ease-out"}
-                overflow={"hidden"}
-              >
-                <Hyperboard
-                  onClickLabel={() =>
-                    setDisplayBoards((val) =>
-                      val === "all" ? "speakers" : "all",
-                    )
-                  }
-                  label="Speakers"
-                  height={height}
-                  data={speakers.map((x) =>
-                    registryContentItemToHyperboardEntry(x),
-                  )}
-                />
-              </Flex>
+              {results?.map((x) => (
+                <Flex
+                  key={x.registry.id}
+                  width={getWidth(x.registry.id)}
+                  minWidth={getWidth(x.registry.id)}
+                  transition={"all 0.5s ease-out"}
+                  overflow={"hidden"}
+                >
+                  <Hyperboard
+                    onClickLabel={() =>
+                      setSelectedRegistry((currentId) =>
+                        currentId === x.registry.id ? undefined : x.registry.id,
+                      )
+                    }
+                    label={x.label || "Unlabelled"}
+                    height={height}
+                    data={
+                      (Object.values(x.content) || {})
+                        .filter((x) => x.displayData)
+                        .map((x) => registryContentItemToHyperboardEntry(x)) ||
+                      []
+                    }
+                  />
+                </Flex>
+              ))}
             </>
           )}
         </Flex>
