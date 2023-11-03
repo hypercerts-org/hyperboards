@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import { Box, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { ConnectButton } from "@/components/ConnectButton";
+import { colors } from "@/theme";
 
 export const headerHeight = "80px";
 
@@ -12,6 +13,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
       alignItems={"center"}
       width={"100vw"}
       minHeight={"100vh"}
+      backgroundColor={colors.background}
     >
       <Header />
       {children}
