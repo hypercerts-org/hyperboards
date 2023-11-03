@@ -98,7 +98,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       <Flex
         paddingY={1}
         pl={1}
-        onClick={props.onClickLabel}
+        onClick={() => props.onClickLabel()}
         cursor={"pointer"}
         textTransform={"uppercase"}
         color={"white"}

@@ -10,7 +10,7 @@ const BoardDetailPage = () => {
     return <div>Invalid uri</div>;
   }
 
-  return <FtcBoard registryId={boardId} />;
+  return <FtcBoard hyperboardId={boardId} />;
 };
 
 export default BoardDetailPage;
