@@ -3,6 +3,7 @@ import {
   Card,
   Flex,
   Heading,
+  HStack,
   Table,
   TableContainer,
   Tbody,
@@ -18,6 +19,7 @@ import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 import { DeleteHyperboardButton } from "@/components/admin/delete-hyperboard-button";
 import { RemoveRegistryFromHyperboardButton } from "@/components/admin/remove-registry-from-hyperboard-button";
 import { headerHeight } from "@/components/Layout";
+import { EditHyperboardRegistryButton } from "@/components/admin/edit-hyperboard-registry-button";
 
 export const HyperboardsAdmin = () => {
   const {
@@ -49,29 +51,44 @@ export const HyperboardsAdmin = () => {
               <Heading>{hyperboard.name}</Heading>
               <DeleteHyperboardButton hyperboardId={hyperboard.id} />
             </Flex>
-            {!!hyperboard.registries.length && (
+            {!!hyperboard.hyperboard_registries.length && (
               <TableContainer>
                 <Table variant={"striped"} size={"sm"} colorScheme="blue">
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
+                      <Td>Label</Td>
                       <Th>Chain ID</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {hyperboard.registries.map((registry) => (
-                      <Tr key={registry.id}>
-                        <Td>{registry.name}</Td>
-                        <Td>{registry.chain_id}</Td>
-                        <Td>
-                          <RemoveRegistryFromHyperboardButton
-                            size={"sm"}
-                            hyperboardId={hyperboard.id}
-                            registryId={registry.id}
-                          />
-                        </Td>
-                      </Tr>
-                    ))}
+                    {hyperboard.hyperboard_registries.map(
+                      (hyperboardRegistry) => {
+                        if (!hyperboardRegistry.registries) return null;
+                        const registry = hyperboardRegistry.registries;
+                        return (
+                          <Tr key={registry.id}>
+                            <Td>{registry.name}</Td>
+                            <Td>{hyperboardRegistry.label}</Td>
+                            <Td>{registry.chain_id}</Td>
+                            <Td>
+                              <HStack justifyContent={"end"}>
+                                <EditHyperboardRegistryButton
+                                  size={"sm"}
+                                  hyperboardId={hyperboard.id}
+                                  registryId={registry.id}
+                                />
+                                <RemoveRegistryFromHyperboardButton
+                                  size={"sm"}
+                                  hyperboardId={hyperboard.id}
+                                  registryId={registry.id}
+                                />
+                              </HStack>
+                            </Td>
+                          </Tr>
+                        );
+                      },
+                    )}
                   </Tbody>
                 </Table>
               </TableContainer>
