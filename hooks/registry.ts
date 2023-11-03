@@ -52,7 +52,6 @@ const processRegistryForDisplay = async (
   const fractions = _.flatMap(fractionsResults, (x) => x.claimTokens);
   const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
 
-  console.log("ownerAddresses", ownerAddresses);
   const claimDisplayDataResponse = await getEntryDisplayData(ownerAddresses);
   const claimDisplayData = _.keyBy(claimDisplayDataResponse?.data || [], (x) =>
     x.address.toLowerCase(),

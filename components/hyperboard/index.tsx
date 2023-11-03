@@ -9,7 +9,7 @@ export interface HyperboardProps {
   data: HyperboardEntry[];
   height: number;
   label: string;
-  onClickLabel: (registryId: string) => void;
+  onClickLabel: () => void;
 }
 
 type Leaf = {
@@ -98,7 +98,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       <Flex
         paddingY={1}
         pl={1}
-        onClick={props.onClickLabel}
+        onClick={() => props.onClickLabel()}
         cursor={"pointer"}
         textTransform={"uppercase"}
         color={"white"}
