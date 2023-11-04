@@ -14,6 +14,8 @@ import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 interface OwnershipTableProps {
   hyperboardId: string;
   showHeader?: boolean;
+  selectedRegistry?: string;
+  onSelectRegistry?: (registryId: string | undefined) => void;
 }
 
 const useHyperboardOwnership = (hyperboardId: string) => {
@@ -77,10 +79,11 @@ const useHyperboardOwnership = (hyperboardId: string) => {
 export const OwnershipTable = ({
   hyperboardId,
   showHeader = false,
+  selectedRegistry,
+  onSelectRegistry,
 }: OwnershipTableProps) => {
   // const data = [];
   const { data } = useHyperboardOwnership(hyperboardId);
-  const [selectedRegistry, setSelectedRegistry] = useState<string>();
   const [selectedClaim, setSelectedClaim] = useState<string>();
 
   if (!data) {
@@ -143,10 +146,10 @@ export const OwnershipTable = ({
                   percentage={100}
                   onClick={() => {
                     if (isRegistrySelected) {
-                      setSelectedRegistry(undefined);
+                      onSelectRegistry?.(undefined);
                     } else {
                       setSelectedClaim(undefined);
-                      setSelectedRegistry(
+                      onSelectRegistry?.(
                         registry.hyperboardRegistry.registry_id,
                       );
                     }

@@ -114,7 +114,12 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
           </Flex>
         </VStack>
         {hyperboard && (
-          <OwnershipTable hyperboardId={hyperboard.id} showHeader />
+          <OwnershipTable
+            hyperboardId={hyperboard.id}
+            showHeader
+            selectedRegistry={selectedRegistry}
+            onSelectRegistry={setSelectedRegistry}
+          />
         )}
       </Center>
     </>
