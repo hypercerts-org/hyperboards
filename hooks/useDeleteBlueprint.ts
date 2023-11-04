@@ -6,6 +6,10 @@ export const useDeleteBlueprint = () => {
   return useMutation(async (blueprintId: number) => {
     const client = await getClient();
 
+    if (!client) {
+      throw new Error("Not logged in");
+    }
+
     return client?.from("blueprints").delete().eq("id", blueprintId);
   });
 };

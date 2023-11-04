@@ -130,7 +130,7 @@ export const RegistriesAdmin = () => {
                         <Td>
                           {new Date(blueprint.created_at).toLocaleDateString()}
                         </Td>
-                        <Td>
+                        <Td textAlign={"end"}>
                           <DeleteBlueprintButton
                             size="xs"
                             blueprintId={blueprint.id}
@@ -215,8 +215,10 @@ export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
           {data.metadata.external_url}
         </Link>
       </Td>
-      <Td>{data.metadata.description}</Td>
-      <Td>
+      <Td maxW={"300px"} isTruncated>
+        {data.metadata.description}
+      </Td>
+      <Td textAlign={"end"}>
         <DeleteClaimButton size="xs" claimId={id} />
       </Td>
     </Tr>

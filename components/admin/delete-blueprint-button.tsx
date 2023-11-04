@@ -29,6 +29,7 @@ export const DeleteBlueprintButton = ({
         duration: 9000,
         isClosable: true,
       });
+      return;
     }
 
     await refetch();
