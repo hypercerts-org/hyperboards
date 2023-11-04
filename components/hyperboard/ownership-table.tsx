@@ -110,6 +110,10 @@ export const OwnershipTable = ({
 
   const claimIds = getClaimIds();
 
+  const indexOfSelectedRegistry = data.findIndex(
+    (registry) => registry.hyperboardRegistry.registry_id === selectedRegistry,
+  );
+
   return (
     <>
       {showHeader && (
@@ -132,10 +136,11 @@ export const OwnershipTable = ({
           borderRight={"none"}
           overflowY={"auto"}
         >
-          {data.map((registry) => {
+          {data.map((registry, index) => {
             const isRegistrySelected =
               !selectedClaim &&
               selectedRegistry === registry.hyperboardRegistry.registry_id;
+            const isFirstAfterSelected = index === indexOfSelectedRegistry + 1;
             return (
               <>
                 <RegistryRow
@@ -143,6 +148,7 @@ export const OwnershipTable = ({
                   isSelected={isRegistrySelected}
                   fadedBorder={isRegistrySelected}
                   text={registry.label || "No label"}
+                  isFirstAfterSelected={isFirstAfterSelected}
                   percentage={100}
                   onClick={() => {
                     if (isRegistrySelected) {
@@ -163,13 +169,14 @@ export const OwnershipTable = ({
                   }
                 />
                 {selectedRegistry === registry.hyperboardRegistry.registry_id &&
-                  registry.claims.map((claim) => {
+                  registry.claims.map((claim, index) => {
                     const isClaimSelected = claim.claim.id === selectedClaim;
+                    const isLastClaim = index === registry.claims.length - 1;
                     return (
                       <ClaimRow
                         key={claim.claim.id}
                         isSelected={isClaimSelected}
-                        fadedBorder={isRegistrySelected}
+                        isLast={isLastClaim}
                         text={claim.metadata.name || "No name"}
                         percentage={(
                           (parseInt(claim.claim.totalUnits, 10) /
@@ -213,7 +220,6 @@ interface SelectionRowProps {
   percentage: number | string;
   onClick: () => void;
   icon: React.JSX.Element;
-  fadedBorder?: boolean;
 }
 
 const RegistryRow = ({
@@ -223,7 +229,11 @@ const RegistryRow = ({
   percentage,
   onClick,
   fadedBorder,
-}: SelectionRowProps) => {
+  isFirstAfterSelected,
+}: SelectionRowProps & {
+  fadedBorder?: boolean;
+  isFirstAfterSelected?: boolean;
+}) => {
   return (
     <Flex
       onClick={onClick}
@@ -232,6 +242,7 @@ const RegistryRow = ({
     >
       <Flex
         width={"100%"}
+        borderTop={isFirstAfterSelected ? "1px solid black" : "none"}
         borderBottom={
           isSelected ? "1px solid rgba(0, 0, 0, 0.3)" : "1px solid black"
         }
@@ -257,8 +268,8 @@ const ClaimRow = ({
   text,
   percentage,
   onClick,
-  fadedBorder,
-}: SelectionRowProps) => {
+  isLast,
+}: SelectionRowProps & { isLast?: boolean }) => {
   return (
     <Flex
       onClick={onClick}
@@ -267,9 +278,7 @@ const ClaimRow = ({
     >
       <Flex
         width={"100%"}
-        borderBottom={
-          fadedBorder ? "1px solid rgba(0, 0, 0, 0.3)" : "1px solid black"
-        }
+        borderBottom={!isLast ? "1px solid rgba(0, 0, 0, 0.3)" : "none"}
         borderRight={isSelected ? "none" : "2px solid black"}
         ml={"42px"}
         py={"14px"}
