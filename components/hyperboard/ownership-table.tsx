@@ -279,7 +279,7 @@ const ClaimRow = ({
       <Flex
         width={"100%"}
         borderBottom={!isLast ? "1px solid rgba(0, 0, 0, 0.3)" : "none"}
-        borderRight={isSelected ? "none" : "2px solid black"}
+        borderRight={isSelected ? "none" : "1px solid black"}
         ml={"42px"}
         py={"14px"}
         pr={"20px"}
