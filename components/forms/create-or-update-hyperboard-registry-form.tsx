@@ -128,7 +128,7 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form style={{ width: "100%" }} onSubmit={handleSubmit(onSubmit)}>
       <VStack>
         <FormControl isInvalid={!!errors.registry}>
           <FormLabel>Registry ID</FormLabel>

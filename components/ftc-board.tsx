@@ -68,7 +68,6 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
           <Flex justifyContent={"flex-start"} width={"100%"}>
             <Breadcrumbs crumbs={crumbs} />
           </Flex>
-          {hyperboard && <OwnershipTable hyperboardId={hyperboard.id} />}
           <Flex
             width={"100%"}
             ref={containerRef}
@@ -114,6 +113,9 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
             )}
           </Flex>
         </VStack>
+        {hyperboard && (
+          <OwnershipTable hyperboardId={hyperboard.id} showHeader />
+        )}
       </Center>
     </>
   );

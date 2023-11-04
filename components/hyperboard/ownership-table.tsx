@@ -9,9 +9,11 @@ import _ from "lodash";
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
 import { getEntriesDisplayData } from "@/hooks/registry";
+import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 
 interface OwnershipTableProps {
   hyperboardId: string;
+  showHeader?: boolean;
 }
 
 const useHyperboardOwnership = (hyperboardId: string) => {
@@ -72,7 +74,10 @@ const useHyperboardOwnership = (hyperboardId: string) => {
   });
 };
 
-export const OwnershipTable = ({ hyperboardId }: OwnershipTableProps) => {
+export const OwnershipTable = ({
+  hyperboardId,
+  showHeader = false,
+}: OwnershipTableProps) => {
   // const data = [];
   const { data } = useHyperboardOwnership(hyperboardId);
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
@@ -103,85 +108,99 @@ export const OwnershipTable = ({ hyperboardId }: OwnershipTableProps) => {
   const claimIds = getClaimIds();
 
   return (
-    <Flex width={"100%"} height={"360px"}>
-      <Flex
-        flexBasis={"50%"}
-        flexDirection={"column"}
-        border={"1px solid black"}
-        borderRight={"none"}
-        overflowY={"auto"}
-      >
-        {data.map((registry) => {
-          const isRegistrySelected =
-            !selectedClaim &&
-            selectedRegistry === registry.hyperboardRegistry.registry_id;
-          return (
-            <>
-              <RegistryRow
-                key={registry.hyperboardRegistry.registry_id}
-                isSelected={isRegistrySelected}
-                fadedBorder={isRegistrySelected}
-                text={registry.label || "No label"}
-                percentage={100}
-                onClick={() => {
-                  if (isRegistrySelected) {
-                    setSelectedRegistry(undefined);
-                  } else {
-                    setSelectedClaim(undefined);
-                    setSelectedRegistry(
-                      registry.hyperboardRegistry.registry_id,
-                    );
-                  }
-                }}
-                icon={
-                  <Image
-                    alt={"Board icon"}
-                    src={"/icons/board.svg"}
-                    width={"24px"}
-                  />
-                }
-              />
-              {selectedRegistry === registry.hyperboardRegistry.registry_id &&
-                registry.claims.map((claim) => {
-                  const isClaimSelected = claim.claim.id === selectedClaim;
-                  return (
-                    <ClaimRow
-                      key={claim.claim.id}
-                      isSelected={isClaimSelected}
-                      fadedBorder={isRegistrySelected}
-                      text={claim.metadata.name || "No name"}
-                      percentage={(
-                        (parseInt(claim.claim.totalUnits, 10) /
-                          registry.totalValueInRegistry) *
-                        100
-                      ).toPrecision(2)}
-                      onClick={() => {
-                        setSelectedClaim(claim.claim.id);
-                      }}
-                      icon={
-                        <Image
-                          alt={"Claim icon"}
-                          src={"/icons/claim.svg"}
-                          width={"12px"}
-                        />
-                      }
+    <>
+      {showHeader && (
+        <Center
+          width={"100%"}
+          border={"1px solid black"}
+          borderBottom={"none"}
+          py={10}
+        >
+          <Text textStyle={"secondary"} textTransform={"uppercase"}>
+            hyperboard ownership
+          </Text>
+        </Center>
+      )}
+      <Flex width={"100%"} height={"360px"}>
+        <Flex
+          flexBasis={"50%"}
+          flexDirection={"column"}
+          border={"1px solid black"}
+          borderRight={"none"}
+          overflowY={"auto"}
+        >
+          {data.map((registry) => {
+            const isRegistrySelected =
+              !selectedClaim &&
+              selectedRegistry === registry.hyperboardRegistry.registry_id;
+            return (
+              <>
+                <RegistryRow
+                  key={registry.hyperboardRegistry.registry_id}
+                  isSelected={isRegistrySelected}
+                  fadedBorder={isRegistrySelected}
+                  text={registry.label || "No label"}
+                  percentage={100}
+                  onClick={() => {
+                    if (isRegistrySelected) {
+                      setSelectedRegistry(undefined);
+                    } else {
+                      setSelectedClaim(undefined);
+                      setSelectedRegistry(
+                        registry.hyperboardRegistry.registry_id,
+                      );
+                    }
+                  }}
+                  icon={
+                    <Image
+                      alt={"Board icon"}
+                      src={"/icons/board.svg"}
+                      width={"24px"}
                     />
-                  );
-                })}
-            </>
-          );
-        })}
+                  }
+                />
+                {selectedRegistry === registry.hyperboardRegistry.registry_id &&
+                  registry.claims.map((claim) => {
+                    const isClaimSelected = claim.claim.id === selectedClaim;
+                    return (
+                      <ClaimRow
+                        key={claim.claim.id}
+                        isSelected={isClaimSelected}
+                        fadedBorder={isRegistrySelected}
+                        text={claim.metadata.name || "No name"}
+                        percentage={(
+                          (parseInt(claim.claim.totalUnits, 10) /
+                            registry.totalValueInRegistry) *
+                          100
+                        ).toPrecision(2)}
+                        onClick={() => {
+                          setSelectedClaim(claim.claim.id);
+                        }}
+                        icon={
+                          <Image
+                            alt={"Claim icon"}
+                            src={"/icons/claim.svg"}
+                            width={"12px"}
+                          />
+                        }
+                      />
+                    );
+                  })}
+              </>
+            );
+          })}
+        </Flex>
+        <Flex
+          flexBasis={"50%"}
+          flexDirection={"column"}
+          border={"1px solid black"}
+          borderLeft={"none"}
+          overflowY={"auto"}
+        >
+          <ClaimOwnershipOverview claimIds={claimIds} />
+        </Flex>
       </Flex>
-      <Flex
-        flexBasis={"50%"}
-        flexDirection={"column"}
-        border={"1px solid black"}
-        borderLeft={"none"}
-        overflowY={"auto"}
-      >
-        <ClaimOwnershipOverview claimIds={claimIds} />
-      </Flex>
-    </Flex>
+    </>
   );
 };
 
@@ -311,6 +330,8 @@ const useClaimOwnership = (claimIds: string[]) => {
         total: _.sum(value.map((x) => parseInt(x.units, 10))),
         metadata: metadataByAddress[key],
       }))
+      .sortBy((x) => x.total)
+      .reverse()
       .toArray()
       .value();
 
@@ -350,7 +371,7 @@ const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
               mx={"20px"}
               py={1}
             >
-              <Text>{ownership.metadata?.companyName}</Text>
+              <Text>{formatMetadata(ownership.metadata)}</Text>
               <Text textStyle={"secondary"}>{percentage.toFixed(2)}%</Text>
             </Flex>
           </Flex>
@@ -358,4 +379,19 @@ const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
       })}
     </>
   );
+};
+
+const formatMetadata = (
+  displayMetadata: DefaultSponsorMetadataEntity | null,
+) => {
+  if (!displayMetadata) {
+    return "Unknown";
+  }
+  const { companyName, type, firstName, lastName } = displayMetadata;
+
+  if (type === "company") {
+    return companyName;
+  }
+
+  return `${firstName} ${lastName}`;
 };

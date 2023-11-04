@@ -31,7 +31,7 @@ export const CreateOrUpdateHyperboardForm = ({
     defaultValues: initialValues,
   });
   return (
-    <form onSubmit={handleSubmit(onSubmitted)}>
+    <form onSubmit={handleSubmit(onSubmitted)} style={{ width: "100%" }}>
       <FormControl isInvalid={!!errors.name}>
         <FormLabel htmlFor="name">Name</FormLabel>
         <Input

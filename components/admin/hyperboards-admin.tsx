@@ -59,7 +59,7 @@ export const HyperboardsAdmin = () => {
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
-                      <Td>Label</Td>
+                      <Th>Label</Th>
                       <Th>Chain ID</Th>
                     </Tr>
                   </Thead>

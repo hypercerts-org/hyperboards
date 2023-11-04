@@ -42,7 +42,7 @@ export const CreateOrUpdateRegistryForm = ({
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmitted)}>
+    <form onSubmit={handleSubmit(onSubmitted)} style={{ width: "100%" }}>
       <VStack>
         <FormControl isInvalid={!!errors.name}>
           <FormLabel htmlFor="name">Name</FormLabel>
