@@ -19,9 +19,9 @@ import { CreateHyperboardModal } from "@/components/admin/create-hyperboard-moda
 import { useMyHyperboards } from "@/hooks/useMyHyperboards";
 import { DeleteHyperboardButton } from "@/components/admin/delete-hyperboard-button";
 import { RemoveRegistryFromHyperboardButton } from "@/components/admin/remove-registry-from-hyperboard-button";
-import { headerHeight } from "@/components/Layout";
 import { EditHyperboardRegistryButton } from "@/components/admin/edit-hyperboard-registry-button";
 import { AddHyperboardRegistryButton } from "@/components/admin/add-hyperboard-registry-button";
+import { headerHeight } from "@/components/layout/header";
 
 export const HyperboardsAdmin = () => {
   const {
@@ -59,7 +59,7 @@ export const HyperboardsAdmin = () => {
                   <Thead>
                     <Tr>
                       <Th>Name</Th>
-                      <Td>Label</Td>
+                      <Th>Label</Th>
                       <Th>Chain ID</Th>
                     </Tr>
                   </Thead>

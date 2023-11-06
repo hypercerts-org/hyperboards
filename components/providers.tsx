@@ -17,6 +17,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HypercertClient } from "@hypercerts-org/sdk";
 import { providers } from "ethers";
 import { InteractionDialogProvider } from "@/components/interaction-modal";
+import Fonts from "@/fonts";
+import { theme } from "@/theme";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, optimism],
@@ -52,7 +54,8 @@ export const Providers = ({
       <RainbowKitProvider chains={chains}>
         <HypercertClientProvider>
           <QueryClientProvider client={queryClient}>
-            <ChakraProvider>
+            <ChakraProvider theme={theme}>
+              <Fonts />
               <InteractionDialogProvider>{children}</InteractionDialogProvider>
             </ChakraProvider>
             {showReactQueryDevtools && (

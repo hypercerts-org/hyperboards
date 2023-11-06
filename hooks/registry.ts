@@ -52,7 +52,7 @@ const processRegistryForDisplay = async (
   const fractions = _.flatMap(fractionsResults, (x) => x.claimTokens);
   const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
 
-  const claimDisplayDataResponse = await getEntryDisplayData(ownerAddresses);
+  const claimDisplayDataResponse = await getEntriesDisplayData(ownerAddresses);
   const claimDisplayData = _.keyBy(claimDisplayDataResponse?.data || [], (x) =>
     x.address.toLowerCase(),
   );
@@ -138,7 +138,7 @@ export const useHyperboardContents = (hyperboardId: string) => {
   );
 };
 
-const getEntryDisplayData = async (addresses: string[]) => {
+export const getEntriesDisplayData = async (addresses: string[]) => {
   return supabase
     .from("default_sponsor_metadata")
     .select("*")

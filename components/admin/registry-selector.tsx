@@ -32,7 +32,7 @@ const getMyRegistryOptions = async (address: string, name: string) => {
 
 export const SingleRegistrySelector = forwardRef(
   function SingleRegistrySelectorRef(
-    props: Omit<Props, "ref">,
+    props: Omit<Props, "ref"> & { onlyMyRegistries?: boolean },
     ref: React.Ref<any>,
   ) {
     const address = useAddress();
@@ -40,7 +40,11 @@ export const SingleRegistrySelector = forwardRef(
       <AsyncSelect
         {...props}
         ref={ref}
-        loadOptions={(name) => getMyRegistryOptions(address || "", name)}
+        loadOptions={(name) =>
+          props.onlyMyRegistries
+            ? getMyRegistryOptions(address || "", name)
+            : getRegistryOptions(name)
+        }
         defaultOptions
       />
     );

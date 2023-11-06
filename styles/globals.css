@@ -1,20 +1,5 @@
 @import url('https://fonts.cdnfonts.com/css/switzer');
 
-@font-face {
-  font-family: "Director-Regular";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: optional;
-  src: url(/fonts/Director-Regular.woff2) format("woff2");
-}
-
-@font-face {
-  font-family: "Director-Variable";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: optional;
-  src: url(/fonts/Director-Variable.woff2) format("woff2");
-}
 
 :root {
   --max-width: 1100px;
@@ -91,3 +76,33 @@ a {
     color-scheme: dark;
   }
 }
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: black transparent;
+}
+/* Chrome, Edge, and Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: none;
+  width: 2px;
+  /*padding: 10px;*/
+  /*border-radius: 5px;*/
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: black;
+  padding: 1px;
+  margin: 4px;
+  /*border-radius: 14px;*/
+  max-width: 2px;
+  /*border: 3px solid black;*/
+}
+
+::-webkit-scrollbar-thumb:hover {
+  /*background-color: var(--tertiary);*/
+}
+

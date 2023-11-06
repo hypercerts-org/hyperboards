@@ -1,16 +1,29 @@
 import { extendTheme, ThemeOverride } from "@chakra-ui/react";
 
-export const chakraTheme: ThemeOverride = extendTheme({
+export const colors = {
+  background: "#F1F1F1",
+};
+
+export const theme: ThemeOverride = extendTheme({
   fonts: {
-    heading: `'Director-regular', sans-serif`,
+    heading: `'Director-Variable', sans-serif`,
     body: `'Switzer', sans-serif`,
+  },
+  textStyles: {
+    primary: {
+      fontFamily: `'Switzer', sans-serif`,
+    },
+    secondary: {
+      "font-family": `'Director-Variable', sans-serif`,
+    },
   },
   fontSizes: {
     lg: "24px",
   },
-  lineHeights: {
-    base: "1",
+  colors: {
+    background: "#F1F1F1",
   },
+  lineHeights: {},
   components: {
     Button: {
       baseStyle: {
