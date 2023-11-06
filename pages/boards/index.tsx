@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { Center, Heading, Spinner } from "@chakra-ui/react";
+import { Center, Heading, Spinner, VStack } from "@chakra-ui/react";
 import { HyperboardEntity } from "@/types/database-entities";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -27,13 +27,15 @@ export const Index = () => {
 
   return (
     <Center py={8}>
-      {data.data.map((board: HyperboardEntity) => (
-        <Link href={`/boards/${board.id}`} key={board.id}>
-          <Heading size={"lg"} textStyle={"secondary"}>
-            {board.name}
-          </Heading>
-        </Link>
-      ))}
+      <VStack spacing={4}>
+        {data.data.map((board: HyperboardEntity) => (
+          <Link href={`/boards/${board.id}`} key={board.id}>
+            <Heading size={"lg"} textStyle={"secondary"}>
+              {board.name}
+            </Heading>
+          </Link>
+        ))}
+      </VStack>
     </Center>
   );
 };
