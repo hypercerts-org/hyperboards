@@ -64,7 +64,7 @@ export const ConnectButton = ({ ...buttonProps }: ButtonProps) => {
                 <div style={{ display: "flex", gap: 12 }}>
                   <Button
                     {...buttonProps}
-                    variant={"blackAndWhite"}
+                    variant={"blackAndWhiteOutline"}
                     onClick={openChainModal}
                     style={{ display: "flex", alignItems: "center" }}
                     type="button"

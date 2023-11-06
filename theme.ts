@@ -20,6 +20,12 @@ const Button = defineStyleConfig({
       background: "black",
       borderRadius: 16,
     },
+    blackAndWhiteOutline: {
+      color: "black",
+      background: "white",
+      border: "1px solid black",
+      borderRadius: 16,
+    },
   },
   defaultProps: {},
 });

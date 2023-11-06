@@ -4,6 +4,7 @@ import {
   Flex,
   Heading,
   HStack,
+  Image,
   Menu,
   MenuButton,
   MenuItem,
@@ -17,10 +18,13 @@ import React from "react";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 import { Pivot as Hamburger } from "hamburger-react";
 import Link from "next/link";
+import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
+import { formatAddress } from "@/utils/formatting";
 
 export const headerHeight = "64px";
 
 export const Header = () => {
+  const { isConnected } = useAccount();
   return (
     <Flex
       width={"100%"}
@@ -38,11 +42,21 @@ export const Header = () => {
           <BrowseMenu />
         </Show>
       </HStack>
-      <HStack ml={"auto"} alignItems={"center"} height={"100%"}>
+      <Flex ml={"auto"} alignItems={"center"} height={"100%"}>
         <Show above={"md"}>
           <ConnectButton />
         </Show>
         <Show below={"md"}>
+          {isConnected && (
+            <Flex
+              px={4}
+              borderLeft={"1px solid black"}
+              backgroundColor={"white"}
+              height={"100%"}
+            >
+              <ProfileInfo />
+            </Flex>
+          )}
           <Flex
             alignItems={"center"}
             borderLeft={"1px solid black"}
@@ -51,7 +65,7 @@ export const Header = () => {
             <MobileMenuButton />
           </Flex>
         </Show>
-      </HStack>
+      </Flex>
     </Flex>
   );
 };
@@ -131,6 +145,40 @@ const MobileMenuLink = ({ href, text }: { href: string; text: string }) => {
         {text}
       </Heading>
     </Link>
+  );
+};
+
+const ProfileInfo = () => {
+  const { address, isConnected } = useAccount();
+  const { data: avatarData } = useEnsAvatar();
+  const { data: ensName } = useEnsName();
+
+  if (!isConnected) {
+    return null;
+  }
+
+  return (
+    <Flex
+      height={"100%"}
+      width={"100%"}
+      alignItems={"center"}
+      justifyContent={"flex-start"}
+    >
+      {avatarData && (
+        <Image
+          alt={ensName ?? "Avatar"}
+          src={avatarData}
+          width={8}
+          height={8}
+          borderRadius={999}
+          mr={2}
+        />
+      )}
+      <VStack alignItems={"flex-start"} spacing={0}>
+        {ensName && <Text fontWeight={500}>{ensName}</Text>}
+        {address && <Text fontSize={"xs"}>{formatAddress(address)}</Text>}
+      </VStack>
+    </Flex>
   );
 };
 
