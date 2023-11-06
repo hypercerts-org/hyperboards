@@ -57,13 +57,20 @@ export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
     }
   }
 
+  // TODO: Add start breadcrumb with company icon
+  // TODO: Add second breadcrumb with company name
+
   return (
     <>
       <Head>
-        <title>Hyperboards - {hyperboard?.name || "Loading"}</title>
+        {hyperboard?.name ? (
+          <title>Hyperboards - {hyperboard.name}</title>
+        ) : (
+          <title>Hyperboards - Loading</title>
+        )}
       </Head>
 
-      <Center flexDirection={"column"} width={"100%"} paddingX={"80px"}>
+      <Center flexDirection={"column"} width={"100%"} paddingX={[0, 0, "80px"]}>
         <VStack width={"100%"}>
           <Flex justifyContent={"flex-start"} width={"100%"}>
             <Breadcrumbs crumbs={crumbs} />

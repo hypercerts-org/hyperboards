@@ -128,9 +128,13 @@ export const OwnershipTable = ({
           </Text>
         </Center>
       )}
-      <Flex width={"100%"} height={"360px"}>
+      <Flex
+        width={"100%"}
+        height={["fit-content", "fit-content", "360px"]}
+        flexDirection={["column", "column", "row"]}
+      >
         <Flex
-          flexBasis={"50%"}
+          flexBasis={["100%", "100%", "50%"]}
           flexDirection={"column"}
           border={"1px solid black"}
           borderRight={"none"}
@@ -140,11 +144,13 @@ export const OwnershipTable = ({
             const isRegistrySelected =
               !selectedClaim &&
               selectedRegistry === registry.hyperboardRegistry.registry_id;
-            const isFirstAfterSelected = index === indexOfSelectedRegistry + 1;
+            const isFirstAfterSelected =
+              indexOfSelectedRegistry !== -1 &&
+              index === indexOfSelectedRegistry + 1;
+            const isLastRegistry = index === data.length - 1;
             return (
-              <>
+              <div key={registry.hyperboardRegistry.registry_id}>
                 <RegistryRow
-                  key={registry.hyperboardRegistry.registry_id}
                   isSelected={isRegistrySelected}
                   fadedBorder={isRegistrySelected}
                   text={registry.label || "No label"}
@@ -171,7 +177,8 @@ export const OwnershipTable = ({
                 {selectedRegistry === registry.hyperboardRegistry.registry_id &&
                   registry.claims.map((claim, index) => {
                     const isClaimSelected = claim.claim.id === selectedClaim;
-                    const isLastClaim = index === registry.claims.length - 1;
+                    const isLastClaim =
+                      !isLastRegistry && index === registry.claims.length - 1;
                     return (
                       <ClaimRow
                         key={claim.claim.id}
@@ -196,12 +203,12 @@ export const OwnershipTable = ({
                       />
                     );
                   })}
-              </>
+              </div>
             );
           })}
         </Flex>
         <Flex
-          flexBasis={"50%"}
+          flexBasis={["100%", "100%", "50%"]}
           flexDirection={"column"}
           border={"1px solid black"}
           borderLeft={"none"}

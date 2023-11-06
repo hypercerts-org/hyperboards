@@ -20,6 +20,9 @@ export const theme: ThemeOverride = extendTheme({
   fontSizes: {
     lg: "24px",
   },
+  colors: {
+    background: "#F1F1F1",
+  },
   lineHeights: {},
   components: {
     Button: {

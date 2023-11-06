@@ -4,10 +4,10 @@ import { FiCompass, FiHome, FiTrendingUp } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
-import { headerHeight } from "@/components/Layout";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 import { MyClaimsAdmin } from "@/components/admin/my-claims-admin";
 import { DefaultSponsorMetadataAdmin } from "@/components/admin/default-sponsor-metadata-admin";
+import { headerHeight } from "@/components/layout/header";
 
 const SIDEBAR_ITEMS = [
   { name: "Hyperboards", icon: FiHome, href: "/admin/hyperboards/" },

@@ -44,7 +44,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     if (!dimensions) {
       return;
     }
-    console.log("drawing", containerRef.current, dimensions);
+    // console.log("drawing", containerRef.current, dimensions);
     d3.select(ref.current)
       .attr("width", props.height)
       .attr("height", props.height)
@@ -83,7 +83,7 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   const ratio = dimensions ? dimensions.width / dimensions.height : 1;
-  console.log("dimensions", dimensions, ratio);
+  // console.log("dimensions", dimensions, ratio);
 
   return (
     <Flex

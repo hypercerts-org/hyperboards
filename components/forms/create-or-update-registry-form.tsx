@@ -41,6 +41,7 @@ export const CreateOrUpdateRegistryForm = ({
     defaultValues: { claims: [], ...initialValues },
   });
 
+  // TODO: Add validation whether claim is on correct chain etc
   return (
     <form onSubmit={handleSubmit(onSubmitted)} style={{ width: "100%" }}>
       <VStack>
