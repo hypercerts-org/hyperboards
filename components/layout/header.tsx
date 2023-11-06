@@ -71,7 +71,7 @@ export const Header = () => {
 };
 
 const MobileMenuButton = () => {
-  const [isOpen, setOpen] = React.useState(true);
+  const [isOpen, setOpen] = React.useState(false);
   return (
     <Flex
       backgroundColor={isOpen ? "white" : undefined}
