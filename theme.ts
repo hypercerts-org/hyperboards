@@ -1,8 +1,34 @@
-import { extendTheme, ThemeOverride } from "@chakra-ui/react";
+import {
+  defineStyleConfig,
+  extendTheme,
+  ThemeOverride,
+} from "@chakra-ui/react";
 
 export const colors = {
   background: "#F1F1F1",
 };
+
+const Button = defineStyleConfig({
+  baseStyle: {
+    borderRadius: "0",
+    color: "white",
+    background: "none",
+  },
+  variants: {
+    blackAndWhite: {
+      color: "white",
+      background: "black",
+      borderRadius: 16,
+    },
+    blackAndWhiteOutline: {
+      color: "black",
+      background: "white",
+      border: "1px solid black",
+      borderRadius: 16,
+    },
+  },
+  defaultProps: {},
+});
 
 export const theme: ThemeOverride = extendTheme({
   fonts: {
@@ -25,11 +51,7 @@ export const theme: ThemeOverride = extendTheme({
   },
   lineHeights: {},
   components: {
-    Button: {
-      baseStyle: {
-        borderRadius: "0",
-      },
-    },
+    Button,
     Input: {
       baseStyle: {
         field: {

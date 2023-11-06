@@ -124,7 +124,7 @@ export const OwnershipTable = ({
           py={10}
         >
           <Text textStyle={"secondary"} textTransform={"uppercase"}>
-            hyperboard ownership
+            {selectedClaim ? "hypercert ownership" : "hyperboard ownership"}
           </Text>
         </Center>
       )}
@@ -139,6 +139,7 @@ export const OwnershipTable = ({
           border={"1px solid black"}
           borderRight={"none"}
           overflowY={"auto"}
+          className={"custom-scrollbar"}
         >
           {data.map((registry, index) => {
             const isRegistrySelected =
@@ -213,6 +214,7 @@ export const OwnershipTable = ({
           border={"1px solid black"}
           borderLeft={"none"}
           overflowY={"auto"}
+          className={"custom-scrollbar"}
         >
           <ClaimOwnershipOverview claimIds={claimIds} />
         </Flex>
@@ -243,9 +245,11 @@ const RegistryRow = ({
 }) => {
   return (
     <Flex
+      cursor={"pointer"}
       onClick={onClick}
       pl={"20px"}
       backgroundColor={isSelected ? "white" : undefined}
+      _hover={{ backgroundColor: "white" }}
     >
       <Flex
         width={"100%"}
@@ -279,9 +283,11 @@ const ClaimRow = ({
 }: SelectionRowProps & { isLast?: boolean }) => {
   return (
     <Flex
+      cursor={"pointer"}
       onClick={onClick}
       pl={"20px"}
       backgroundColor={isSelected ? "white" : undefined}
+      _hover={{ backgroundColor: "white" }}
     >
       <Flex
         width={"100%"}
