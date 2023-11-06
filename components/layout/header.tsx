@@ -219,8 +219,8 @@ const BrowseMenu = () => {
               mt={-2}
               border={"1px solid black"}
             >
-              <BrowseMenuItem text="hypercerts" />
-              <BrowseMenuItem text="hyperboards" />
+              <BrowseMenuItem text="hypercerts" href="/" />
+              <BrowseMenuItem text="hyperboards" href="/boards" />
             </MenuList>
           </>
         )}
@@ -229,19 +229,26 @@ const BrowseMenu = () => {
   );
 };
 
-const BrowseMenuItem = ({ text }: { text: string }) => {
+const BrowseMenuItem = ({ text, href }: { text: string; href: string }) => {
   return (
-    <MenuItem
-      height={headerHeight}
-      backgroundColor={"background"}
+    <Box
       width={"100%"}
       borderBottom={"1px solid black"}
-      _hover={{ backgroundColor: "white" }}
       _last={{ borderBottom: "none" }}
+      height={headerHeight}
     >
-      <Text textAlign={"center"} width={"100%"} textTransform={"uppercase"}>
-        {text}
-      </Text>
-    </MenuItem>
+      <Link href={href}>
+        <MenuItem
+          _hover={{ backgroundColor: "white" }}
+          backgroundColor={"background"}
+          width={"100%"}
+          height={"100%"}
+        >
+          <Text textAlign={"center"} width={"100%"} textTransform={"uppercase"}>
+            {text}
+          </Text>
+        </MenuItem>
+      </Link>
+    </Box>
   );
 };
