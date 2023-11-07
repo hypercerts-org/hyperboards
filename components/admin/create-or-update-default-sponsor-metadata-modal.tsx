@@ -7,7 +7,9 @@ export const CreateOrUpdateDefaultSponsorMetadataModal = ({
 }: Omit<ModalProps, "children">) => {
   return (
     <GenericModal title="Create default sponsor metadata" {...modalProps}>
-      <CreateOrUpdateDefaultSponsorMetadataForm />
+      <CreateOrUpdateDefaultSponsorMetadataForm
+        onCompleted={() => modalProps.onClose()}
+      />
     </GenericModal>
   );
 };

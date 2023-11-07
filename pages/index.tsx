@@ -8,7 +8,7 @@ function Index() {
       <Head>
         <title>Hyperboards - FTC</title>
       </Head>
-      <FtcBoard hyperboardId={"82581a5b-7efe-48d1-b766-862c02473d15"} />
+      <FtcBoard hyperboardId={"2c2b02ca-05ec-484a-9d6a-0ed025b05ad7"} />
     </>
   );
 }
