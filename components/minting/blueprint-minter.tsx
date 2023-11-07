@@ -19,6 +19,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
+import { useChainId } from "wagmi";
+import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -120,6 +122,9 @@ export const BlueprintMinter = ({
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
   const getClient = useGetAuthenticatedClient();
+
+  const chainId = useChainId();
+  const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -294,13 +299,25 @@ export const BlueprintMinter = ({
   };
 
   return (
-    <HStack>
-      <MintingForm
-        onSubmit={onMint}
-        initialValues={values}
-        buttonLabel="Mint"
-      />
-      <HypercertPreview values={values} imageRef={ref} />
-    </HStack>
+    <>
+      {!isCorrectChain && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertDescription>
+            This blueprint is on a different chain. Please switch to the correct
+            chain.
+          </AlertDescription>
+        </Alert>
+      )}
+      <HStack>
+        <MintingForm
+          disabled={!isCorrectChain}
+          onSubmit={onMint}
+          initialValues={values}
+          buttonLabel="Mint"
+        />
+        <HypercertPreview values={values} imageRef={ref} />
+      </HStack>
+    </>
   );
 };

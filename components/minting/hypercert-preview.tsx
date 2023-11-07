@@ -8,6 +8,8 @@ export const HypercertPreview = ({
   imageRef: MutableRefObject<HTMLDivElement | null>;
   values: Partial<MintingFormValues>;
 }) => {
+  // TODO: Implement design used on hypercerts.org
+  // TODO: Make background color variable
   return (
     <div
       ref={imageRef}

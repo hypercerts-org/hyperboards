@@ -41,10 +41,12 @@ export const MintingForm = ({
   onSubmit,
   initialValues,
   buttonLabel = "Submit",
+  disabled,
 }: {
   onSubmit: (values: MintingFormValues) => void;
   initialValues?: MintingFormValues;
   buttonLabel?: string;
+  disabled?: boolean;
 }) => {
   const {
     register,
@@ -54,34 +56,36 @@ export const MintingForm = ({
     handleSubmit,
   } = useMintingForm(initialValues);
 
+  const isDisabled = isSubmitting || disabled;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex direction={"column"} width={"100%"}>
         <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
           <FormControl isInvalid={!!errors.name?.message}>
             <FormLabel>Name</FormLabel>
-            <Input {...register("name")} isDisabled={isSubmitting} />
+            <Input {...register("name")} isDisabled={isDisabled} />
             <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.workScope?.message}>
             <FormLabel>Work Scope</FormLabel>
-            <Input {...register("workScope")} isDisabled={isSubmitting} />
+            <Input {...register("workScope")} isDisabled={isDisabled} />
             <FormErrorMessage>{errors.workScope?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.description?.message}>
             <FormLabel>Description</FormLabel>
-            <Textarea {...register("description")} isDisabled={isSubmitting} />
+            <Textarea {...register("description")} isDisabled={isDisabled} />
             <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.externalUrl?.message}>
             <FormLabel>External URL</FormLabel>
-            <Input {...register("externalUrl")} isDisabled={isSubmitting} />
+            <Input {...register("externalUrl")} isDisabled={isDisabled} />
             <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.workStart?.message}>
             <FormLabel>Work Start</FormLabel>
             <SingleDatepicker
-              disabled={isSubmitting}
+              disabled={isDisabled}
               name="date-work-start"
               onDateChange={(e) => setValue("workStart", e)}
               date={watch("workStart")}
@@ -91,7 +95,7 @@ export const MintingForm = ({
           <FormControl isInvalid={!!errors.workEnd?.message}>
             <FormLabel>Work End</FormLabel>
             <SingleDatepicker
-              disabled={isSubmitting}
+              disabled={isDisabled}
               onDateChange={(e) => setValue("workEnd", e)}
               name="date-work-end"
               date={watch("workEnd")}
@@ -100,10 +104,10 @@ export const MintingForm = ({
           </FormControl>
           <FormControl isInvalid={!!errors.contributors?.message}>
             <FormLabel>Contributors</FormLabel>
-            <Input isDisabled={isSubmitting} {...register("contributors")} />
+            <Input isDisabled={isDisabled} {...register("contributors")} />
             <FormErrorMessage>{errors.contributors?.message}</FormErrorMessage>
           </FormControl>
-          <Button type={"submit"} isDisabled={isSubmitting}>
+          <Button type={"submit"} isDisabled={isDisabled}>
             {buttonLabel}
           </Button>
         </VStack>
