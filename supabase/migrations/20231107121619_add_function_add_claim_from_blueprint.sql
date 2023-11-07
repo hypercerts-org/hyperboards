@@ -1,17 +1,15 @@
-create
-or replace function add_claim_from_blueprint(
-       registry_id uuid,
-       hypercert_id text,
-       chain_id int4,
-       admin_id text,
-       owner_id text,
-       blueprint_id uuid,
-       ) return uuid language plpgsql security definer set search_path = public
-as $$
-       declare
+set check_function_bodies = off;
+
+CREATE OR REPLACE FUNCTION public.add_claim_from_blueprint(registry_id uuid, hypercert_id text, chain_id integer, admin_id text, owner_id text, blueprint_id bigint)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
 claim_id uuid;
-     declare
-old_blueprint_id uuid;
+declare
+old_blueprint_id int4;
 begin
 select id
 into old_blueprint_id
@@ -33,4 +31,5 @@ from blueprints
 where id = old_blueprint_id;
 return claim_id;
 end;
-$$;
+$function$
+;

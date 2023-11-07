@@ -220,7 +220,8 @@ const BrowseMenu = () => {
               border={"1px solid black"}
             >
               <BrowseMenuItem text="hypercerts" href="/" />
-              <BrowseMenuItem text="hyperboards" href="/boards" />
+              <BrowseMenuItem text="hyperboards" href="/boards/" />
+              <BrowseMenuItem text="admin" href="/admin/hyperboards" />
             </MenuList>
           </>
         )}

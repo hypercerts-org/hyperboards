@@ -16,10 +16,9 @@ import {
 } from "@hypercerts-org/sdk";
 import { ContractReceipt } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
-import { useCreateClaims } from "@/hooks/useCreateClaims";
-import { useDeleteBlueprint } from "@/hooks/useDeleteBlueprint";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
+import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -118,10 +117,9 @@ export const BlueprintMinter = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const toast = useToast();
   const client = useHypercertClient();
-  const { mutateAsync: createClaims } = useCreateClaims();
-  const { mutateAsync: deleteBlueprint } = useDeleteBlueprint();
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
+  const getClient = useGetAuthenticatedClient();
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -157,6 +155,19 @@ export const BlueprintMinter = ({
       return;
     }
 
+    const supabase = await getClient();
+
+    if (!supabase) {
+      toast({
+        title: "Error",
+        description: "Client not initialized",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const steps = [
       {
         title: "Generate image",
@@ -168,11 +179,7 @@ export const BlueprintMinter = ({
       },
       {
         title: "Adding to registry",
-        description: "Adding to registry",
-      },
-      {
-        title: "Deleting blueprint",
-        description: "Deleting blueprint",
+        description: "Adding to registry and deleting blueprint",
       },
     ];
 
@@ -235,16 +242,13 @@ export const BlueprintMinter = ({
 
     setStep("Adding to registry");
     try {
-      await createClaims({
-        claims: [
-          {
-            hypercert_id: claimId,
-            registry_id: blueprint.data.registry_id,
-            admin_id: blueprint.data.admin_id,
-            chain_id: blueprint.data.registries.chain_id,
-            owner_id: address,
-          },
-        ],
+      await supabase.rpc("add_claim_from_blueprint", {
+        registry_id: blueprint.data.registry_id,
+        admin_id: blueprint.data.admin_id,
+        chain_id: blueprint.data.registries.chain_id,
+        owner_id: address,
+        blueprint_id: blueprintId,
+        hypercert_id: claimId,
       });
       toast({
         title: "Success",
@@ -266,30 +270,7 @@ export const BlueprintMinter = ({
       return;
     }
 
-    setStep("Deleting blueprint");
-    try {
-      await deleteBlueprint(blueprintId);
-      toast({
-        title: "Success",
-        description: "Blueprint deleted",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-    } catch (e) {
-      console.log(e);
-      toast({
-        title: "Error",
-        description: "Could not delete blueprint",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-      return;
-    }
-
+    onClose();
     onComplete?.();
   };
 

@@ -50,7 +50,7 @@ export const MintingForm = ({
     register,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
   } = useMintingForm(initialValues);
 
@@ -60,27 +60,28 @@ export const MintingForm = ({
         <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
           <FormControl isInvalid={!!errors.name?.message}>
             <FormLabel>Name</FormLabel>
-            <Input {...register("name")} />
+            <Input {...register("name")} isDisabled={isSubmitting} />
             <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.workScope?.message}>
             <FormLabel>Work Scope</FormLabel>
-            <Input {...register("workScope")} />
+            <Input {...register("workScope")} isDisabled={isSubmitting} />
             <FormErrorMessage>{errors.workScope?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.description?.message}>
             <FormLabel>Description</FormLabel>
-            <Textarea {...register("description")} />
+            <Textarea {...register("description")} isDisabled={isSubmitting} />
             <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.externalUrl?.message}>
             <FormLabel>External URL</FormLabel>
-            <Input {...register("externalUrl")} />
+            <Input {...register("externalUrl")} isDisabled={isSubmitting} />
             <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.workStart?.message}>
             <FormLabel>Work Start</FormLabel>
             <SingleDatepicker
+              disabled={isSubmitting}
               name="date-work-start"
               onDateChange={(e) => setValue("workStart", e)}
               date={watch("workStart")}
@@ -90,6 +91,7 @@ export const MintingForm = ({
           <FormControl isInvalid={!!errors.workEnd?.message}>
             <FormLabel>Work End</FormLabel>
             <SingleDatepicker
+              disabled={isSubmitting}
               onDateChange={(e) => setValue("workEnd", e)}
               name="date-work-end"
               date={watch("workEnd")}
@@ -98,10 +100,12 @@ export const MintingForm = ({
           </FormControl>
           <FormControl isInvalid={!!errors.contributors?.message}>
             <FormLabel>Contributors</FormLabel>
-            <Input {...register("contributors")} />
+            <Input isDisabled={isSubmitting} {...register("contributors")} />
             <FormErrorMessage>{errors.contributors?.message}</FormErrorMessage>
           </FormControl>
-          <Button type={"submit"}>{buttonLabel}</Button>
+          <Button type={"submit"} isDisabled={isSubmitting}>
+            {buttonLabel}
+          </Button>
         </VStack>
       </Flex>
     </form>

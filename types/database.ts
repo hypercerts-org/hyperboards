@@ -285,7 +285,17 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_claim_from_blueprint: {
+        Args: {
+          registry_id: string
+          hypercert_id: string
+          chain_id: number
+          admin_id: string
+          owner_id: string
+          blueprint_id: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
