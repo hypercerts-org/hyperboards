@@ -117,7 +117,6 @@ export interface Database {
           companyName: string | null
           created_at: string
           firstName: string | null
-          id: string
           image: string
           lastName: string | null
           type: string
@@ -127,7 +126,6 @@ export interface Database {
           companyName?: string | null
           created_at?: string
           firstName?: string | null
-          id?: string
           image: string
           lastName?: string | null
           type: string
@@ -137,7 +135,6 @@ export interface Database {
           companyName?: string | null
           created_at?: string
           firstName?: string | null
-          id?: string
           image?: string
           lastName?: string | null
           type?: string
@@ -150,18 +147,21 @@ export interface Database {
           hyperboard_id: string
           label: string | null
           registry_id: string
+          render_method: string
         }
         Insert: {
           created_at?: string | null
           hyperboard_id: string
           label?: string | null
           registry_id: string
+          render_method: string
         }
         Update: {
           created_at?: string | null
           hyperboard_id?: string
           label?: string | null
           registry_id?: string
+          render_method?: string
         }
         Relationships: [
           {

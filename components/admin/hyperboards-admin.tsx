@@ -22,6 +22,7 @@ import { RemoveRegistryFromHyperboardButton } from "@/components/admin/remove-re
 import { EditHyperboardRegistryButton } from "@/components/admin/edit-hyperboard-registry-button";
 import { AddHyperboardRegistryButton } from "@/components/admin/add-hyperboard-registry-button";
 import { headerHeight } from "@/components/layout/header";
+import { formatRenderMethodReadableName } from "@/utils/formatting";
 
 export const HyperboardsAdmin = () => {
   const {
@@ -60,6 +61,7 @@ export const HyperboardsAdmin = () => {
                     <Tr>
                       <Th>Name</Th>
                       <Th>Label</Th>
+                      <Th>Render method</Th>
                       <Th>Chain ID</Th>
                     </Tr>
                   </Thead>
@@ -72,6 +74,11 @@ export const HyperboardsAdmin = () => {
                           <Tr key={registry.id}>
                             <Td>{registry.name}</Td>
                             <Td>{hyperboardRegistry.label}</Td>
+                            <Td>
+                              {formatRenderMethodReadableName(
+                                hyperboardRegistry.render_method,
+                              )}
+                            </Td>
                             <Td>{registry.chain_id}</Td>
                             <Td>
                               <HStack justifyContent={"end"}>

@@ -2,6 +2,7 @@ import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useMutation } from "wagmi";
 import { HyperboardRegistryInsert } from "@/types/database-entities";
 import { uniq } from "lodash";
+import { DEFAULT_RENDER_METHOD } from "@/config";
 
 export const useAddRegistriesToHyperboard = () => {
   const getClient = useGetAuthenticatedClient();
@@ -24,6 +25,7 @@ export const useAddRegistriesToHyperboard = () => {
         (registryId) => ({
           hyperboard_id: hyperboardId,
           registry_id: registryId,
+          render_method: DEFAULT_RENDER_METHOD,
         }),
       );
 

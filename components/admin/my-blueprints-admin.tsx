@@ -32,6 +32,7 @@ export const MyBlueprintsAdmin = () => {
   const blueprintId = query["blueprintId"];
   const parsedBluePrintId = parseInt(blueprintId as string);
 
+  // TODO: Disable mint link for blueprints on a different chain
   return (
     <Flex direction={"column"} width={"100%"}>
       <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>

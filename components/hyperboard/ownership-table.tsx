@@ -388,7 +388,7 @@ const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
         const percentage =
           (ownership.total / data.totalValueForAllFractions) * 100;
         return (
-          <Flex key={ownership.metadata?.id} backgroundColor={"white"}>
+          <Flex key={ownership.metadata?.address} backgroundColor={"white"}>
             <Flex
               borderBottom={"1px solid rgba(0, 0, 0, 0.3)"}
               width={"100%"}
