@@ -9,39 +9,97 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useCreateDefaultSponsorMetadata } from "@/hooks/useCreateDefaultSponsorMetadata";
+import { useFetchDefaultSponsorMetadataByAddress } from "@/hooks/useFetchDefaultSponsorMetadataByAddress";
+import { useEffect } from "react";
+import { useUpdateDefaultSponsorMetadata } from "@/hooks/useUpdateDefaultSponsorMetadata";
 
 interface CreateOrUpdateDefaultSponsorMetadataFormValues {
-  address: string;
-  type: string;
-  companyName: string;
-  firstName: string;
-  lastName: string;
-  image: string;
+  address: string | null;
+  type: string | null;
+  companyName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  image: string | null;
 }
 export const CreateOrUpdateDefaultSponsorMetadataForm = ({
-  initialValues,
+  sponsorAddress,
   onCompleted,
 }: {
-  initialValues?: CreateOrUpdateDefaultSponsorMetadataFormValues;
+  sponsorAddress?: string;
   onCompleted?: () => void;
 }) => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: initialValues,
-  });
+  } = useForm<CreateOrUpdateDefaultSponsorMetadataFormValues>({});
+
+  const { data } = useFetchDefaultSponsorMetadataByAddress(sponsorAddress);
+
+  useEffect(() => {
+    if (!data?.data) {
+      return;
+    }
+    reset(data?.data);
+  }, [data]);
 
   const { mutateAsync: createDefaultSponsorMetadata } =
     useCreateDefaultSponsorMetadata();
+  const { mutateAsync: updateDefaultSponsorMetadata } =
+    useUpdateDefaultSponsorMetadata();
   const toast = useToast();
 
-  const onSubmitted = async (
-    values: CreateOrUpdateDefaultSponsorMetadataFormValues,
-  ) => {
+  const onSubmitted = async ({
+    address,
+    image,
+    type,
+    ...values
+  }: CreateOrUpdateDefaultSponsorMetadataFormValues) => {
+    if (!address || !image || !type) {
+      return;
+    }
+
+    if (sponsorAddress) {
+      try {
+        await updateDefaultSponsorMetadata({
+          data: {
+            type,
+            address,
+            image,
+            ...values,
+          },
+        });
+        toast({
+          title: "Success",
+          description: "Default sponsor metadata updated",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        onCompleted?.();
+      } catch (e) {
+        console.log(e);
+        toast({
+          title: "Error",
+          description: "Could not update default sponsor metadata",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+      return;
+    }
+
     try {
-      await createDefaultSponsorMetadata({ data: values });
+      await createDefaultSponsorMetadata({
+        data: {
+          type,
+          address,
+          image,
+          ...values,
+        },
+      });
       toast({
         title: "Success",
         description: "Default sponsor metadata created",
