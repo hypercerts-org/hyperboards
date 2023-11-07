@@ -1,7 +1,7 @@
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
 import { AiOutlineLink } from "react-icons/ai";
 import { AlertDialog } from "@/components/dialogs/alert-confirmation-dialog";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
+import { useFetchMyHyperboards } from "@/hooks/useFetchMyHyperboards";
 import { useRemoveRegistryFromHyperboard } from "@/hooks/useRemoveRegistryFromHyperboard";
 
 export const RemoveRegistryFromHyperboardButton = ({
@@ -13,7 +13,7 @@ export const RemoveRegistryFromHyperboardButton = ({
   registryId: string;
   size?: string;
 }) => {
-  const { refetch } = useMyHyperboards();
+  const { refetch } = useFetchMyHyperboards();
   const { onClose, onOpen, isOpen } = useDisclosure();
 
   const toast = useToast();

@@ -8,7 +8,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useRegister } from "@/hooks/useRegister";
+import { useRegisterUser } from "@/hooks/useRegisterUser";
 import { useRouter } from "next/router";
 
 export const RegisterForm = ({}: {}) => {
@@ -18,7 +18,7 @@ export const RegisterForm = ({}: {}) => {
     formState: { errors, isSubmitting },
   } = useForm<{ email: string }>();
 
-  const { mutateAsync: registerAsync } = useRegister();
+  const { mutateAsync: registerAsync } = useRegisterUser();
   const toast = useToast();
   const { push } = useRouter();
 

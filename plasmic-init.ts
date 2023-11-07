@@ -1,7 +1,5 @@
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
-import { FtcBoard } from "@/components/ftc-board";
-import { ConnectButton } from "@/components/ConnectButton";
-import { Store } from "@/components/store";
+import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 
 export const PLASMIC = initPlasmicLoader({
   projects: [
@@ -16,7 +14,7 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
-PLASMIC.registerComponent(FtcBoard, {
+PLASMIC.registerComponent(HyperboardRenderer, {
   name: "FtcBoard",
   importPath: "./components/ftc-board",
   props: {},

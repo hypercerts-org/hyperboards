@@ -120,6 +120,7 @@ export const CreateOrUpdateDefaultSponsorMetadataForm = ({
     }
   };
 
+  // TODO: Add preview of rendering of different tiles
   return (
     <form style={{ width: "100%" }} onSubmit={handleSubmit(onSubmitted)}>
       <VStack spacing={4}>

@@ -1,5 +1,5 @@
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
-import { useMyRegistries } from "@/hooks/useMyRegistries";
+import { useFetchMyRegistries } from "@/hooks/useFetchMyRegistries";
 import { AiFillDelete } from "react-icons/ai";
 import { AlertDialog } from "@/components/dialogs/alert-confirmation-dialog";
 import { useDeleteBlueprint } from "@/hooks/useDeleteBlueprint";
@@ -11,7 +11,7 @@ export const DeleteBlueprintButton = ({
   blueprintId: number;
   size?: string;
 }) => {
-  const { refetch } = useMyRegistries();
+  const { refetch } = useFetchMyRegistries();
   const { onClose, onOpen, isOpen } = useDisclosure();
 
   const toast = useToast();

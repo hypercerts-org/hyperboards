@@ -36,7 +36,7 @@ const fetchHistoryToAddress = (address: string) =>
     })
     .then((res) => res.result.transfers);
 
-export const useTransactionHistory = (address: string) => {
+export const useFetchTransactionHistory = (address: string) => {
   return useQuery(
     ["transactionHistoryTo", address],
     async () => {

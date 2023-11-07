@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { FtcBoard } from "@/components/ftc-board";
+import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 
 export const Index = () => {
   const { query } = useRouter();
 
   const hyperboardId = query.hyperboardId as string;
 
-  return <FtcBoard hyperboardId={hyperboardId} />;
+  return <HyperboardRenderer hyperboardId={hyperboardId} />;
 };
 
 export default Index;

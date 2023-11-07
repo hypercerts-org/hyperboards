@@ -19,14 +19,14 @@ import {
   Center,
   Spinner,
 } from "@chakra-ui/react";
-import { useMyRegistries } from "@/hooks/useMyRegistries";
+import { useFetchMyRegistries } from "@/hooks/useFetchMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
 import { useState } from "react";
 import { AiFillEdit } from "react-icons/ai";
 import { CreateUpdateRegistryFormValues } from "@/components/forms/create-or-update-registry-form";
 import { DeleteRegistryButton } from "@/components/admin/delete-registry-button";
 import { ClaimEntity } from "@/types/database-entities";
-import { useHypercertById } from "@/hooks/useHypercertById";
+import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { formatAddress } from "@/utils/formatting";
 import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
 import { DeleteBlueprintButton } from "@/components/admin/delete-blueprint-button";
@@ -45,7 +45,7 @@ export const RegistriesAdmin = () => {
     onOpen: createBlueprintOnOpen,
   } = useDisclosure();
 
-  const { data } = useMyRegistries();
+  const { data } = useFetchMyRegistries();
 
   const [selectedRegistry, setSelectedRegistry] =
     useState<CreateUpdateRegistryFormValues>();
@@ -173,7 +173,7 @@ export const RegistriesAdmin = () => {
 };
 
 export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
-  const { data, isLoading } = useHypercertById(hypercert_id);
+  const { data, isLoading } = useFetchHypercertById(hypercert_id);
 
   if (isLoading) {
     return (

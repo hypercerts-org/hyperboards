@@ -8,7 +8,7 @@ import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
-import { getEntriesDisplayData } from "@/hooks/registry";
+import { getEntriesDisplayData } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 
 interface OwnershipTableProps {

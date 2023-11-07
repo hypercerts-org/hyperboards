@@ -14,7 +14,7 @@ import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
 import { useEffect } from "react";
 import { useFetchHyperboardRegistryById } from "@/hooks/useFetchHyperboardRegistryById";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
+import { useFetchMyHyperboards } from "@/hooks/useFetchMyHyperboards";
 
 export interface CreateOrUpdateHyperboardRegistryFormValues {
   label: string;
@@ -35,7 +35,8 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
   initialValues?: Partial<CreateOrUpdateHyperboardRegistryFormValues>;
   onComplete?: () => void;
 }) => {
-  const { refetch } = useMyHyperboards();
+  // TODO: Add dropdown for rendering method: 'image-only' | 'full'
+  const { refetch } = useFetchMyHyperboards();
   const { data: registryData } = useFetchRegistryById(registryId);
   const { data: hyperboardRegistryData } = useFetchHyperboardRegistryById(
     hyperboardId,

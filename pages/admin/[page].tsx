@@ -6,7 +6,7 @@ import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 import { MyClaimsAdmin } from "@/components/admin/my-claims-admin";
-import { DefaultSponsorMetadataAdmin } from "@/components/admin/default-sponsor-metadata-admin";
+import { DefaultDisplayData } from "@/components/admin/default-display-data";
 import { headerHeight } from "@/components/layout/header";
 
 const SIDEBAR_ITEMS = [
@@ -15,9 +15,9 @@ const SIDEBAR_ITEMS = [
   { name: "My claims", icon: FiCompass, href: "/admin/my-claims/" },
   { name: "My blueprints", icon: FiCompass, href: "/admin/my-blueprints/" },
   {
-    name: "Default metadata",
+    name: "Default display data",
     icon: FiCompass,
-    href: "/admin/default-sponsor-metadata/",
+    href: "/admin/default-display-metadata/",
   },
 ];
 
@@ -34,7 +34,7 @@ const Admin = () => {
         {page === "registries" && <RegistriesAdmin />}
         {page === "my-claims" && <MyClaimsAdmin />}
         {page === "my-blueprints" && <MyBlueprintsAdmin />}
-        {page === "default-sponsor-metadata" && <DefaultSponsorMetadataAdmin />}
+        {page === "default-display-metadata" && <DefaultDisplayData />}
       </Flex>
     </Flex>
   );

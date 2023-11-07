@@ -16,7 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { CreateHyperboardModal } from "@/components/admin/create-hyperboard-modal";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
+import { useFetchMyHyperboards } from "@/hooks/useFetchMyHyperboards";
 import { DeleteHyperboardButton } from "@/components/admin/delete-hyperboard-button";
 import { RemoveRegistryFromHyperboardButton } from "@/components/admin/remove-registry-from-hyperboard-button";
 import { EditHyperboardRegistryButton } from "@/components/admin/edit-hyperboard-registry-button";
@@ -30,7 +30,7 @@ export const HyperboardsAdmin = () => {
     onOpen: createOnOpen,
   } = useDisclosure();
 
-  const { data } = useMyHyperboards();
+  const { data } = useFetchMyHyperboards();
 
   return (
     <Flex

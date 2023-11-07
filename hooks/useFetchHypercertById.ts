@@ -2,7 +2,7 @@ import { useHypercertClient } from "@/components/providers";
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
 
-export const useHypercertById = (hypercertId: string) => {
+export const useFetchHypercertById = (hypercertId: string) => {
   const client = useHypercertClient();
   const chainId = useChainId();
 

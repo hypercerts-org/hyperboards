@@ -11,14 +11,14 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { useMyBlueprints } from "@/hooks/useMyBlueprints";
+import { useFetchMyBlueprints } from "@/hooks/useFetchMyBlueprints";
 import { formatAddress } from "@/utils/formatting";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { BlueprintMinter } from "@/components/minting/blueprint-minter";
 
 export const MyBlueprintsAdmin = () => {
-  const { data, isLoading } = useMyBlueprints();
+  const { data, isLoading } = useFetchMyBlueprints();
   const { query, push } = useRouter();
 
   if (isLoading) {

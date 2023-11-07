@@ -1,6 +1,6 @@
 import * as React from "react";
 import { registerComponent } from "@plasmicapp/react-web/lib/host";
-import { FtcBoard } from "@/components/ftc-board";
+import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 import { PlasmicCanvasHost } from "@plasmicapp/loader-nextjs";
 import { PLASMIC } from "@/plasmic-init";
 import { Providers } from "@/components/providers";
@@ -24,7 +24,7 @@ export default function PlasmicHost() {
   );
 }
 
-registerComponent(FtcBoard, {
+registerComponent(HyperboardRenderer, {
   name: "FtcBoard",
   importPath: "./components/ftc-board",
   props: {},

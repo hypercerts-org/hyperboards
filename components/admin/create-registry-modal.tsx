@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useAddress } from "@/hooks/useAddress";
 import { GenericModal } from "@/components/GenericModal";
-import { useMyRegistries } from "@/hooks/useMyRegistries";
+import { useFetchMyRegistries } from "@/hooks/useFetchMyRegistries";
 import { ClaimInsert } from "@/types/database-entities";
 import {
   CreateOrUpdateRegistryForm,
@@ -25,7 +25,7 @@ export const CreateRegistryModal = ({
   const chainId = useChainId();
   const client = useHypercertClient();
 
-  const { refetch } = useMyRegistries();
+  const { refetch } = useFetchMyRegistries();
   const { mutateAsync: createClaims } = useCreateClaims();
 
   const onConfirm = async ({

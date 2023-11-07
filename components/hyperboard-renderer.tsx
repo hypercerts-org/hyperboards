@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { useSize } from "@chakra-ui/react-use-size";
 import {
   registryContentItemToHyperboardEntry,
-  useHyperboardContents,
-} from "@/hooks/registry";
+  useFetchHyperboardContents,
+} from "@/hooks/useFetchHyperboardContents";
 import { Center, Flex, Spinner, VStack } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
@@ -11,13 +11,17 @@ import Head from "next/head";
 import { BreadcrumbEntry, Breadcrumbs } from "@/components/breadcrumbs";
 import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 
-export const FtcBoard = ({ hyperboardId }: { hyperboardId: string }) => {
+export const HyperboardRenderer = ({
+  hyperboardId,
+}: {
+  hyperboardId: string;
+}) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
 
-  const { data, isLoading } = useHyperboardContents(hyperboardId);
+  const { data, isLoading } = useFetchHyperboardContents(hyperboardId);
   const results = data?.results;
   const hyperboard = data?.hyperboard;
 
