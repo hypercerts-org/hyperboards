@@ -31,19 +31,37 @@ export default async function handler(
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  // Create a new user with correct email.
-  const { data: authUser, error } = await supabase.auth.admin.createUser({
-    email,
-    user_metadata: { address: lowerCaseAddress },
-    email_confirm: true,
-  });
+  // Check if user for email exists
+  const { data: users, error: userError } =
+    await supabase.auth.admin.listUsers();
+  const userForEmail = users?.users.find((user) => user.email === email);
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+  if (userError) {
+    return res.status(500).json({ error: userError.message });
+  }
+
+  const newNonce = Math.floor(Math.random() * 1000000);
+  let userId: string | undefined;
+  if (userForEmail) {
+    userId = userForEmail.id;
+  } else {
+    // Create a new user with correct email.
+    const { data: authUser, error } = await supabase.auth.admin.createUser({
+      email,
+      user_metadata: { address: lowerCaseAddress },
+      email_confirm: true,
+    });
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    userId = authUser?.user.id;
+  }
+
+  if (!userId) {
+    return res.status(500).json({ error: "User not found or created" });
   }
 
   // 5. insert response into public.users table with id with a new nonce
-  const newNonce = Math.floor(Math.random() * 1000000);
   const { error: updateUserError } = await supabase
     .from("users")
     .update({
@@ -52,7 +70,7 @@ export default async function handler(
         lastAuth: new Date().toISOString(),
         lastAuthStatus: "success",
       },
-      id: authUser.user.id,
+      id: userId,
     })
     .eq("address", lowerCaseAddress); // primary key
 
