@@ -20,7 +20,7 @@ import { formatAddress } from "@/utils/formatting";
 import { CreateOrUpdateDefaultSponsorMetadataModal } from "@/components/admin/create-or-update-default-sponsor-metadata-modal";
 import { EditDefaultSponsorMetadataButton } from "@/components/admin/edit-default-sponsor-metadata-button";
 
-export const DefaultDisplayData = () => {
+export const DefaultDisplayDataAdmin = () => {
   const { data, isLoading } = useFetchDefaultSponsorMetadata();
   const {
     isOpen: isOpenCreate,

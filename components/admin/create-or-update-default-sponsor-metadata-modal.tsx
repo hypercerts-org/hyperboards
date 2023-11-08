@@ -9,6 +9,7 @@ export const CreateOrUpdateDefaultSponsorMetadataModal = ({
   return (
     <GenericModal
       title={`${sponsorAddress ? "Update" : "Create"} default sponsor metadata`}
+      width={"fit-content"}
       {...modalProps}
     >
       <CreateOrUpdateDefaultSponsorMetadataForm

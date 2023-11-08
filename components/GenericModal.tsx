@@ -2,6 +2,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalContentProps,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -11,12 +12,13 @@ import { Flex, Modal } from "@chakra-ui/react";
 export const GenericModal = ({
   title,
   children,
+  width,
   ...modalProps
-}: ModalProps & { title: string }) => {
+}: ModalProps & { title: string } & Pick<ModalContentProps, "width">) => {
   return (
     <Modal {...modalProps}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent minW={width}>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

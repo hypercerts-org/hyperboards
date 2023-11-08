@@ -6,7 +6,7 @@ import { HyperboardsAdmin } from "@/components/admin/hyperboards-admin";
 import { RegistriesAdmin } from "@/components/admin/registries-admin";
 import { MyBlueprintsAdmin } from "@/components/admin/my-blueprints-admin";
 import { MyClaimsAdmin } from "@/components/admin/my-claims-admin";
-import { DefaultDisplayData } from "@/components/admin/default-display-data";
+import { DefaultDisplayDataAdmin } from "@/components/admin/default-display-data-admin";
 import { headerHeight } from "@/components/layout/header";
 
 const SIDEBAR_ITEMS = [
@@ -34,7 +34,7 @@ const Admin = () => {
         {page === "registries" && <RegistriesAdmin />}
         {page === "my-claims" && <MyClaimsAdmin />}
         {page === "my-blueprints" && <MyBlueprintsAdmin />}
-        {page === "default-display-metadata" && <DefaultDisplayData />}
+        {page === "default-display-metadata" && <DefaultDisplayDataAdmin />}
       </Flex>
     </Flex>
   );
