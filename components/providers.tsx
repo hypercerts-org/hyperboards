@@ -5,7 +5,6 @@ import {
   useChainId,
   useWalletClient,
   WagmiConfig,
-  WalletClient,
 } from "wagmi";
 import { goerli, optimism } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -15,7 +14,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HypercertClient } from "@hypercerts-org/sdk";
-import { providers } from "ethers";
 import { InteractionDialogProvider } from "@/components/interaction-modal";
 import Fonts from "@/fonts";
 import { theme } from "@/theme";

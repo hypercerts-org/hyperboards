@@ -14,14 +14,13 @@ import {
   validateMetaData,
   validateClaimData,
 } from "@hypercerts-org/sdk";
-import { ContractReceipt } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { ethers, providers } from "ethers";
+import { providers } from "ethers";
 import {
   decodeEventLog,
   HttpTransport,
