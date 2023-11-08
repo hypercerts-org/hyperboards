@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Select,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -14,10 +15,12 @@ import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
 import { useEffect } from "react";
 import { useFetchHyperboardRegistryById } from "@/hooks/useFetchHyperboardRegistryById";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
+import { useFetchMyHyperboards } from "@/hooks/useFetchMyHyperboards";
+import { formatRenderMethodReadableName } from "@/utils/formatting";
 
 export interface CreateOrUpdateHyperboardRegistryFormValues {
-  label: string;
+  label: string | null;
+  render_method: string;
   registry: {
     value: string;
     label: string;
@@ -35,7 +38,7 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
   initialValues?: Partial<CreateOrUpdateHyperboardRegistryFormValues>;
   onComplete?: () => void;
 }) => {
-  const { refetch } = useMyHyperboards();
+  const { refetch } = useFetchMyHyperboards();
   const { data: registryData } = useFetchRegistryById(registryId);
   const { data: hyperboardRegistryData } = useFetchHyperboardRegistryById(
     hyperboardId,
@@ -65,6 +68,10 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
   useEffect(() => {
     if (hyperboardRegistryData?.data?.label) {
       setValue("label", hyperboardRegistryData.data.label);
+    }
+
+    if (hyperboardRegistryData?.data?.render_method) {
+      setValue("render_method", hyperboardRegistryData.data.render_method);
     }
   }, [hyperboardRegistryData?.data, setValue]);
 
@@ -107,6 +114,7 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
       label: values.label,
       registry_id: values.registry.value,
       hyperboard_id: hyperboardId,
+      render_method: values.render_method,
     };
 
     try {
@@ -157,6 +165,23 @@ export const CreateOrUpdateHyperboardRegistryForm = ({
             })}
           />
           <FormErrorMessage>{errors.label?.message}</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.render_method}>
+          <FormLabel>Render method</FormLabel>
+          <Select
+            disabled={isSubmitting}
+            {...register("render_method", {
+              required: "This is required",
+            })}
+          >
+            <option value="image-only">
+              {formatRenderMethodReadableName("image-only")}
+            </option>
+            <option value="full">
+              {formatRenderMethodReadableName("full")}
+            </option>
+          </Select>
+          <FormErrorMessage>{errors.render_method?.message}</FormErrorMessage>
         </FormControl>
         <Button mt={4} colorScheme="teal" type="submit">
           Submit

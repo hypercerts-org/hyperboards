@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@chakra-ui/react";
 
-export const useMyBlueprints = () => {
+export const useFetchMyBlueprints = () => {
   const address = useAddress();
   const toast = useToast();
 

@@ -12,11 +12,11 @@ import {
   Center,
   Spinner,
 } from "@chakra-ui/react";
-import { useMyClaims } from "@/hooks/useMyClaims";
+import { useFetchMyClaims } from "@/hooks/useFetchMyClaims";
 import { ClaimRow } from "@/components/admin/registries-admin";
 
 export const MyClaimsAdmin = () => {
-  const { data, isLoading } = useMyClaims();
+  const { data, isLoading } = useFetchMyClaims();
 
   if (isLoading) {
     return <Spinner />;

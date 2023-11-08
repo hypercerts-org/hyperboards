@@ -2,7 +2,7 @@ import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useMutation } from "wagmi";
 import { DefaultSponsorMetadataInsert } from "@/types/database-entities";
 
-export const useCreateDefaultSponsorMetadata = () => {
+export const useUpdateDefaultSponsorMetadata = () => {
   const getClient = useGetAuthenticatedClient();
 
   return useMutation(
@@ -15,7 +15,8 @@ export const useCreateDefaultSponsorMetadata = () => {
 
       return client
         .from("default_sponsor_metadata")
-        .insert([data])
+        .update(data)
+        .eq("address", data.address)
         .throwOnError();
     },
   );

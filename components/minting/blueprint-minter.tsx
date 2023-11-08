@@ -14,12 +14,44 @@ import {
   validateMetaData,
   validateClaimData,
 } from "@hypercerts-org/sdk";
-import { ContractReceipt } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
-import { useCreateClaims } from "@/hooks/useCreateClaims";
-import { useDeleteBlueprint } from "@/hooks/useDeleteBlueprint";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
+import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
+import { useChainId } from "wagmi";
+import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
+import { providers } from "ethers";
+import {
+  decodeEventLog,
+  HttpTransport,
+  parseAbi,
+  PublicClient,
+  TransactionReceipt,
+} from "viem";
+import { HypercertMinterAbi } from "@hypercerts-org/contracts";
+
+export function publicClientToProvider(publicClient: PublicClient) {
+  console.log("publicClientToProvider", publicClient);
+  const { chain, transport } = publicClient;
+  if (!chain) {
+    return;
+  }
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  if (transport.type === "fallback")
+    return new providers.FallbackProvider(
+      (transport.transports as ReturnType<HttpTransport>[]).map(
+        ({ value }) => new providers.JsonRpcProvider(value?.url, network),
+      ),
+    );
+  return new providers.JsonRpcProvider(
+    publicClient.chain?.rpcUrls?.default.http[0],
+    network,
+  );
+}
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -76,14 +108,22 @@ const formValuesToHypercertMetadata = (
   return metaData;
 };
 
-const constructClaimIdFromContractReceipt = (receipt: ContractReceipt) => {
-  const { events } = receipt;
+const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
+  console.log(receipt);
+  const events = receipt.logs.map((log) =>
+    decodeEventLog({
+      abi: parseAbi(HypercertMinterAbi),
+      data: log.data,
+      topics: log.topics,
+    }),
+  );
 
+  console.log("events", events);
   if (!events) {
     throw new Error("No events in receipt");
   }
 
-  const claimEvent = events.find((e) => e.event === "TransferSingle");
+  const claimEvent = events.find((e) => e.eventName === "TransferSingle");
 
   if (!claimEvent) {
     throw new Error("TransferSingle event not found");
@@ -95,13 +135,14 @@ const constructClaimIdFromContractReceipt = (receipt: ContractReceipt) => {
     throw new Error("No args in event");
   }
 
+  // @ts-ignore
   const tokenIdBigNumber = args[3] as BigNumber;
 
   if (!tokenIdBigNumber) {
     throw new Error("No tokenId arg in event");
   }
 
-  const contractId = receipt.to.toLowerCase();
+  const contractId = receipt.to?.toLowerCase();
   const tokenId = tokenIdBigNumber.toString();
 
   return `${contractId}-${tokenId}`;
@@ -118,10 +159,12 @@ export const BlueprintMinter = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const toast = useToast();
   const client = useHypercertClient();
-  const { mutateAsync: createClaims } = useCreateClaims();
-  const { mutateAsync: deleteBlueprint } = useDeleteBlueprint();
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
+  const getClient = useGetAuthenticatedClient();
+
+  const chainId = useChainId();
+  const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -157,6 +200,19 @@ export const BlueprintMinter = ({
       return;
     }
 
+    const supabase = await getClient();
+
+    if (!supabase) {
+      toast({
+        title: "Error",
+        description: "Client not initialized",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const steps = [
       {
         title: "Generate image",
@@ -168,11 +224,7 @@ export const BlueprintMinter = ({
       },
       {
         title: "Adding to registry",
-        description: "Adding to registry",
-      },
-      {
-        title: "Deleting blueprint",
-        description: "Deleting blueprint",
+        description: "Adding to registry and deleting blueprint",
       },
     ];
 
@@ -192,17 +244,21 @@ export const BlueprintMinter = ({
       return;
     }
 
-    let contractReceipt: ContractReceipt | undefined;
+    let transactionReceipt: TransactionReceipt | undefined;
 
     setStep("Minting");
     try {
       const claimData = formValuesToHypercertMetadata(values, image);
-      const mintResult = await client.mintClaim(
+      const transactionHash = await client.mintClaim(
         claimData,
-        1000,
+        1000n,
         TransferRestrictions.FromCreatorOnly,
       );
-      contractReceipt = await mintResult.wait();
+      const config = client.config;
+      const provider = publicClientToProvider(config.publicClient!);
+      console.log(config, provider);
+      // @ts-ignore
+      transactionReceipt = await provider?.waitForTransaction(transactionHash);
     } catch (e) {
       console.error(e);
       toast({
@@ -219,7 +275,7 @@ export const BlueprintMinter = ({
     let claimId: string | undefined;
 
     try {
-      claimId = constructClaimIdFromContractReceipt(contractReceipt);
+      claimId = constructClaimIdFromContractReceipt(transactionReceipt!);
     } catch (e) {
       console.error(e);
       toast({
@@ -235,16 +291,13 @@ export const BlueprintMinter = ({
 
     setStep("Adding to registry");
     try {
-      await createClaims({
-        claims: [
-          {
-            hypercert_id: claimId,
-            registry_id: blueprint.data.registry_id,
-            admin_id: blueprint.data.admin_id,
-            chain_id: blueprint.data.registries.chain_id,
-            owner_id: address,
-          },
-        ],
+      await supabase.rpc("add_claim_from_blueprint", {
+        registry_id: blueprint.data.registry_id,
+        admin_id: blueprint.data.admin_id,
+        chain_id: blueprint.data.registries.chain_id,
+        owner_id: address,
+        blueprint_id: blueprintId,
+        hypercert_id: claimId,
       });
       toast({
         title: "Success",
@@ -266,30 +319,7 @@ export const BlueprintMinter = ({
       return;
     }
 
-    setStep("Deleting blueprint");
-    try {
-      await deleteBlueprint(blueprintId);
-      toast({
-        title: "Success",
-        description: "Blueprint deleted",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-    } catch (e) {
-      console.log(e);
-      toast({
-        title: "Error",
-        description: "Could not delete blueprint",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-      return;
-    }
-
+    onClose();
     onComplete?.();
   };
 
@@ -313,13 +343,25 @@ export const BlueprintMinter = ({
   };
 
   return (
-    <HStack>
-      <MintingForm
-        onSubmit={onMint}
-        initialValues={values}
-        buttonLabel="Mint"
-      />
-      <HypercertPreview values={values} imageRef={ref} />
-    </HStack>
+    <>
+      {!isCorrectChain && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertDescription>
+            This blueprint is on a different chain. Please switch to the correct
+            chain.
+          </AlertDescription>
+        </Alert>
+      )}
+      <HStack>
+        <MintingForm
+          disabled={!isCorrectChain}
+          onSubmit={onMint}
+          initialValues={values}
+          buttonLabel="Mint"
+        />
+        <HypercertPreview values={values} imageRef={ref} />
+      </HStack>
+    </>
   );
 };

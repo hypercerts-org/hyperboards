@@ -1,4 +1,4 @@
-import { useTransactionHistory } from "@/hooks/useTransactionHistory";
+import { useFetchTransactionHistory } from "@/hooks/useFetchTransactionHistory";
 import React from "react";
 import {
   Text,
@@ -15,7 +15,7 @@ import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-f
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 export const TransactionHistory = () => {
-  const { data, isLoading } = useTransactionHistory(SAFE_ADDRESS);
+  const { data, isLoading } = useFetchTransactionHistory(SAFE_ADDRESS);
   const isMobile = useIsMobile();
 
   if (isLoading) {

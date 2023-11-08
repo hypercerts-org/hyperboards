@@ -9,3 +9,5 @@ export const TRADER_CONTRACT = requireEnv(
   process.env.NEXT_PUBLIC_TRADER_CONTRACT,
   "TRADER_CONTRACT",
 ) as `0x${string}`;
+
+export const DEFAULT_RENDER_METHOD = "full";

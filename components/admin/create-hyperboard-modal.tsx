@@ -7,7 +7,7 @@ import {
   CreateOrUpdateHyperboardFormValues,
 } from "@/components/forms/create-or-update-hyperboard-form";
 import { GenericModal } from "@/components/GenericModal";
-import { useMyHyperboards } from "@/hooks/useMyHyperboards";
+import { useFetchMyHyperboards } from "@/hooks/useFetchMyHyperboards";
 import { useAddRegistriesToHyperboard } from "@/hooks/useAddRegistriesToHyperboard";
 import { useChainId } from "wagmi";
 
@@ -19,7 +19,7 @@ export const CreateHyperboardModal = ({
   const toast = useToast();
   const chainId = useChainId();
 
-  const { refetch } = useMyHyperboards();
+  const { refetch } = useFetchMyHyperboards();
   const { mutateAsync: addRegistriesToHyperboard } =
     useAddRegistriesToHyperboard();
 

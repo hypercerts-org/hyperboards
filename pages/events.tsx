@@ -1,4 +1,4 @@
-import { useListRegistries } from "@/hooks/registry";
+import { useListRegistries } from "@/hooks/useFetchHyperboardContents";
 import Link from "next/link";
 import { Center, Heading, Spinner, VStack } from "@chakra-ui/react";
 import Head from "next/head";

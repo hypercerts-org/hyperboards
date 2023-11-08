@@ -1,13 +1,11 @@
 import { useAddress } from "@/hooks/useAddress";
 import { useMutation } from "wagmi";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useToast } from "@chakra-ui/react";
 import { MintingFormValues } from "@/components/minting/minting-form";
 
 export const useCreateBlueprint = () => {
   const admin_id = useAddress();
   const getClient = useGetAuthenticatedClient();
-  const toast = useToast();
 
   return useMutation(
     async ({
@@ -16,26 +14,12 @@ export const useCreateBlueprint = () => {
       ...values
     }: { address: string; registryId: string } & MintingFormValues) => {
       if (!admin_id) {
-        toast({
-          title: "No address",
-          description: "Please connect your wallet",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
+        throw new Error("No address found");
       }
 
       const client = await getClient();
       if (!client) {
-        toast({
-          title: "Not logged in",
-          description: "Please connect your wallet",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
+        throw new Error("Not logged in");
       }
 
       const { data, error } = await client
@@ -51,14 +35,7 @@ export const useCreateBlueprint = () => {
         .select();
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-        return;
+        throw new Error(error.message);
       }
 
       return data;

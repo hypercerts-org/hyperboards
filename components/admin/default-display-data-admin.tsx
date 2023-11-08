@@ -18,8 +18,9 @@ import {
 } from "@chakra-ui/react";
 import { formatAddress } from "@/utils/formatting";
 import { CreateOrUpdateDefaultSponsorMetadataModal } from "@/components/admin/create-or-update-default-sponsor-metadata-modal";
+import { EditDefaultSponsorMetadataButton } from "@/components/admin/edit-default-sponsor-metadata-button";
 
-export const DefaultSponsorMetadataAdmin = () => {
+export const DefaultDisplayDataAdmin = () => {
   const { data, isLoading } = useFetchDefaultSponsorMetadata();
   const {
     isOpen: isOpenCreate,
@@ -66,6 +67,12 @@ export const DefaultSponsorMetadataAdmin = () => {
                         >
                           {defaultSponsorMetadata.image}
                         </a>
+                      </Td>
+                      <Td textAlign={"right"}>
+                        <EditDefaultSponsorMetadataButton
+                          sponsorAddress={defaultSponsorMetadata.address}
+                          size="sm"
+                        />
                       </Td>
                     </Tr>
                   ))}

@@ -16,7 +16,7 @@ import { useHypercertClient } from "@/components/providers";
 import { useCreateBlueprint } from "@/hooks/useCreateBlueprint";
 import { SingleRegistrySelector } from "@/components/admin/registry-selector";
 import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface FormValues {
   address: string;
@@ -30,6 +30,7 @@ export const CreateOrUpdateBlueprintForm = ({
   registryId?: string;
   onComplete?: () => void;
 }) => {
+  const [submitting, setSubmitting] = useState(false);
   const address = useAddress();
   const { data: registryData } = useFetchRegistryById(registryId);
 
@@ -38,6 +39,7 @@ export const CreateOrUpdateBlueprintForm = ({
     register,
     getValues,
     setValue,
+
     formState: { errors },
   } = useForm<FormValues>({
     reValidateMode: "onBlur",
@@ -57,7 +59,7 @@ export const CreateOrUpdateBlueprintForm = ({
 
   const toast = useToast();
   const client = useHypercertClient();
-  const { mutateAsync } = useCreateBlueprint();
+  const { mutateAsync: createBlueprint } = useCreateBlueprint();
 
   const onSubmitBluePrint = async (values: MintingFormValues) => {
     const address = getValues("address");
@@ -87,8 +89,10 @@ export const CreateOrUpdateBlueprintForm = ({
       return;
     }
 
+    setSubmitting(true);
+
     try {
-      await mutateAsync({
+      await createBlueprint({
         ...values,
         address,
         registryId: registryId.value,
@@ -97,12 +101,16 @@ export const CreateOrUpdateBlueprintForm = ({
         title: "Blueprint created",
         status: "success",
       });
-    } catch (e) {
+      setSubmitting(false);
+    } catch (e: any) {
       console.error(e);
       toast({
         title: "Error creating blueprint",
+        description: e.message,
         status: "error",
       });
+      setSubmitting(false);
+      return;
     }
 
     onComplete?.();
@@ -116,6 +124,7 @@ export const CreateOrUpdateBlueprintForm = ({
           {...register("address", {
             required: "Blueprint address is required",
           })}
+          isDisabled={submitting}
         />
         <FormErrorMessage>{errors.address?.message}</FormErrorMessage>
       </FormControl>
@@ -123,7 +132,9 @@ export const CreateOrUpdateBlueprintForm = ({
         <FormLabel>Registry ID</FormLabel>
         <Controller
           control={control}
-          render={(props) => <SingleRegistrySelector {...props.field} />}
+          render={(props) => (
+            <SingleRegistrySelector isDisabled={submitting} {...props.field} />
+          )}
           name={"registryId"}
         />
         <FormErrorMessage>{errors.registryId?.message}</FormErrorMessage>

@@ -22,7 +22,7 @@ const fetchRegister = async (
   return await res.json();
 };
 
-export const useRegister = () => {
+export const useRegisterUser = () => {
   const address = useAddress();
   const toast = useToast();
 

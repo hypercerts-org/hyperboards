@@ -76,7 +76,7 @@ const processRegistryForDisplay = async (
   };
 };
 
-export const useHyperboardContents = (hyperboardId: string) => {
+export const useFetchHyperboardContents = (hyperboardId: string) => {
   const toast = useToast();
   const client = useHypercertClient();
 

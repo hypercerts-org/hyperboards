@@ -56,13 +56,23 @@ export default async function handler(
     .eq("address", lowerCaseAddress)
     .single();
 
-  if (error) {
-    console.log("Error selecting user", error);
-    return res.status(500).json({ error: error.message });
+  const JWT = process.env.NEXT_PUBLIC_JWT_SECRET;
+
+  if (!JWT) {
+    console.error("JWT not set");
+    return res.status(500).json({ error: "JWT not set" });
   }
 
+  // Guest user, just use jwt to sign address
   if (!user) {
-    return res.status(500).json({ error: "User not found" });
+    const token = jwt.sign(
+      {
+        address: lowerCaseAddress, // this will be read by RLS policy
+      },
+      JWT,
+      { expiresIn: 60 * 2 },
+    );
+    return res.status(200).send({ token });
   }
 
   // 3. verify the nonce included in the request matches what's
@@ -92,13 +102,6 @@ export default async function handler(
         },
       })
       .eq("address", lowerCaseAddress); // primary key
-  }
-  // 6. lastly, we sign the token, then return it to client
-  const JWT = process.env.NEXT_PUBLIC_JWT_SECRET;
-
-  if (!JWT) {
-    console.error("JWT not set");
-    return res.status(500).json({ error: "JWT not set" });
   }
 
   const token = jwt.sign(

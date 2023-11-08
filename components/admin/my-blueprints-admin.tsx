@@ -1,4 +1,5 @@
 import {
+  Badge,
   Card,
   Flex,
   Spinner,
@@ -11,15 +12,17 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { useMyBlueprints } from "@/hooks/useMyBlueprints";
+import { useFetchMyBlueprints } from "@/hooks/useFetchMyBlueprints";
 import { formatAddress } from "@/utils/formatting";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { BlueprintMinter } from "@/components/minting/blueprint-minter";
+import { useChainId } from "wagmi";
 
 export const MyBlueprintsAdmin = () => {
-  const { data, isLoading } = useMyBlueprints();
+  const { data, isLoading } = useFetchMyBlueprints();
   const { query, push } = useRouter();
+  const chainId = useChainId();
 
   if (isLoading) {
     return <Spinner />;
@@ -53,29 +56,39 @@ export const MyBlueprintsAdmin = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {data.data?.map((blueprint) => (
-                    <Tr key={blueprint.id}>
-                      {/*
+                  {data.data?.map((blueprint) => {
+                    const isCorrectChain =
+                      blueprint.registries?.chain_id === chainId;
+                    return (
+                      <Tr key={blueprint.id}>
+                        {/*
                   // @ts-ignore */}
-                      <Td>{blueprint.form_values?.name}</Td>
-                      <Td>{blueprint.registries?.name}</Td>
-                      <Td>{new Date(blueprint.created_at).toLocaleString()}</Td>
-                      <Td>{formatAddress(blueprint.admin_id)}</Td>
-                      <Td textDecoration={"underline"}>
-                        <Link
-                          href={{
-                            href: "/admin/blueprints",
-                            pathname: "/admin/my-blueprints",
-                            query: {
-                              blueprintId: blueprint.id,
-                            },
-                          }}
-                        >
-                          Mint
-                        </Link>{" "}
-                      </Td>
-                    </Tr>
-                  ))}
+                        <Td>{blueprint.form_values?.name}</Td>
+                        <Td>{blueprint.registries?.name}</Td>
+                        <Td>
+                          {new Date(blueprint.created_at).toLocaleString()}
+                        </Td>
+                        <Td>{formatAddress(blueprint.admin_id)}</Td>
+                        <Td textDecoration={"underline"}>
+                          {isCorrectChain ? (
+                            <Link
+                              href={{
+                                href: "/admin/blueprints",
+                                pathname: "/admin/my-blueprints",
+                                query: {
+                                  blueprintId: blueprint.id,
+                                },
+                              }}
+                            >
+                              Mint
+                            </Link>
+                          ) : (
+                            <Badge colorScheme="red">Different chain</Badge>
+                          )}
+                        </Td>
+                      </Tr>
+                    );
+                  })}
                 </Tbody>
               </Table>
             </TableContainer>
