@@ -19,8 +19,40 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
+import { ethers, providers } from "ethers";
+import {
+  decodeEventLog,
+  HttpTransport,
+  parseAbi,
+  PublicClient,
+  TransactionReceipt,
+} from "viem";
+import { HypercertMinterAbi } from "@hypercerts-org/contracts";
+
+export function publicClientToProvider(publicClient: PublicClient) {
+  console.log("publicClientToProvider", publicClient);
+  const { chain, transport } = publicClient;
+  if (!chain) {
+    return;
+  }
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  if (transport.type === "fallback")
+    return new providers.FallbackProvider(
+      (transport.transports as ReturnType<HttpTransport>[]).map(
+        ({ value }) => new providers.JsonRpcProvider(value?.url, network),
+      ),
+    );
+  return new providers.JsonRpcProvider(
+    publicClient.chain?.rpcUrls?.default.http[0],
+    network,
+  );
+}
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -77,14 +109,22 @@ const formValuesToHypercertMetadata = (
   return metaData;
 };
 
-const constructClaimIdFromContractReceipt = (receipt: ContractReceipt) => {
-  const { events } = receipt;
+const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
+  console.log(receipt);
+  const events = receipt.logs.map((log) =>
+    decodeEventLog({
+      abi: parseAbi(HypercertMinterAbi),
+      data: log.data,
+      topics: log.topics,
+    }),
+  );
 
+  console.log("events", events);
   if (!events) {
     throw new Error("No events in receipt");
   }
 
-  const claimEvent = events.find((e) => e.event === "TransferSingle");
+  const claimEvent = events.find((e) => e.eventName === "TransferSingle");
 
   if (!claimEvent) {
     throw new Error("TransferSingle event not found");
@@ -96,13 +136,14 @@ const constructClaimIdFromContractReceipt = (receipt: ContractReceipt) => {
     throw new Error("No args in event");
   }
 
+  // @ts-ignore
   const tokenIdBigNumber = args[3] as BigNumber;
 
   if (!tokenIdBigNumber) {
     throw new Error("No tokenId arg in event");
   }
 
-  const contractId = receipt.to.toLowerCase();
+  const contractId = receipt.to?.toLowerCase();
   const tokenId = tokenIdBigNumber.toString();
 
   return `${contractId}-${tokenId}`;
@@ -204,17 +245,21 @@ export const BlueprintMinter = ({
       return;
     }
 
-    let contractReceipt: ContractReceipt | undefined;
+    let transactionReceipt: TransactionReceipt | undefined;
 
     setStep("Minting");
     try {
       const claimData = formValuesToHypercertMetadata(values, image);
-      const mintResult = await client.mintClaim(
+      const transactionHash = await client.mintClaim(
         claimData,
-        1000,
+        1000n,
         TransferRestrictions.FromCreatorOnly,
       );
-      contractReceipt = await mintResult.wait();
+      const config = client.config;
+      const provider = publicClientToProvider(config.publicClient!);
+      console.log(config, provider);
+      // @ts-ignore
+      transactionReceipt = await provider?.waitForTransaction(transactionHash);
     } catch (e) {
       console.error(e);
       toast({
@@ -231,7 +276,7 @@ export const BlueprintMinter = ({
     let claimId: string | undefined;
 
     try {
-      claimId = constructClaimIdFromContractReceipt(contractReceipt);
+      claimId = constructClaimIdFromContractReceipt(transactionReceipt!);
     } catch (e) {
       console.error(e);
       toast({

@@ -81,28 +81,19 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     console.log("creating hypercert client", chainId, walletClient);
 
-    const walletClientToSigner = (walletClient: WalletClient) => {
-      const { account, chain, transport } = walletClient;
-      const network = {
-        chainId: chain.id,
-        name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
-      };
-      const provider = new providers.Web3Provider(transport, network);
-      const signer = provider.getSigner(account.address);
-      console.log("signer", signer);
-      return signer;
-    };
+    if (!chainId) {
+      return;
+    }
 
-    const operator = walletClient
-      ? walletClientToSigner(walletClient)
-      : undefined;
+    if (!walletClient) {
+      return;
+    }
 
     const hypercertClient = new HypercertClient({
-      chainId,
+      chain: { id: chainId },
       nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN!,
       web3StorageToken: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN!,
-      operator,
+      walletClient,
     });
 
     setClient(hypercertClient);
