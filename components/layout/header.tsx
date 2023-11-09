@@ -222,6 +222,10 @@ const BrowseMenu = () => {
               <BrowseMenuItem text="hypercerts" href="/" />
               <BrowseMenuItem text="hyperboards" href="/boards/" />
               <BrowseMenuItem text="admin" href="/admin/hyperboards" />
+              <BrowseMenuItem
+                text="create order"
+                href="/marketplace/create-order"
+              />
             </MenuList>
           </>
         )}

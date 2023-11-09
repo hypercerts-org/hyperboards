@@ -21,6 +21,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "^0.9.0",
+    "@hypercerts-org/marketplace-sdk": "^0.0.3",
     "@hypercerts-org/sdk": "^1.0.0-alpha.8",
     "@plasmicapp/cli": "^0.1.307",
     "@plasmicapp/loader-nextjs": "^1.0.309",
@@ -42,6 +43,7 @@
     "dayzed": "^3.2.3",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "ethers": "6.8.0",
     "framer-motion": "^10.16.2",
     "hamburger-react": "^2.5.0",
     "html2canvas": "^1.4.1",
@@ -58,7 +60,8 @@
     "supabase": "^1.106.1",
     "typescript": "5.2.2",
     "viem": "^1.10.3",
-    "wagmi": "^1.4.1"
+    "wagmi": "^1.4.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@snaplet/copycat": "^0.18.1",

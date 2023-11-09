@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { readableMessageToSign } from "@/hooks/useGetAuthenticatedClient";
-import { ethers } from "ethers";
+import { verifyMessage } from "ethers";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 import jwt from "jsonwebtoken";
@@ -37,10 +37,7 @@ export default async function handler(
   );
 
   // 1. verify the signed message matches the requested address
-  const recoveredAddress = ethers.utils.verifyMessage(
-    readableMessageToSign,
-    signed,
-  );
+  const recoveredAddress = verifyMessage(readableMessageToSign, signed);
 
   if (
     !recoveredAddress ||
