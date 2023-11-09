@@ -47,7 +47,7 @@ export default async function handler(
   }
 
   // 2. select * from public.user table where address matches
-  const { data: user, error } = await supabase
+  const { data: user } = await supabase
     .from("users")
     .select("*")
     .eq("address", lowerCaseAddress)

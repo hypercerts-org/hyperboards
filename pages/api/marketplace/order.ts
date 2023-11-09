@@ -7,6 +7,7 @@ import { OrderStatus } from "@/types/api";
 import { deployments } from "@hypercerts-org/contracts";
 import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
 import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
+import { Database } from "@/types/hypercerts-database";
 
 /**
  * Given an array of params, returns the encoded params.
@@ -110,8 +111,8 @@ export default async function handler(
       status: OrderStatus;
       quoteType: number;
       globalNonce: string;
-      subsetNonce: string;
-      orderNonce: string;
+      subsetNonce: number;
+      orderNonce: number;
       strategyId: number;
       collectionType: number;
       collection: string;
@@ -121,7 +122,7 @@ export default async function handler(
       endTime: number;
       price: string;
       itemIds: string[];
-      amounts: string[];
+      amounts: number[];
       additionalParameters: string;
       chainId: number;
       signature: string;
@@ -173,11 +174,19 @@ export default async function handler(
     }
 
     // Add to database
-    const supabase = createClient(supabaseUrl, supabaseHypercertServiceRoleKey);
-    const insertEntity = { ...makerOrder, chainId, signature };
+    const supabase = createClient<Database>(
+      supabaseUrl,
+      supabaseHypercertServiceRoleKey,
+    );
+    const insertEntity = {
+      ...makerOrder,
+      globalNonce: makerOrder.globalNonce.toString(10),
+      chainId,
+      signature,
+    };
     console.log("[marketplace-api] Inserting order entity", insertEntity);
     try {
-      const insertedEntity = await supabase
+      const resultRow = await supabase
         .from("marketplace-orders")
         .insert([insertEntity])
         .select("*")
@@ -187,7 +196,15 @@ export default async function handler(
       res.status(200).json({
         message: "Added to database",
         success: true,
-        data: insertedEntity.data,
+        data: resultRow.data
+          ? {
+              ...resultRow.data,
+              itemIds: resultRow.data.itemIds as string[],
+              amounts: resultRow.data.amounts as number[],
+              status: "VALID",
+              hash: "0x",
+            }
+          : null,
       });
     } catch (error) {
       console.error(error);

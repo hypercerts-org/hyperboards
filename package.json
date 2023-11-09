@@ -10,6 +10,7 @@
     "supabase:init": "supabase init",
     "supabase:start": "supabase start",
     "supabase:types": "supabase gen types typescript --local > ./types/database.ts",
+    "supabase:types:hypercerts": "npx supabase gen types typescript --project-id clagjjfinooizoqdkvqc --schema public > types/hypercerts-database.ts",
     "supabase:migration:new": "supabase migration new",
     "supabase:migration:push": "supabase migration up",
     "supabase:migration:diff": "supabase db diff --schema public",
