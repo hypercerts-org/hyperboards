@@ -7,7 +7,6 @@ import {
 
 import { z } from "zod";
 import { OrderStatus } from "@/types/api";
-import { deployments } from "@hypercerts-org/contracts";
 import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
 import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
 import { Database } from "@/types/hypercerts-database";
@@ -70,7 +69,8 @@ const getTypedData = (chainId: number) => ({
   chainId,
   // TODO: Get correct contract address
   // @ts-ignore
-  verifyingContract: deployments[chainId].HypercertExchange,
+  verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
+  // verifyingContract: deployments[chainId].HypercertExchange,
 });
 
 export const makerTypes = {
@@ -92,15 +92,6 @@ export const makerTypes = {
     { name: "additionalParameters", type: "bytes" },
   ],
 };
-
-const supabaseUrl = requireEnv(
-  process.env.NEXT_PUBLIC_SUPABASE_HYPERCERTS_URL,
-  "NEXT_PUBLIC_SUPABASE_HYPERCERTS_URL",
-);
-const supabaseHypercertServiceRoleKey = requireEnv(
-  process.env.NEXT_PUBLIC_SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
-  "NEXT_PUBLIC_SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY",
-);
 
 export default async function handler(
   req: NextApiRequest,

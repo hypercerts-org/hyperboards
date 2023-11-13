@@ -13,14 +13,13 @@ export const useCreateOrder = () => {
       signature,
       quoteType,
       globalNonce,
-      currency,
     }: {
       order: Order;
       signer: string;
       signature: string;
       quoteType: QuoteType;
       globalNonce: number;
-      currency: string;
+      // currency: string;
     }) => {
       if (!chainId) {
         throw new Error("No chainId");
@@ -41,7 +40,6 @@ export const useCreateOrder = () => {
           signature,
           chainId,
           globalNonce,
-          currency,
         }),
       }).then((res) => res.json() as Promise<{ success: boolean }>);
     },

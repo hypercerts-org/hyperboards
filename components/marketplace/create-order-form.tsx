@@ -1,11 +1,14 @@
 import { useForm } from "react-hook-form";
 import {
   Button,
+  Center,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Heading,
   Input,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { LooksRare, QuoteType } from "@hypercerts-org/marketplace-sdk";
 import {
@@ -16,13 +19,7 @@ import {
   WalletClient,
 } from "wagmi";
 import { useHypercertClient } from "@/components/providers";
-import {
-  HttpTransport,
-  isAddress,
-  parseEther,
-  PublicClient,
-  zeroAddress,
-} from "viem";
+import { HttpTransport, isAddress, parseEther, PublicClient } from "viem";
 import { useCreateOrder } from "@/hooks/marketplace/useCreateOrder";
 import { useInteractionModal } from "@/components/interaction-modal";
 import {
@@ -32,6 +29,7 @@ import {
 } from "@ethersproject/providers";
 import React from "react";
 import { Provider } from "ethers";
+import { waitForTransactionReceipt } from "viem/actions";
 
 interface CreateOfferFormValues {
   fractionId: string;
@@ -101,6 +99,7 @@ export interface Order {
   amounts?: number[];
   startTime?: number;
   additionalParams: string;
+  currency: string;
 }
 
 export const CreateOrderForm = () => {
@@ -111,8 +110,8 @@ export const CreateOrderForm = () => {
   } = useForm<CreateOfferFormValues>({
     defaultValues: {
       fractionId:
-        "0x822f17a9a5eecfd66dbaff7946a8071c265d1d07-11229318108390969294291362045248350978048",
-      price: "1",
+        "0x822f17a9a5eecfd66dbaff7946a8071c265d1d07-4261015798583991439488376834260601543852033",
+      price: "0.000000000000001",
     },
   });
   const chainId = useChainId();
@@ -124,6 +123,7 @@ export const CreateOrderForm = () => {
   const { onOpen, onClose, setStep } = useInteractionModal();
   const signer = useEthersSigner();
   const provider = useEthersProvider();
+  const { data: walletClientData } = useWalletClient();
 
   const onSubmit = async (values: CreateOfferFormValues) => {
     if (!client) {
@@ -240,6 +240,17 @@ export const CreateOrderForm = () => {
       return;
     }
 
+    if (!walletClientData) {
+      toast({
+        title: "Error",
+        description: "Wallet client not initialized",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     // TODO: Fix typing issue with provider
     // @ts-ignore
     const lr = new LooksRare(chainId, provider as unknown as Provider, signer);
@@ -255,6 +266,7 @@ export const CreateOrderForm = () => {
       itemIds: [tokenIdBigInt.toString(10)], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
       additionalParams: "0x",
       amounts: [1],
+      currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
     };
 
     let signature: string | undefined;
@@ -262,20 +274,28 @@ export const CreateOrderForm = () => {
     try {
       setStep("Create");
       const { maker, isCollectionApproved, isTransferManagerApproved } =
-        await lr.createMakerAsk(order);
+        await lr.createMakerAsk({
+          ...order,
+        });
+
+      console.log(maker);
 
       // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
       setStep("Approve transfer manager");
       if (!isTransferManagerApproved) {
         const tx = await lr.grantTransferManagerApproval().call();
-        await tx.wait();
+        await waitForTransactionReceipt(walletClientData, {
+          hash: tx.hash as `0x${string}`,
+        });
       }
 
       setStep("Approve collection");
       // Approve the collection items to be transferred by the TransferManager
       if (!isCollectionApproved) {
         const tx = await lr.approveAllCollectionItems(maker.collection);
-        await tx.wait();
+        await waitForTransactionReceipt(walletClientData, {
+          hash: tx.hash as `0x${string}`,
+        });
       }
 
       // Sign your maker order
@@ -314,7 +334,6 @@ export const CreateOrderForm = () => {
         signer: address,
         globalNonce: 0,
         quoteType: QuoteType.Ask,
-        currency: zeroAddress,
       });
     } catch (e) {
       toast({
@@ -331,30 +350,37 @@ export const CreateOrderForm = () => {
     console.log(values);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!!errors.fractionId}>
-        <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
-        <Input
-          id="fractionId"
-          placeholder="Fraction ID"
-          {...register("fractionId", { required: true })}
-        />
-        <FormErrorMessage>
-          {errors.fractionId && "Fraction ID is required"}
-        </FormErrorMessage>
-      </FormControl>
-      <FormControl isInvalid={!!errors.price}>
-        <FormLabel htmlFor="price">Price</FormLabel>
-        <Input
-          id="price"
-          placeholder="Price"
-          {...register("price", { required: true })}
-        />
-        <FormErrorMessage>
-          {errors.price && "Price is required"}
-        </FormErrorMessage>
-      </FormControl>
-      <Button type="submit">Put on sale</Button>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+      <VStack>
+        <Heading size={"md"}>Sell fraction</Heading>
+        <FormControl isInvalid={!!errors.fractionId}>
+          <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
+          <Input
+            id="fractionId"
+            placeholder="Fraction ID"
+            {...register("fractionId", { required: "Fraction ID is required" })}
+          />
+          <FormErrorMessage>
+            {errors.fractionId && errors.fractionId.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.price}>
+          <FormLabel htmlFor="price">Price</FormLabel>
+          <Input
+            id="price"
+            placeholder="Price"
+            {...register("price", { required: "Price is required" })}
+          />
+          <FormErrorMessage>
+            {errors.price && errors.price.message}
+          </FormErrorMessage>
+        </FormControl>
+        <Center>
+          <Button colorScheme="teal" type="submit">
+            Put on sale
+          </Button>
+        </Center>
+      </VStack>
     </form>
   );
 };
