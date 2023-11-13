@@ -22,6 +22,7 @@ import {
 } from "@/components/marketplace/create-order-form";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { waitForTransactionReceipt } from "viem/actions";
+import { isObject } from "lodash";
 
 export const AvailableOrders = () => {
   const { data, isLoading } = useFetchMarketplaceOrders();
@@ -181,16 +182,18 @@ export const AvailableOrders = () => {
                     });
                   } catch (e) {
                     console.error(e);
-                    console.log({ ...e });
-                    const decodedError = decodeErrorResult({
-                      abi: looksRareABI,
-                      data: e.error?.data?.originalError?.data,
-                    });
-                    console.log(decodedError);
+                    let description = "Order execution error";
+                    if (isObject(e)) {
+                      const decodedError = decodeErrorResult({
+                        abi: looksRareABI,
+                        data: (e as any).error?.data?.originalError?.data,
+                      });
+                      description = decodedError?.errorName || description;
+                    }
+
                     toast({
                       title: "Order execution error",
-                      description:
-                        decodedError?.errorName || "Order execution error",
+                      description,
                       status: "error",
                       duration: 5000,
                       isClosable: true,
