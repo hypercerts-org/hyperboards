@@ -14,9 +14,9 @@ import {
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
-import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-form";
 import { useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { ZUZALU_DONATION_SAFE_ADDRESS } from "@/config";
 
 export const MoreInformationModal = ({
   ...modalProps
@@ -119,7 +119,7 @@ export const MoreInformationModal = ({
                 <b>Multi-sig that stores the funds</b>
               </Text>
               <UnorderedList spacing={2} mt={1}>
-                <ListItem>Address: {SAFE_ADDRESS}</ListItem>
+                <ListItem>Address: {ZUZALU_DONATION_SAFE_ADDRESS}</ListItem>
                 <ListItem>
                   Signer 1: Vitalik Buterin, vitalik.eth,
                   0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045

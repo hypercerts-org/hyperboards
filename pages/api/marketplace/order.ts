@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
-import { requireEnv } from "@/config";
+import {
+  SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
+  SUPABASE_HYPERCERTS_URL,
+} from "@/config";
 
 import { z } from "zod";
 import { OrderStatus } from "@/types/api";
@@ -175,8 +178,8 @@ export default async function handler(
 
     // Add to database
     const supabase = createClient<Database>(
-      supabaseUrl,
-      supabaseHypercertServiceRoleKey,
+      SUPABASE_HYPERCERTS_URL,
+      SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
     );
     const insertEntity = {
       ...makerOrder,

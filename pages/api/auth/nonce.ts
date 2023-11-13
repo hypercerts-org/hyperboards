@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
+import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from "@/config";
 
 type Data = {
   nonce: number;
@@ -15,8 +16,8 @@ export default async function handler(
   const nonce = Math.floor(Math.random() * 1000000);
 
   const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
   );
 
   const { data, error } = await supabase

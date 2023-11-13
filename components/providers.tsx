@@ -17,12 +17,18 @@ import { HypercertClient } from "@hypercerts-org/sdk";
 import { InteractionDialogProvider } from "@/components/interaction-modal";
 import Fonts from "@/fonts";
 import { theme } from "@/theme";
+import {
+  ALCHEMY_KEY_GOERLI,
+  NFT_STORAGE_TOKEN,
+  WALLETCONNECT_ID,
+  WEB3_STORAGE_TOKEN,
+} from "@/config";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, optimism],
   [
     alchemyProvider({
-      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI!,
+      apiKey: ALCHEMY_KEY_GOERLI,
     }),
     publicProvider(),
   ],
@@ -30,7 +36,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: "Hyperboards",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID!,
+  projectId: WALLETCONNECT_ID,
   chains,
 });
 
@@ -89,8 +95,8 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
 
     const hypercertClient = new HypercertClient({
       chain: { id: chainId },
-      nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN!,
-      web3StorageToken: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN!,
+      nftStorageToken: NFT_STORAGE_TOKEN,
+      web3StorageToken: WEB3_STORAGE_TOKEN,
       walletClient,
     });
 

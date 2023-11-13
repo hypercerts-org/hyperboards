@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { toHex } from "viem";
+import { ALCHEMY_KEY_GOERLI } from "@/config";
 
 const START_BLOCK = 9898972;
-const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI;
-const baseURL = `https://eth-mainnet.alchemyapi.io/v2/${apiKey}`;
+const baseURL = `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY_GOERLI}`;
 
 const fetchHistoryToAddress = (address: string) =>
   fetch(baseURL, {
