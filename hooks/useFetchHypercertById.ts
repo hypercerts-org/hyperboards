@@ -33,5 +33,8 @@ export const useFetchHypercertById = (hypercertId: string) => {
         metadata,
       };
     },
+    {
+      enabled: !!client && !!chainId,
+    },
   );
 };
