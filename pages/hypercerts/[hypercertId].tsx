@@ -12,7 +12,6 @@ import {
   Divider as ChakraDivider,
   DividerProps,
   Flex,
-  Heading,
   HStack,
   Image,
   Spinner,
@@ -31,6 +30,7 @@ import { formatAddress, formatWorkTimeframe } from "@/utils/formatting";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 import { PropsWithChildren } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -41,6 +41,9 @@ export const Index = () => {
     hypercertId as string,
   );
   const { data: fractionsData } = useFetchHypercertFractionsByHypercertId(
+    hypercertId as string,
+  );
+  const { data: collectionsData } = useFetchCollectionsForHypercert(
     hypercertId as string,
   );
 
@@ -118,25 +121,35 @@ export const Index = () => {
               py={5}
               pl={5}
             >
-              <Heading
-                fontWeight={400}
-                fontSize={"sm"}
-                textTransform={"uppercase"}
-              >
+              <Text textStyle={"secondary"} fontSize={"sm"}>
                 Creator
-              </Heading>
+              </Text>
               <Text>
                 {displayData?.data?.companyName ||
                   formatAddress(hypercert?.owner)}
               </Text>
             </VStack>
-            <VStack width={"100%"}>
-              <Heading fontWeight={400} fontSize={"sm"}>
-                Creator
-              </Heading>
-              <Text fontWeight={100}>
-                {displayData?.data?.companyName ||
-                  formatAddress(hypercert?.owner)}
+            <VStack
+              width={"100%"}
+              alignItems={"flex-start"}
+              justifyContent={"center"}
+              py={5}
+              pl={5}
+            >
+              <Text textStyle={"secondary"} fontSize={"sm"}>
+                Collection
+              </Text>
+              <Text>
+                {collectionsData?.length
+                  ? collectionsData.map((x) => (
+                      <Tag key={x.id} size={"lg"}>
+                        {x.name}{" "}
+                        <Text opacity={0.5} ml={8} as={"span"}>
+                          {(x.claims[0] as unknown as { count: number }).count}
+                        </Text>
+                      </Tag>
+                    ))
+                  : "No collections"}
               </Text>
             </VStack>
           </HStack>
@@ -156,8 +169,8 @@ export const Index = () => {
             </Text>
             <HStack>
               {hypercert?.metadata?.hypercert?.work_scope?.value?.map((x) => (
-                <Tag key={x} variant={"outline"} size={"lg"}>
-                  {x}
+                <Tag key={x} size={"lg"}>
+                  <Text fontWeight={400}>{x}</Text>
                 </Tag>
               ))}
             </HStack>
@@ -239,7 +252,7 @@ const AccordionLine = ({
   previewLine?: string;
 }>) => {
   return (
-    <Accordion width={"100%"} allowToggle>
+    <Accordion width={"100%"} allowToggle borderBottomColor={"transparent"}>
       <AccordionItem width={"100%"}>
         {({ isExpanded }) => (
           <>
@@ -270,9 +283,9 @@ const AccordionLine = ({
 
                 <Box ml={"auto"}>
                   {isExpanded ? (
-                    <BiChevronUp ml={"auto"} fontSize="12px" />
+                    <BiChevronUp ml={"auto"} fontSize="18px" />
                   ) : (
-                    <BiChevronDown ml={"auto"} fontSize="12px" />
+                    <BiChevronDown ml={"auto"} fontSize="18px" />
                   )}
                 </Box>
               </Flex>

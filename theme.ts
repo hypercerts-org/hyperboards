@@ -8,6 +8,22 @@ export const colors = {
   background: "#F1F1F1",
 };
 
+const Badge = defineStyleConfig({
+  baseStyle: {
+    backgroundColor: "black",
+    color: "white",
+  },
+});
+
+const Tag = defineStyleConfig({
+  baseStyle: {
+    container: {
+      border: "1px solid black",
+      background: "transparent",
+    },
+  },
+});
+
 const Button = defineStyleConfig({
   baseStyle: {
     borderRadius: "0",
@@ -53,6 +69,8 @@ export const theme: ThemeOverride = extendTheme({
   },
   components: {
     Button,
+    Badge,
+    Tag,
     Input: {
       baseStyle: {
         field: {
