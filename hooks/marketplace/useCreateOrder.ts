@@ -1,7 +1,7 @@
 import { useChainId, useMutation } from "wagmi";
 import { Order } from "@/components/marketplace/create-order-form";
 import { HYPERCERTS_MARKETPLACE_API_URL } from "@/config";
-import { QuoteType } from "../../../marketplace-sdk";
+import { QuoteType } from "@hypercerts-org/marketplace-sdk";
 
 export const useCreateOrder = () => {
   const chainId = useChainId();

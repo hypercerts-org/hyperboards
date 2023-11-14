@@ -124,7 +124,7 @@ const MobileMenuContent = ({
           borderRadius={4}
         >
           <VStack>
-            <MobileMenuLink href="/" text="hypercerts" />
+            <MobileMenuLink href="/hypercerts" text="hypercerts" />
             <MobileMenuLink href="/" text="hyperboards" />
           </VStack>
           <ConnectButton mt={12} borderRadius={6} />
@@ -219,7 +219,7 @@ const BrowseMenu = () => {
               mt={-2}
               border={"1px solid black"}
             >
-              <BrowseMenuItem text="hypercerts" href="/" />
+              <BrowseMenuItem text="hypercerts" href="/hypercerts" />
               <BrowseMenuItem text="hyperboards" href="/boards/" />
               <BrowseMenuItem text="admin" href="/admin/hyperboards" />
               <BrowseMenuItem

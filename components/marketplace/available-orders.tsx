@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { decodeErrorResult, formatEther } from "viem";
 import { useFetchMarketplaceOrders } from "@/hooks/marketplace/useFetchMarketplaceOrders";
-import { LooksRare } from "../../../marketplace-sdk";
+import { LooksRare } from "@hypercerts-org/marketplace-sdk";
 import { useChainId, useWalletClient } from "wagmi";
 import {
   useEthersProvider,
