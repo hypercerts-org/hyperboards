@@ -66,7 +66,7 @@ export const RegistriesAdmin = () => {
         >
           Create Registry
         </Button>
-        {data?.data?.map((registry) => (
+        {data?.data?.map(({ blueprints, ...registry }) => (
           <Card key={registry.id} p={4} width={"100%"}>
             <VStack alignItems={"flex-start"}>
               <HStack justifyContent={"space-between"} width={"100%"}>
@@ -119,7 +119,7 @@ export const RegistriesAdmin = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {registry.blueprints.map((blueprint) => (
+                    {blueprints.map((blueprint) => (
                       <Tr key={blueprint.id}>
                         <Td>
                           {/*

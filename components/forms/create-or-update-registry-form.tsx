@@ -25,7 +25,7 @@ export interface CreateOrUpdateHyperboardFormProps {
 const minimumCharacters = 40;
 
 export type CreateUpdateRegistryFormValues = RegistryInsert & {
-  claims: { claim_id?: string; hypercert_id: string }[];
+  claims: { claim_id?: string; hypercert_id: string; id?: string }[];
 };
 
 export const CreateOrUpdateRegistryForm = ({

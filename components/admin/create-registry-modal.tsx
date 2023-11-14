@@ -100,12 +100,13 @@ export const CreateRegistryModal = ({
 
     try {
       const claimInserts: ClaimInsert[] = await Promise.all(
-        claims.map(async ({ hypercert_id }) => {
+        claims.map(async ({ hypercert_id, claim_id = crypto.randomUUID() }) => {
           const claim = await client.indexer.claimById(hypercert_id);
           if (!claim.claim) {
             throw new Error("Claim not found");
           }
           return {
+            id: claim_id,
             registry_id: insertedRegistry.id,
             hypercert_id,
             chain_id: chainId,
