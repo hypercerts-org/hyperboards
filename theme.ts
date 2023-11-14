@@ -22,6 +22,9 @@ const Tag = defineStyleConfig({
       background: "transparent",
     },
   },
+  defaultProps: {
+    size: "lg",
+  },
 });
 
 const Button = defineStyleConfig({

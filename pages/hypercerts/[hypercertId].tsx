@@ -31,6 +31,8 @@ import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 import { PropsWithChildren } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
+import { CollectionTag } from "@/components/collection-tag";
+import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -71,10 +73,6 @@ export const Index = () => {
       </Center>
     );
   }
-
-  const unitsForSale = 10;
-  const unitsListed = 100;
-  const pricePerUnit = 0.25;
 
   return (
     <Flex width={"100%"} paddingX={5}>
@@ -141,13 +139,15 @@ export const Index = () => {
               </Text>
               <Text>
                 {collectionsData?.length
-                  ? collectionsData.map((x) => (
-                      <Tag key={x.id} size={"lg"}>
-                        {x.name}{" "}
-                        <Text opacity={0.5} ml={8} as={"span"}>
-                          {(x.claims[0] as unknown as { count: number }).count}
-                        </Text>
-                      </Tag>
+                  ? collectionsData.map((collection) => (
+                      <CollectionTag
+                        key={collection.id}
+                        name={collection.name}
+                        count={
+                          (collection.claims[0] as unknown as { count: number })
+                            .count
+                        }
+                      />
                     ))
                   : "No collections"}
               </Text>
@@ -212,14 +212,7 @@ export const Index = () => {
                 py={6}
                 spacing={8}
               >
-                <Flex justifyContent={"space-between"} width={"100%"}>
-                  <SellStat
-                    amount={unitsForSale}
-                    unit="units"
-                    subText={`${unitsListed} listed`}
-                  />
-                  <SellStat amount={pricePerUnit} unit="ETH" subText="unit" />
-                </Flex>
+                <MarketplaceStats hypercertId={hypercertId as string} />
                 <HStack width={"100%"}>
                   <Button variant={"blackAndWhite"} width={"100%"}>
                     Buy
@@ -295,31 +288,6 @@ const AccordionLine = ({
         )}
       </AccordionItem>
     </Accordion>
-  );
-};
-
-const SellStat = ({
-  amount,
-  subText,
-  unit,
-}: {
-  amount: number;
-  unit: string;
-  subText: string;
-}) => {
-  return (
-    <Flex alignItems={"flex-end"}>
-      <Text fontSize={"lg"} lineHeight={"1.7rem"}>
-        {amount}
-      </Text>
-      <Text fontSize={"sm"}>&nbsp;{unit}</Text>
-      <Text fontSize={"sm"} opacity={0.4}>
-        &nbsp;/&nbsp;
-      </Text>
-      <Text fontSize={"sm"} opacity={0.4}>
-        {subText}
-      </Text>
-    </Flex>
   );
 };
 
