@@ -7,7 +7,11 @@ export const CreateBlueprintModal = ({
   ...modalProps
 }: { registryId?: string } & Omit<ModalProps, "children">) => {
   return (
-    <GenericModal title="Create Blueprint" {...modalProps}>
+    <GenericModal
+      title="Create Blueprint"
+      {...modalProps}
+      width={"fit-content"}
+    >
       <CreateOrUpdateBlueprintForm
         onComplete={modalProps.onClose}
         registryId={registryId}

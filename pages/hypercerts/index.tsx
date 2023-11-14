@@ -79,7 +79,7 @@ export const Index = () => {
           />
         ))}
       </Flex>
-      <SimpleGrid columns={[1, 2, 4]} spacing={5}>
+      <SimpleGrid columns={[1, 2, 4]} spacing={5} mb={10}>
         {displayedHypercerts.map((hypercertId) => (
           <Link key={hypercertId} href={`/hypercerts/${hypercertId}`}>
             <HypercertTile hypercertId={hypercertId} />
