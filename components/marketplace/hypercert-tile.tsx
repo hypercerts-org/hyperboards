@@ -10,7 +10,7 @@ export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
   return (
     <Flex
       ref={ref}
-      width={"335px"}
+      maxWidth={"335px"}
       flexDir={"column"}
       outline={isHovered ? "1px solid black" : "none"}
       cursor={"pointer"}

@@ -33,6 +33,7 @@ import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHyperce
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
 import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
+import _ from "lodash";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -73,6 +74,8 @@ export const Index = () => {
       </Center>
     );
   }
+
+  const uniqueCollections = _.uniqBy(collectionsData, "id");
 
   return (
     <Flex width={"100%"} paddingX={5}>
@@ -137,20 +140,22 @@ export const Index = () => {
               <Text textStyle={"secondary"} fontSize={"sm"}>
                 Collection
               </Text>
-              <Text>
-                {collectionsData?.length
-                  ? collectionsData.map((collection) => (
-                      <CollectionTag
-                        key={collection.id}
-                        name={collection.name}
-                        count={
-                          (collection.claims[0] as unknown as { count: number })
-                            .count
-                        }
-                      />
-                    ))
-                  : "No collections"}
-              </Text>
+              {uniqueCollections?.length ? (
+                <HStack flexWrap={"wrap"}>
+                  {uniqueCollections.map((collection) => (
+                    <CollectionTag
+                      key={collection.id}
+                      name={collection.name}
+                      count={
+                        (collection.claims[0] as unknown as { count: number })
+                          .count
+                      }
+                    />
+                  ))}
+                </HStack>
+              ) : (
+                <Text>No collections</Text>
+              )}
             </VStack>
           </HStack>
           <Flex px={4} py={5} alignItems={"center"}>
@@ -167,7 +172,7 @@ export const Index = () => {
             <Text as="span" textStyle={"secondary"} fontSize={"sm"}>
               Work scope:
             </Text>
-            <HStack>
+            <HStack flexWrap={"wrap"}>
               {hypercert?.metadata?.hypercert?.work_scope?.value?.map((x) => (
                 <Tag key={x} size={"lg"}>
                   <Text fontWeight={400}>{x}</Text>

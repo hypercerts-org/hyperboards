@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { HypercertPreview } from "@/components/minting/hypercert-preview";
+import { MutableRefObject } from "react";
 
 export interface MintingFormValues {
   name: string;
@@ -44,11 +45,13 @@ export const MintingForm = ({
   initialValues,
   buttonLabel = "Submit",
   disabled,
+  imageRef,
 }: {
   onSubmit: (values: MintingFormValues) => void;
   initialValues?: MintingFormValues;
   buttonLabel?: string;
   disabled?: boolean;
+  imageRef?: MutableRefObject<HTMLDivElement | null>;
 }) => {
   const {
     register,
@@ -62,9 +65,9 @@ export const MintingForm = ({
   const values = watch();
 
   return (
-    <HStack>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Flex direction={"column"} width={"100%"}>
+    <HStack w={"100%"} minW={0}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+        <Flex direction={"column"} width={"100%"} minWidth={0}>
           <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
             <FormControl isInvalid={!!errors.name?.message}>
               <FormLabel>Name</FormLabel>
@@ -119,7 +122,7 @@ export const MintingForm = ({
           </VStack>
         </Flex>
       </form>
-      <HypercertPreview values={values} />
+      <HypercertPreview imageRef={imageRef} values={values} />
     </HStack>
   );
 };

@@ -4,7 +4,6 @@ import {
   MintingForm,
   MintingFormValues,
 } from "@/components/minting/minting-form";
-import { HypercertPreview } from "@/components/minting/hypercert-preview";
 import { useRef } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
 import { useHypercertClient } from "@/components/providers";
@@ -359,8 +358,8 @@ export const BlueprintMinter = ({
           onSubmit={onMint}
           initialValues={values}
           buttonLabel="Mint"
+          imageRef={ref}
         />
-        <HypercertPreview values={values} imageRef={ref} />
       </HStack>
     </>
   );

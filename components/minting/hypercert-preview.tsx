@@ -11,12 +11,13 @@ export const HypercertPreview = ({
   values: Partial<MintingFormValues>;
 }) => {
   // TODO: Make background color variable
-  console.log("Inside hypercert preview", values);
   return (
     <Flex
       ref={imageRef}
       width={"320px"}
       height={"400px"}
+      minW={"320px"}
+      minH={"400px"}
       borderRadius={"22px"}
       backgroundColor={"#73C9CC"}
       position={"relative"}

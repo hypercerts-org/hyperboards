@@ -54,7 +54,12 @@ export const Index = () => {
           {totalCount}
         </Badge>
       </Flex>
-      <Flex mb={"60px"}>
+      <Flex
+        flexWrap={"wrap"}
+        maxWidth={"800px"}
+        justifyContent={"center"}
+        mb={"60px"}
+      >
         <CollectionTag
           name="All"
           count={totalCount}
