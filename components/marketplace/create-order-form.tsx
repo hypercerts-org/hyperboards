@@ -7,29 +7,23 @@ import {
   FormLabel,
   Heading,
   Input,
+  Select,
+  Spinner,
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { LooksRare, QuoteType } from "@hypercerts-org/marketplace-sdk";
-import {
-  useAccount,
-  useChainId,
-  usePublicClient,
-  useWalletClient,
-  WalletClient,
-} from "wagmi";
-import { useHypercertClient } from "@/components/providers";
-import { HttpTransport, isAddress, parseEther, PublicClient } from "viem";
-import { useCreateOrder } from "@/hooks/marketplace/useCreateOrder";
-import { useInteractionModal } from "@/components/interaction-modal";
+import { usePublicClient, useWalletClient, WalletClient } from "wagmi";
+import { HttpTransport, PublicClient } from "viem";
 import {
   FallbackProvider,
   JsonRpcProvider,
   Web3Provider,
 } from "@ethersproject/providers";
 import React from "react";
-import { Provider } from "ethers";
-import { waitForTransactionReceipt } from "viem/actions";
+import { useCreateMakerAsk } from "@/hooks/marketplace/useCreateMakerAsk";
+import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { formatAddress } from "@/utils/formatting";
+import { useAddress } from "@/hooks/useAddress";
 
 interface CreateOfferFormValues {
   fractionId: string;
@@ -102,264 +96,74 @@ export interface Order {
   currency: string;
 }
 
-export const CreateOrderForm = () => {
+export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateOfferFormValues>({
     defaultValues: {
-      fractionId:
-        "0x822f17a9a5eecfd66dbaff7946a8071c265d1d07-4261015798583991439488376834260601543852033",
       price: "0.000000000000001",
     },
   });
-  const chainId = useChainId();
-  const client = useHypercertClient();
-  const { data: walletClient } = useWalletClient();
-  const { mutateAsync: createOrder } = useCreateOrder();
+  const { data, isLoading } =
+    useFetchHypercertFractionsByHypercertId(hypercertId);
   const toast = useToast();
-  const { address } = useAccount();
-  const { onOpen, onClose, setStep } = useInteractionModal();
-  const signer = useEthersSigner();
-  const provider = useEthersProvider();
-  const { data: walletClientData } = useWalletClient();
+  const { mutateAsync: createMakerAsk } = useCreateMakerAsk();
+  const address = useAddress();
 
   const onSubmit = async (values: CreateOfferFormValues) => {
-    if (!client) {
-      return;
-    }
-
-    if (!chainId) {
-      return;
-    }
-
-    if (!walletClient) {
-      return;
-    }
-
-    if (!address) {
-      return;
-    }
-
-    onOpen([
-      {
-        title: "Create",
-        description: "Creating order in contract",
-      },
-      {
-        title: "Approve transfer manager",
-        description: "Approving transfer manager",
-      },
-      {
-        title: "Approve collection",
-        description: "Approving collection",
-      },
-      {
-        title: "Sign order",
-        description: "Signing order",
-      },
-      {
-        title: "Create order",
-        description: "Creating order",
-      },
-    ]);
-
-    if (!client.config.publicClient) {
-      toast({
-        title: "Error",
-        description: "Public client not initialized",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    // const signer = walletClientToSigner(walletClient);
-
-    if (!provider) {
-      toast({
-        title: "Error",
-        description: "Provider not initialized",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (!signer) {
-      toast({
-        title: "Error",
-        description: "Signer not initialized",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    console.log(chainId, provider, signer);
-    const [contractAddress, tokenId] = values.fractionId.split("-");
-
-    if (!contractAddress || !isAddress(contractAddress)) {
-      toast({
-        title: "Error",
-        description: "Invalid contract address",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    let tokenIdBigInt: BigInt | undefined;
     try {
-      tokenIdBigInt = BigInt(tokenId);
-    } catch (e) {
-      console.error(e);
+      await createMakerAsk(values);
       toast({
-        title: "Error",
-        description: "Error parsing token ID",
-        status: "error",
+        title: "Maker ask created",
+        status: "success",
         duration: 9000,
         isClosable: true,
-      });
-      return;
-    }
-
-    if (!tokenIdBigInt) {
-      toast({
-        title: "Error",
-        description: "Invalid token ID",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (!walletClientData) {
-      toast({
-        title: "Error",
-        description: "Wallet client not initialized",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    // TODO: Fix typing issue with provider
-    // @ts-ignore
-    const lr = new LooksRare(chainId, provider as unknown as Provider, signer);
-    const order: Order = {
-      collection: contractAddress,
-      collectionType: 2,
-      strategyId: 0,
-      subsetNonce: 0, // keep 0 if you don't know what it is used for
-      orderNonce: 0, // You need to retrieve this value from the API
-      startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
-      endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
-      price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
-      itemIds: [tokenIdBigInt.toString(10)], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
-      additionalParams: "0x",
-      amounts: [1],
-      currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-    };
-
-    let signature: string | undefined;
-
-    try {
-      setStep("Create");
-      const { maker, isCollectionApproved, isTransferManagerApproved } =
-        await lr.createMakerAsk({
-          ...order,
-        });
-
-      console.log(maker);
-
-      // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
-      setStep("Approve transfer manager");
-      if (!isTransferManagerApproved) {
-        const tx = await lr.grantTransferManagerApproval().call();
-        await waitForTransactionReceipt(walletClientData, {
-          hash: tx.hash as `0x${string}`,
-        });
-      }
-
-      setStep("Approve collection");
-      // Approve the collection items to be transferred by the TransferManager
-      if (!isCollectionApproved) {
-        const tx = await lr.approveAllCollectionItems(maker.collection);
-        await waitForTransactionReceipt(walletClientData, {
-          hash: tx.hash as `0x${string}`,
-        });
-      }
-
-      // Sign your maker order
-      setStep("Sign order");
-      signature = await lr.signMakerOrder(maker);
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: "Could not sign order",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      console.error(e);
-      onClose();
-      return;
-    }
-
-    if (!signature) {
-      toast({
-        title: "Error",
-        description: "Could not sign order",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-      return;
-    }
-
-    try {
-      setStep("Create order");
-      await createOrder({
-        order,
-        signature: signature!,
-        signer: address,
-        globalNonce: 0,
-        quoteType: QuoteType.Ask,
       });
     } catch (e) {
       toast({
-        title: "Error",
-        description: "Could not create order",
+        title: "Could not create maker ask",
+        description: e?.toString(),
         status: "error",
         duration: 9000,
         isClosable: true,
       });
-      onClose();
-      console.error(e);
-      return;
     }
-    console.log(values);
   };
+
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Center>
+        <Heading size={"md"}>Hypercert fractions not found</Heading>
+      </Center>
+    );
+  }
+
+  const yourFractions = data.filter((fraction) => fraction.owner === address);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
       <VStack>
-        <Heading size={"md"}>Sell fraction</Heading>
         <FormControl isInvalid={!!errors.fractionId}>
           <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
-          <Input
-            id="fractionId"
-            placeholder="Fraction ID"
+          <Select
             {...register("fractionId", { required: "Fraction ID is required" })}
-          />
+          >
+            {yourFractions.map((fraction) => (
+              <option key={fraction.id} value={fraction.id}>
+                {formatAddress(fraction.id)} - {fraction.units} units
+              </option>
+            ))}
+          </Select>
           <FormErrorMessage>
             {errors.fractionId && errors.fractionId.message}
           </FormErrorMessage>

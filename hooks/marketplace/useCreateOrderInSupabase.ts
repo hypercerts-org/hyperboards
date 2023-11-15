@@ -3,7 +3,7 @@ import { Order } from "@/components/marketplace/create-order-form";
 import { HYPERCERTS_MARKETPLACE_API_URL } from "@/config";
 import { QuoteType } from "@hypercerts-org/marketplace-sdk";
 
-export const useCreateOrder = () => {
+export const useCreateOrderInSupabase = () => {
   const chainId = useChainId();
 
   return useMutation(

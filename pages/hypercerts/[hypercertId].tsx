@@ -35,11 +35,14 @@ import { CollectionTag } from "@/components/collection-tag";
 import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
 import _ from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
+import { useAddress } from "@/hooks/useAddress";
+import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button";
 
 export const Index = () => {
   const { query } = useRouter();
-
   const { hypercertId } = query;
+
+  const address = useAddress();
 
   const { data: hypercert, isLoading } = useFetchHypercertById(
     hypercertId as string,
@@ -54,6 +57,11 @@ export const Index = () => {
   const { data: displayData } = useFetchDefaultSponsorMetadataByAddress(
     hypercert?.owner,
   );
+
+  const ownedByConnectedUser = !!fractionsData?.some(
+    (fraction) => fraction.owner === address,
+  );
+  const createdByCurrentUser = hypercert?.owner === address;
 
   if (isLoading)
     return (
@@ -80,12 +88,7 @@ export const Index = () => {
 
   return (
     <Flex width={"100%"} paddingX={5}>
-      <Flex
-        width={"100%"}
-        border={"1px solid black"}
-        borderTop={"none"}
-        height={"100%"}
-      >
+      <Flex width={"100%"} border={"1px solid black"} borderTop={"none"}>
         <VStack
           width={"100%"}
           divider={<Divider />}
@@ -129,6 +132,11 @@ export const Index = () => {
               <Text>
                 {displayData?.data?.companyName ||
                   formatAddress(hypercert?.owner)}
+                {createdByCurrentUser && (
+                  <Text as={"span"} ml={1}>
+                    (you)
+                  </Text>
+                )}
               </Text>
             </VStack>
             <VStack
@@ -209,11 +217,36 @@ export const Index = () => {
               />
             </Center>
             <Box width={"100%"} backgroundColor={"black"} height={"100%"}>
+              {ownedByConnectedUser && (
+                <VStack
+                  backgroundColor={"white"}
+                  borderRadius={"12px"}
+                  width={"100%"}
+                  px={5}
+                  py={6}
+                  spacing={8}
+                  borderBottom={"1px solid black"}
+                >
+                  <Text>You own this hypercert</Text>
+                  <HStack width={"100%"}>
+                    <ListForSaleButton
+                      width={"100%"}
+                      hypercertId={hypercertId as string}
+                    />
+                    <Button
+                      variant="blackAndWhiteOutline"
+                      width={"100%"}
+                      backgroundColor={"background"}
+                    >
+                      Transfer
+                    </Button>
+                  </HStack>
+                </VStack>
+              )}
               <VStack
                 backgroundColor={"white"}
                 borderRadius={"12px"}
                 width={"100%"}
-                height={"100%"}
                 px={5}
                 py={6}
                 spacing={8}
