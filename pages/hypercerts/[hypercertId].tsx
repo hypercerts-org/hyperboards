@@ -34,6 +34,7 @@ import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForH
 import { CollectionTag } from "@/components/collection-tag";
 import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
 import _ from "lodash";
+import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -219,9 +220,10 @@ export const Index = () => {
               >
                 <MarketplaceStats hypercertId={hypercertId as string} />
                 <HStack width={"100%"}>
-                  <Button variant={"blackAndWhite"} width={"100%"}>
-                    Buy
-                  </Button>
+                  <BuyHypercertButton
+                    width={"100%"}
+                    hypercertId={hypercertId as string}
+                  />
                   <Button
                     variant="blackAndWhiteOutline"
                     width={"100%"}
