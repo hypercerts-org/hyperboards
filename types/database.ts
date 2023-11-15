@@ -204,6 +204,7 @@ export interface Database {
       }
       registries: {
         Row: {
+          a: number | null
           admin_id: string
           chain_id: number
           created_at: string
@@ -213,6 +214,7 @@ export interface Database {
           name: string
         }
         Insert: {
+          a?: number | null
           admin_id: string
           chain_id: number
           created_at?: string
@@ -222,6 +224,7 @@ export interface Database {
           name: string
         }
         Update: {
+          a?: number | null
           admin_id?: string
           chain_id?: number
           created_at?: string

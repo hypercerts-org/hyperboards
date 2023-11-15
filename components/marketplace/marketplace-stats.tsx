@@ -1,43 +1,61 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Center, Flex, Spinner, Text } from "@chakra-ui/react";
+import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
 
 const SellStat = ({
   amount,
   subText,
   unit,
 }: {
-  amount: number;
-  unit: string;
-  subText: string;
+  amount: number | string;
+  unit?: string;
+  subText?: string;
 }) => {
   return (
     <Flex alignItems={"flex-end"}>
       <Text fontSize={"lg"} lineHeight={"1.7rem"}>
         {amount}
       </Text>
-      <Text fontSize={"sm"}>&nbsp;{unit}</Text>
-      <Text fontSize={"sm"} opacity={0.4}>
-        &nbsp;/&nbsp;
-      </Text>
-      <Text fontSize={"sm"} opacity={0.4}>
-        {subText}
-      </Text>
+      {unit && <Text fontSize={"sm"}>&nbsp;{unit}</Text>}
+
+      {subText && (
+        <Text fontSize={"sm"} ml={1} opacity={0.4}>
+          {subText}
+        </Text>
+      )}
     </Flex>
   );
 };
 
-export const MarketplaceStats = ({}: { hypercertId: string }) => {
-  // TODO: Wire this up
-  const unitsForSale = 10;
-  const unitsListed = 100;
-  const pricePerUnit = 0.25;
+export const MarketplaceStats = ({ hypercertId }: { hypercertId: string }) => {
+  const { data: orders, isLoading } =
+    useFetchMarketplaceOrdersForHypercert(hypercertId);
+
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!orders || orders.totalUnitsForSale === 0) {
+    return (
+      <Center>
+        <Text>Not for sale</Text>
+      </Center>
+    );
+  }
+
   return (
     <Flex justifyContent={"space-between"} width={"100%"}>
-      <SellStat
-        amount={unitsForSale}
-        unit="units"
-        subText={`${unitsListed} listed`}
-      />
-      <SellStat amount={pricePerUnit} unit="ETH" subText="unit" />
+      <SellStat amount={orders.totalUnitsForSale} subText="units listed" />
+      {orders.priceOfCheapestFraction !== undefined && (
+        <SellStat
+          amount={orders.priceOfCheapestFraction.toString()}
+          unit="ETH"
+          subText="/ unit"
+        />
+      )}
     </Flex>
   );
 };

@@ -472,7 +472,7 @@ export interface Database {
       "marketplace-orders": {
         Row: {
           additionalParameters: string
-          amounts: Json
+          amounts: number[]
           chainId: number
           collection: string
           collectionType: number
@@ -481,7 +481,7 @@ export interface Database {
           endTime: number
           globalNonce: string
           id: string
-          itemIds: Json
+          itemIds: string[]
           orderNonce: number
           price: string
           quoteType: number
@@ -493,7 +493,7 @@ export interface Database {
         }
         Insert: {
           additionalParameters: string
-          amounts: Json
+          amounts: number[]
           chainId: number
           collection: string
           collectionType: number
@@ -502,7 +502,7 @@ export interface Database {
           endTime: number
           globalNonce: string
           id?: string
-          itemIds: Json
+          itemIds: string[]
           orderNonce: number
           price: string
           quoteType: number
@@ -514,7 +514,7 @@ export interface Database {
         }
         Update: {
           additionalParameters?: string
-          amounts?: Json
+          amounts?: number[]
           chainId?: number
           collection?: string
           collectionType?: number
@@ -523,7 +523,7 @@ export interface Database {
           endTime?: number
           globalNonce?: string
           id?: string
-          itemIds?: Json
+          itemIds?: string[]
           orderNonce?: number
           price?: string
           quoteType?: number

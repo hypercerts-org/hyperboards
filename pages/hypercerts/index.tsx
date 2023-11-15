@@ -40,14 +40,20 @@ export const Index = () => {
           selectedCollections.includes(collection.id),
         );
 
-  const displayedHypercerts = displayedCollections
-    .map((collection) => collection.claims.map((claim) => claim.hypercert_id))
-    .flat();
+  const displayedHypercerts = _.uniq(
+    displayedCollections
+      .map((collection) => collection.claims.map((claim) => claim.hypercert_id))
+      .flat(),
+  );
 
   return (
     <>
       <Flex mt={10} mb={10}>
-        <Text textStyle={"secondary"} fontSize={"88px"} lineHeight={"88px"}>
+        <Text
+          textStyle={"secondary"}
+          fontSize={["42px", "50px", "88px"]}
+          lineHeight={"88px"}
+        >
           Hypercerts
         </Text>
         <Badge height={"fit-content"} ml={4} size={"lg"}>
