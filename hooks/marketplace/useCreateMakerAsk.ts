@@ -99,6 +99,7 @@ export const useCreateMakerAsk = () => {
         // TODO: Fix typing issue with provider
         // @ts-ignore
         provider as unknown as Provider,
+        // @ts-ignore
         signer,
       );
       const order: Order = {
