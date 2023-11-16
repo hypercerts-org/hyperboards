@@ -37,6 +37,7 @@ import _ from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 import { useAddress } from "@/hooks/useAddress";
 import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button";
+import Link from "next/link";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -104,14 +105,16 @@ export const Index = () => {
               alignItems={"center"}
               mb={10}
             >
-              <Flex alignItems={"center"}>
-                <Image
-                  alt="Return to marketplace"
-                  mr={6}
-                  src="/icons/arrow_left.svg"
-                />
-                <Text>Back to marketplace</Text>
-              </Flex>
+              <Link href={"/hypercerts"}>
+                <Flex alignItems={"center"}>
+                  <Image
+                    alt="Return to marketplace"
+                    mr={6}
+                    src="/icons/arrow_left.svg"
+                  />
+                  <Text>Back to marketplace</Text>
+                </Flex>
+              </Link>
               <Image alt="Share hypercert" src="/icons/share.svg" />
             </Flex>
             <Text fontSize={"4xl"} textStyle={"secondary"}>
