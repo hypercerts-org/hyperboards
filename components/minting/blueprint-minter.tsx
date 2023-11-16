@@ -4,7 +4,6 @@ import {
   MintingForm,
   MintingFormValues,
 } from "@/components/minting/minting-form";
-import { HypercertPreview } from "@/components/minting/hypercert-preview";
 import { useRef } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
 import { useHypercertClient } from "@/components/providers";
@@ -20,7 +19,7 @@ import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { providers } from "ethers";
+import { FallbackProvider, JsonRpcProvider } from "ethers";
 import {
   decodeEventLog,
   HttpTransport,
@@ -42,12 +41,12 @@ export function publicClientToProvider(publicClient: PublicClient) {
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
   if (transport.type === "fallback")
-    return new providers.FallbackProvider(
+    return new FallbackProvider(
       (transport.transports as ReturnType<HttpTransport>[]).map(
-        ({ value }) => new providers.JsonRpcProvider(value?.url, network),
+        ({ value }) => new JsonRpcProvider(value?.url, network),
       ),
     );
-  return new providers.JsonRpcProvider(
+  return new JsonRpcProvider(
     publicClient.chain?.rpcUrls?.default.http[0],
     network,
   );
@@ -359,8 +358,8 @@ export const BlueprintMinter = ({
           onSubmit={onMint}
           initialValues={values}
           buttonLabel="Mint"
+          imageRef={ref}
         />
-        <HypercertPreview values={values} imageRef={ref} />
       </HStack>
     </>
   );

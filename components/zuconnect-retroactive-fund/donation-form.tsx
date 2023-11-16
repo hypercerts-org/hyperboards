@@ -18,7 +18,7 @@ import {
 import { useForm } from "react-hook-form";
 import "@rainbow-me/rainbowkit/styles.css";
 import { usePublicClient, useSendTransaction } from "wagmi";
-import { requireEnv } from "@/config";
+import { ZUZALU_DONATION_SAFE_ADDRESS } from "@/config";
 import { parseEther } from "viem";
 import { supabase } from "@/lib/supabase";
 import { useAddress } from "@/hooks/useAddress";
@@ -38,11 +38,6 @@ type FormValues = {
   email: string;
   agreement: boolean;
 };
-
-export const SAFE_ADDRESS = requireEnv(
-  process.env.NEXT_PUBLIC_ZUZALU_DONATION_SAFE,
-  "NEXT_PUBLIC_ZUZALU_DONATION_SAFE",
-);
 
 export const DonationForm = () => {
   const isMobile = useIsMobile();
@@ -273,7 +268,7 @@ const useSendDonation = ({ amount }: { amount: number }) => {
   const publicClient = usePublicClient();
 
   const { sendTransactionAsync } = useSendTransaction({
-    to: SAFE_ADDRESS,
+    to: ZUZALU_DONATION_SAFE_ADDRESS,
     value: valueInWei,
     onSuccess: async (data) => {
       console.log(data);

@@ -5,11 +5,14 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
+import { HypercertPreview } from "@/components/minting/hypercert-preview";
+import { MutableRefObject } from "react";
 
 export interface MintingFormValues {
   name: string;
@@ -42,11 +45,13 @@ export const MintingForm = ({
   initialValues,
   buttonLabel = "Submit",
   disabled,
+  imageRef,
 }: {
   onSubmit: (values: MintingFormValues) => void;
   initialValues?: MintingFormValues;
   buttonLabel?: string;
   disabled?: boolean;
+  imageRef?: MutableRefObject<HTMLDivElement | null>;
 }) => {
   const {
     register,
@@ -57,61 +62,67 @@ export const MintingForm = ({
   } = useMintingForm(initialValues);
 
   const isDisabled = isSubmitting || disabled;
+  const values = watch();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Flex direction={"column"} width={"100%"}>
-        <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
-          <FormControl isInvalid={!!errors.name?.message}>
-            <FormLabel>Name</FormLabel>
-            <Input {...register("name")} isDisabled={isDisabled} />
-            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.workScope?.message}>
-            <FormLabel>Work Scope</FormLabel>
-            <Input {...register("workScope")} isDisabled={isDisabled} />
-            <FormErrorMessage>{errors.workScope?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.description?.message}>
-            <FormLabel>Description</FormLabel>
-            <Textarea {...register("description")} isDisabled={isDisabled} />
-            <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.externalUrl?.message}>
-            <FormLabel>External URL</FormLabel>
-            <Input {...register("externalUrl")} isDisabled={isDisabled} />
-            <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.workStart?.message}>
-            <FormLabel>Work Start</FormLabel>
-            <SingleDatepicker
-              disabled={isDisabled}
-              name="date-work-start"
-              onDateChange={(e) => setValue("workStart", e)}
-              date={watch("workStart")}
-            />
-            <FormErrorMessage>{errors.workStart?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.workEnd?.message}>
-            <FormLabel>Work End</FormLabel>
-            <SingleDatepicker
-              disabled={isDisabled}
-              onDateChange={(e) => setValue("workEnd", e)}
-              name="date-work-end"
-              date={watch("workEnd")}
-            />
-            <FormErrorMessage>{errors.workEnd?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.contributors?.message}>
-            <FormLabel>Contributors</FormLabel>
-            <Input isDisabled={isDisabled} {...register("contributors")} />
-            <FormErrorMessage>{errors.contributors?.message}</FormErrorMessage>
-          </FormControl>
-          <Button type={"submit"} isDisabled={isDisabled}>
-            {buttonLabel}
-          </Button>
-        </VStack>
-      </Flex>
-    </form>
+    <HStack w={"100%"} minW={0}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+        <Flex direction={"column"} width={"100%"} minWidth={0}>
+          <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
+            <FormControl isInvalid={!!errors.name?.message}>
+              <FormLabel>Name</FormLabel>
+              <Input {...register("name")} isDisabled={isDisabled} />
+              <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.workScope?.message}>
+              <FormLabel>Work Scope</FormLabel>
+              <Input {...register("workScope")} isDisabled={isDisabled} />
+              <FormErrorMessage>{errors.workScope?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.description?.message}>
+              <FormLabel>Description</FormLabel>
+              <Textarea {...register("description")} isDisabled={isDisabled} />
+              <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.externalUrl?.message}>
+              <FormLabel>External URL</FormLabel>
+              <Input {...register("externalUrl")} isDisabled={isDisabled} />
+              <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.workStart?.message}>
+              <FormLabel>Work Start</FormLabel>
+              <SingleDatepicker
+                disabled={isDisabled}
+                name="date-work-start"
+                onDateChange={(e) => setValue("workStart", e)}
+                date={watch("workStart")}
+              />
+              <FormErrorMessage>{errors.workStart?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.workEnd?.message}>
+              <FormLabel>Work End</FormLabel>
+              <SingleDatepicker
+                disabled={isDisabled}
+                onDateChange={(e) => setValue("workEnd", e)}
+                name="date-work-end"
+                date={watch("workEnd")}
+              />
+              <FormErrorMessage>{errors.workEnd?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.contributors?.message}>
+              <FormLabel>Contributors</FormLabel>
+              <Input isDisabled={isDisabled} {...register("contributors")} />
+              <FormErrorMessage>
+                {errors.contributors?.message}
+              </FormErrorMessage>
+            </FormControl>
+            <Button type={"submit"} isDisabled={isDisabled}>
+              {buttonLabel}
+            </Button>
+          </VStack>
+        </Flex>
+      </form>
+      <HypercertPreview imageRef={imageRef} values={values} />
+    </HStack>
   );
 };

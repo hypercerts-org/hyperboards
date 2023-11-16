@@ -1,4 +1,5 @@
 import { Database } from "@/types/database";
+import { Database as HypercertsDatabase } from "@/types/hypercerts-database";
 
 export type HyperboardEntity =
   Database["public"]["Tables"]["hyperboards"]["Row"];
@@ -21,3 +22,6 @@ export type DefaultSponsorMetadataEntity =
   Database["public"]["Tables"]["default_sponsor_metadata"]["Row"];
 export type DefaultSponsorMetadataInsert =
   Database["public"]["Tables"]["default_sponsor_metadata"]["Insert"];
+
+export type MarketplaceOrderEntity =
+  HypercertsDatabase["public"]["Tables"]["marketplace-orders"]["Row"];

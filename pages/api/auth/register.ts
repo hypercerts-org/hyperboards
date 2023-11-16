@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from "@/config";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,8 +28,8 @@ export default async function handler(
   }
 
   const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
   );
 
   // Check if user for email exists

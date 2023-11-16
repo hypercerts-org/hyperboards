@@ -1,10 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { readableMessageToSign } from "@/hooks/useGetAuthenticatedClient";
-import { ethers } from "ethers";
+import { verifyMessage } from "ethers";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from "@/config";
 
 type Data =
   | {
@@ -32,15 +33,12 @@ export default async function handler(
   const lowerCaseAddress = address.toLowerCase();
 
   const supabase = createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
   );
 
   // 1. verify the signed message matches the requested address
-  const recoveredAddress = ethers.utils.verifyMessage(
-    readableMessageToSign,
-    signed,
-  );
+  const recoveredAddress = verifyMessage(readableMessageToSign, signed);
 
   if (
     !recoveredAddress ||
@@ -50,18 +48,11 @@ export default async function handler(
   }
 
   // 2. select * from public.user table where address matches
-  const { data: user, error } = await supabase
+  const { data: user } = await supabase
     .from("users")
     .select("*")
     .eq("address", lowerCaseAddress)
     .single();
-
-  const JWT = process.env.NEXT_PUBLIC_JWT_SECRET;
-
-  if (!JWT) {
-    console.error("JWT not set");
-    return res.status(500).json({ error: "JWT not set" });
-  }
 
   // Guest user, just use jwt to sign address
   if (!user) {
@@ -69,7 +60,7 @@ export default async function handler(
       {
         address: lowerCaseAddress, // this will be read by RLS policy
       },
-      JWT,
+      JWT_SECRET,
       { expiresIn: 60 * 2 },
     );
     return res.status(200).send({ token });
@@ -111,7 +102,7 @@ export default async function handler(
       aud: "authenticated",
       role: "authenticated",
     },
-    JWT,
+    JWT_SECRET,
     { expiresIn: 60 * 2 },
   );
 

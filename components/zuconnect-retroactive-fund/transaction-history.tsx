@@ -11,11 +11,13 @@ import {
 } from "@chakra-ui/react";
 import { useEnsName } from "wagmi";
 import { formatAddress } from "@/utils/formatting";
-import { SAFE_ADDRESS } from "@/components/zuconnect-retroactive-fund/donation-form";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { ZUZALU_DONATION_SAFE_ADDRESS } from "@/config";
 
 export const TransactionHistory = () => {
-  const { data, isLoading } = useFetchTransactionHistory(SAFE_ADDRESS);
+  const { data, isLoading } = useFetchTransactionHistory(
+    ZUZALU_DONATION_SAFE_ADDRESS,
+  );
   const isMobile = useIsMobile();
 
   if (isLoading) {

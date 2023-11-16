@@ -1,133 +1,215 @@
 import { MintingFormValues } from "@/components/minting/minting-form";
 import { MutableRefObject } from "react";
+import { Flex, HStack, Image, Text } from "@chakra-ui/react";
+import { format } from "date-fns";
 
 export const HypercertPreview = ({
   values,
   imageRef,
 }: {
-  imageRef: MutableRefObject<HTMLDivElement | null>;
+  imageRef?: MutableRefObject<HTMLDivElement | null>;
   values: Partial<MintingFormValues>;
 }) => {
-  // TODO: Implement design used on hypercerts.org
   // TODO: Make background color variable
   return (
-    <div
+    <Flex
       ref={imageRef}
-      style={{
-        width: "320px",
-        height: "400px",
-        backgroundColor: "#254D32",
-        backgroundSize: "cover",
-        backgroundRepeat: "repeat-y",
-        justifyContent: "flex-end",
-        alignItems: "flex-start",
-        padding: "16px",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: "10px",
-        overflow: "hidden",
-      }}
+      width={"320px"}
+      height={"400px"}
+      minW={"320px"}
+      minH={"400px"}
+      borderRadius={"22px"}
+      backgroundColor={"#73C9CC"}
+      position={"relative"}
+      flexDirection={"column"}
     >
-      <h1
-        style={{
-          color: "white",
-          fontWeight: "bolder",
-          fontSize: "24px",
-          margin: "auto 0px 0px 0px",
-        }}
+      <Flex
+        position={"absolute"}
+        flexDirection={"column"}
+        alignItems={"stretch"}
+        justifyContent={"flex-start"}
+        width={"100%"}
+        height={"100%"}
+        maxWidth={"100%"}
+        maxHeight={"200px"}
+        left={"0px"}
+        top={"0px"}
+        overflow={"hidden"}
+        background={"none"}
+        minW={"0"}
+        minH={"0"}
       >
-        {values?.name ?? "Name of the chapter"}
-      </h1>
+        <Image
+          alt={"background art"}
+          borderTopRadius={"22px"}
+          src={"https://i.imgur.com/wsM3fWd.jpeg"}
+          position={"relative"}
+          objectFit={"fill"}
+          maxWidth={"none"}
+          left={"auto"}
+          top={"auto"}
+          width={"100%"}
+          height={"100%"}
+        />
+      </Flex>
 
-      <hr
-        style={{
-          borderColor: "#C2E812",
-          borderWidth: "1px",
-          width: "100%",
-          margin: "5px 0px 12px 0px",
-        }}
+      <Flex
+        display={"flex"}
+        position={"absolute"}
+        flexDirection={"column"}
+        alignItems={"stretch"}
+        justifyContent={"flex-start"}
+        width={"100%"}
+        height={"100%"}
+        maxWidth={"100%"}
+        maxHeight={"51%"}
+        left={"0px"}
+        top={"0px"}
+        overflow={"hidden"}
+        background={
+          "linear-gradient(0deg,#73C9CC 0%,#73C9CC00 100%) 0% 0% / 100% 100% repeat"
+        }
+        minW={"0"}
+        minH={"0"}
       />
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
+      <Image
+        opacity={0.6}
+        alt={"background vector art"}
+        borderTopRadius={"22px"}
+        src={"/images/vector_backgrounds/contours.svg"}
+        position={"absolute"}
+        objectFit={"cover"}
+        maxWidth={"100%"}
+        left={"0px"}
+        top={"0px"}
+        width={"100%"}
+        height={"100%"}
+        minW={"0"}
+        minH={"0"}
+        borderRadius={"22px"}
+        color={"#33898C"}
+      />
+      <Flex
+        display={"flex"}
+        position={"relative"}
+        flexDirection={"column"}
+        alignItems={"flex-start"}
+        justifyContent={"space-between"}
+        width={"100%"}
+        height={"100%"}
+        maxWidth={"100%"}
+        top={"auto"}
+        left={"auto"}
+        zIndex={"1"}
+        minWidth={"0"}
+        minHeight={"0"}
+        padding={"18px 18px 0"}
       >
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "8px",
-          }}
+        <Flex
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"flex-start"}
+          justifyContent={"center"}
+          width={"40px"}
+          height={"40px"}
+          maxWidth={"100%"}
+          overflow={"hidden"}
+          background={"white"}
+          flexShrink={"0"}
+          borderRadius={"2000px"}
+          border={"1px solid #225B5E"}
         >
-          {values.workScope
-            ?.split(", ")
-            .map((w) => w.trim())
-            .map((w) => (
-              <span
-                key={w}
-                style={{
-                  color: "#C2E812",
-                  borderColor: "#C2E812",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderRadius: "10px",
-                  height: "auto",
-                  backgroundColor: "transparent",
-                  fontSize: "12px",
-                  fontWeight: "normal",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "3px 10px",
-                }}
-              >
-                {w.toLowerCase()}
-              </span>
-            ))}
-        </div>
-
-        <div
-          style={{
-            width: "100%",
-            justifyContent: "space-between",
-            display: "flex",
-            fontSize: "14px",
-            lineHeight: "14px",
-            fontFamily: "Raleway, sans-serif",
-            fontWeight: "bolder",
-            color: "white",
-            marginTop: "12px",
-          }}
+          <Image src="https://i.imgur.com/sDQhp3Y.png" alt={"Logo image"} />
+        </Flex>
+        <Flex
+          position={"relative"}
+          flexDirection={"column"}
+          width={"100%"}
+          height={"auto"}
+          paddingTop={"8px"}
+          paddingBottom={"8px"}
+          minWidth={"0"}
+          borderTop={"2px solid #194446"}
+          borderColor={"#194446"}
+          minHeight={"114.5px"}
         >
-          <span>Timeframe</span>
-          <span>
-            {values.workStart?.toLocaleDateString() ?? "Start Date"}
-            {" — "}
-            {values.workEnd?.toLocaleDateString() ?? "End Date"}
-          </span>
-        </div>
-      </div>
-
-      <hr
-        style={{
-          borderColor: "#C2E812",
-          borderWidth: "1px",
-          width: "100%",
-          margin: "12px 0px 12px 0px",
-        }}
-      />
-
-      <div
-        style={{
-          width: "100%",
-          justifyContent: "center",
-          display: "flex",
-          padding: "5px",
-        }}
-      ></div>
-    </div>
+          <Text
+            fontSize={"24px"}
+            fontWeight={"700"}
+            color={"#194446"}
+            lineHeight={"1.2"}
+            textAlign={"left"}
+          >
+            {values.name}
+          </Text>
+        </Flex>
+      </Flex>
+      <Flex
+        display="flex"
+        position="relative"
+        flexDirection="column"
+        width="100%"
+        height="auto"
+        maxWidth="100%"
+        minWidth="0"
+        padding="16px"
+      >
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="flex-end"
+          minWidth="0"
+          marginTop="-8px"
+          height="calc(100% + 8px)"
+          width={"100%"}
+        >
+          <Flex
+            display="flex"
+            position="relative"
+            flexDirection="column"
+            width="100%"
+            height="auto"
+            maxWidth="100%"
+            minWidth="0"
+            padding="6px 0 6px 0"
+            borderTop="1px solid #225B5E"
+          >
+            <Flex maxWidth="100%" width="100%" justifyContent={"space-between"}>
+              <Text fontSize={"12px"} fontWeight={500}>
+                WORK
+              </Text>
+              {values.workStart && values.workEnd && (
+                <Text fontSize={"12px"}>
+                  {formatDate(values.workStart)} → {formatDate(values.workEnd)}
+                </Text>
+              )}
+            </Flex>
+            <HStack flexWrap={"wrap"} pt={2}>
+              {values.workScope
+                ?.split(",")
+                .map((x) => x.trim())
+                .map((workScope) => (
+                  <Flex
+                    backgroundColor={"#73C9CC"}
+                    paddingX={2}
+                    paddingY={1}
+                    key={workScope}
+                    border={"1px solid #225B5E"}
+                    borderRadius={"6px"}
+                    fontSize={"14px"}
+                  >
+                    {workScope.toLowerCase()}
+                  </Flex>
+                ))}
+            </HStack>
+            {/* Child components go here */}
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
   );
+};
+
+const formatDate = (date: Date) => {
+  return format(date, "yyyy-MM-dd");
 };

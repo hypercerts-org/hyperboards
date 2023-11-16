@@ -9,12 +9,13 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "@/theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ALCHEMY_KEY_GOERLI, WALLETCONNECT_ID } from "@/config";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
   [
     alchemyProvider({
-      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI!,
+      apiKey: ALCHEMY_KEY_GOERLI,
     }),
     publicProvider(),
   ],
@@ -22,7 +23,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: "Hyperboards",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID!,
+  projectId: WALLETCONNECT_ID,
   chains,
 });
 

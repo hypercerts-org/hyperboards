@@ -18,6 +18,6 @@ export const useCreateClaims = () => {
       return;
     }
 
-    return supabase.from("claims").insert(claims).select();
+    return supabase.from("claims").upsert(claims).select();
   });
 };

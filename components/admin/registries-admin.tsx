@@ -55,6 +55,8 @@ export const RegistriesAdmin = () => {
     setSelectedRegistry(undefined);
   };
 
+  // TODO: A number should be able to be set for each claim <> registry relation, to see how much of the total space of the registry it takes up
+  // TODO: This space is then divided using the units, and how much everybody owns of the total number of units for a claim.
   return (
     <Flex direction={"column"} width={"100%"}>
       <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
@@ -66,7 +68,7 @@ export const RegistriesAdmin = () => {
         >
           Create Registry
         </Button>
-        {data?.data?.map((registry) => (
+        {data?.data?.map(({ blueprints, ...registry }) => (
           <Card key={registry.id} p={4} width={"100%"}>
             <VStack alignItems={"flex-start"}>
               <HStack justifyContent={"space-between"} width={"100%"}>
@@ -119,7 +121,7 @@ export const RegistriesAdmin = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {registry.blueprints.map((blueprint) => (
+                    {blueprints.map((blueprint) => (
                       <Tr key={blueprint.id}>
                         <Td>
                           {/*
