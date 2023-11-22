@@ -73,6 +73,6 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "prettier": "^3.0.3",
-    "snaplet": "^0.72.2"
+    "snaplet": "0.71"
   }
 }

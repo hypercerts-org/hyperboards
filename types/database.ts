@@ -79,6 +79,7 @@ export interface Database {
           admin_id: string
           chain_id: number
           created_at: string
+          display_size: number
           hypercert_id: string
           id: string
           owner_id: string
@@ -88,6 +89,7 @@ export interface Database {
           admin_id: string
           chain_id: number
           created_at?: string
+          display_size?: number
           hypercert_id: string
           id?: string
           owner_id: string
@@ -97,6 +99,7 @@ export interface Database {
           admin_id?: string
           chain_id?: number
           created_at?: string
+          display_size?: number
           hypercert_id?: string
           id?: string
           owner_id?: string

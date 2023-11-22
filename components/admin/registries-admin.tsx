@@ -101,6 +101,7 @@ export const RegistriesAdmin = () => {
                       <Th>Owner</Th>
                       <Th>External url</Th>
                       <Th>Description</Th>
+                      <Th>Display size</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -174,7 +175,12 @@ export const RegistriesAdmin = () => {
   );
 };
 
-export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
+export const ClaimRow = ({
+  hypercert_id,
+  chain_id,
+  id,
+  display_size,
+}: {} & ClaimEntity) => {
   const { data, isLoading } = useFetchHypercertById(hypercert_id);
 
   if (isLoading) {
@@ -220,6 +226,7 @@ export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
       <Td maxW={"300px"} isTruncated>
         {data.metadata.description}
       </Td>
+      <Td>{display_size}</Td>
       <Td textAlign={"end"}>
         <DeleteClaimButton size="xs" claimId={id} />
       </Td>
