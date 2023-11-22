@@ -38,6 +38,7 @@ export interface Database {
         Row: {
           admin_id: string
           created_at: string
+          display_size: number
           form_values: Json
           id: number
           minter_address: string
@@ -46,6 +47,7 @@ export interface Database {
         Insert: {
           admin_id: string
           created_at?: string
+          display_size?: number
           form_values: Json
           id?: number
           minter_address: string
@@ -54,6 +56,7 @@ export interface Database {
         Update: {
           admin_id?: string
           created_at?: string
+          display_size?: number
           form_values?: Json
           id?: number
           minter_address?: string
@@ -157,7 +160,7 @@ export interface Database {
           hyperboard_id: string
           label?: string | null
           registry_id: string
-          render_method: string
+          render_method?: string
         }
         Update: {
           created_at?: string | null
@@ -174,7 +177,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "hyperboard_registries_registry_id_fkey"
+            foreignKeyName: "hyperboard_registries_registries_id_fk"
             columns: ["registry_id"]
             referencedRelation: "registries"
             referencedColumns: ["id"]
@@ -207,7 +210,6 @@ export interface Database {
       }
       registries: {
         Row: {
-          a: number | null
           admin_id: string
           chain_id: number
           created_at: string
@@ -217,7 +219,6 @@ export interface Database {
           name: string
         }
         Insert: {
-          a?: number | null
           admin_id: string
           chain_id: number
           created_at?: string
@@ -227,7 +228,6 @@ export interface Database {
           name: string
         }
         Update: {
-          a?: number | null
           admin_id?: string
           chain_id?: number
           created_at?: string

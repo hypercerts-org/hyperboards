@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 interface FormValues {
   address: string;
   registryId: { label: string; value: string };
+  displaySize: number;
 }
 
 export const CreateOrUpdateBlueprintForm = ({
@@ -45,6 +46,7 @@ export const CreateOrUpdateBlueprintForm = ({
     reValidateMode: "onBlur",
     defaultValues: {
       address,
+      displaySize: 1,
     },
   });
 
@@ -64,6 +66,7 @@ export const CreateOrUpdateBlueprintForm = ({
   const onSubmitBluePrint = async (values: MintingFormValues) => {
     const address = getValues("address");
     const registryId = getValues("registryId");
+    const displaySize = getValues("displaySize");
 
     if (!client) {
       toast({
@@ -95,6 +98,7 @@ export const CreateOrUpdateBlueprintForm = ({
       await createBlueprint({
         ...values,
         address,
+        displaySize,
         registryId: registryId.value,
       });
       toast({
@@ -138,6 +142,16 @@ export const CreateOrUpdateBlueprintForm = ({
           name={"registryId"}
         />
         <FormErrorMessage>{errors.registryId?.message}</FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={!!errors.displaySize}>
+        <FormLabel>Display Size</FormLabel>
+        <Input
+          {...register("displaySize", {
+            required: "Display size is required",
+          })}
+          isDisabled={submitting}
+        />
+        <FormErrorMessage>{errors.displaySize?.message}</FormErrorMessage>
       </FormControl>
       <MintingForm onSubmit={onSubmitBluePrint} />
     </VStack>
