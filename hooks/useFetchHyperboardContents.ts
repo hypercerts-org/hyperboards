@@ -11,6 +11,7 @@ import {
   DefaultSponsorMetadataEntity,
   RegistryEntity,
 } from "@/types/database-entities";
+import { sift } from "@/utils/sift";
 
 // interface EntryDisplayData {
 //   image: string;
@@ -40,16 +41,26 @@ export const useListRegistries = () => {
 const processRegistryForDisplay = async (
   registry: RegistryEntity & { claims: ClaimEntity[] },
   label: string | null,
+  totalOfAllDisplaySizes: number,
   client: HypercertClient,
 ) => {
   const claims = registry.claims;
   const fractionsResults = await Promise.all(
-    claims.map((claim) => {
-      return client.indexer.fractionsByClaim(claim.hypercert_id);
+    claims.map(async (claim) => {
+      const fractions = await client.indexer.fractionsByClaim(
+        claim.hypercert_id,
+      );
+      const displaySizeCoefficient =
+        claim.display_size / totalOfAllDisplaySizes;
+      return fractions.claimTokens.map((fraction) => ({
+        ...fraction,
+        unitsAdjustedForDisplaySize:
+          parseInt(fraction.units, 10) * displaySizeCoefficient,
+      }));
     }),
   );
 
-  const fractions = _.flatMap(fractionsResults, (x) => x.claimTokens);
+  const fractions = _.flatMap(fractionsResults, (x) => x);
   const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
 
   const claimDisplayDataResponse = await getEntriesDisplayData(ownerAddresses);
@@ -64,7 +75,10 @@ const processRegistryForDisplay = async (
       return {
         fractions: fractionsPerOwner,
         displayData: claimDisplayData[owner],
-        totalValue: _.sum(fractionsPerOwner.map((x) => parseInt(x.units, 10))),
+        totalValue: _.sumBy(
+          fractionsPerOwner,
+          (x) => x.unitsAdjustedForDisplaySize,
+        ),
       };
     })
     .value();
@@ -117,11 +131,21 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
         return null;
       }
 
+      const totalOfAllDisplaySizes = _.sumBy(
+        sift(
+          hyperboardData.hyperboard_registries
+            .map((registry) => registry.registries?.claims)
+            .flat(),
+        ),
+        (x) => x.display_size,
+      );
+
       const results = await Promise.all(
         hyperboardData.hyperboard_registries.map(async (registry) => {
           return await processRegistryForDisplay(
             registry.registries!,
             registry.label,
+            totalOfAllDisplaySizes,
             client,
           );
         }),

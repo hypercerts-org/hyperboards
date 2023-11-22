@@ -55,8 +55,6 @@ export const RegistriesAdmin = () => {
     setSelectedRegistry(undefined);
   };
 
-  // TODO: A number should be able to be set for each claim <> registry relation, to see how much of the total space of the registry it takes up
-  // TODO: This space is then divided using the units, and how much everybody owns of the total number of units for a claim.
   return (
     <Flex direction={"column"} width={"100%"}>
       <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
@@ -81,6 +79,7 @@ export const RegistriesAdmin = () => {
                         claims: registry.claims.map((claim) => ({
                           claim_id: claim.id,
                           hypercert_id: claim.hypercert_id,
+                          display_size: claim.display_size,
                         })),
                       });
                       createOnOpen();
@@ -101,6 +100,7 @@ export const RegistriesAdmin = () => {
                       <Th>Owner</Th>
                       <Th>External url</Th>
                       <Th>Description</Th>
+                      <Th>Display size</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -174,7 +174,12 @@ export const RegistriesAdmin = () => {
   );
 };
 
-export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
+export const ClaimRow = ({
+  hypercert_id,
+  chain_id,
+  id,
+  display_size,
+}: {} & ClaimEntity) => {
   const { data, isLoading } = useFetchHypercertById(hypercert_id);
 
   if (isLoading) {
@@ -220,6 +225,7 @@ export const ClaimRow = ({ hypercert_id, chain_id, id }: {} & ClaimEntity) => {
       <Td maxW={"300px"} isTruncated>
         {data.metadata.description}
       </Td>
+      <Td>{display_size}</Td>
       <Td textAlign={"end"}>
         <DeleteClaimButton size="xs" claimId={id} />
       </Td>
