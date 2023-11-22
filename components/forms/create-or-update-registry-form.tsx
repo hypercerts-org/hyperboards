@@ -25,7 +25,12 @@ export interface CreateOrUpdateHyperboardFormProps {
 const minimumCharacters = 40;
 
 export type CreateUpdateRegistryFormValues = RegistryInsert & {
-  claims: { claim_id?: string; hypercert_id: string; id?: string }[];
+  claims: {
+    claim_id?: string;
+    hypercert_id: string;
+    id?: string;
+    display_size: number;
+  }[];
 };
 
 export const CreateOrUpdateRegistryForm = ({
@@ -113,6 +118,7 @@ const ClaimsField = ({
       {fields.map((item, index) => (
         <HStack key={item.id}>
           <Input {...register(`claims.${index}.hypercert_id`)} />
+          <Input {...register(`claims.${index}.display_size`)} />
           {item.claim_id ? (
             <DeleteClaimButton claimId={item.claim_id} />
           ) : (
@@ -126,7 +132,10 @@ const ClaimsField = ({
           )}
         </HStack>
       ))}
-      <Button type="button" onClick={() => append({ hypercert_id: "" })}>
+      <Button
+        type="button"
+        onClick={() => append({ hypercert_id: "", display_size: 1 })}
+      >
         + add another claim
       </Button>
     </VStack>
