@@ -37,6 +37,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     })),
   };
 
+  const { height, width } = dimensions || {};
   useEffect(() => {
     if (!containerRef.current) {
       return;
@@ -50,7 +51,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", props.height)
       .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
-  }, [containerRef.current]);
+  }, [containerRef.current, width, height]);
 
   const draw = () => {
     if (!dimensions) {
