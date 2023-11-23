@@ -25,3 +25,5 @@ export type DefaultSponsorMetadataInsert =
 
 export type MarketplaceOrderEntity =
   HypercertsDatabase["public"]["Tables"]["marketplace-orders"]["Row"];
+
+export type BlueprintEntity = Database["public"]["Tables"]["blueprints"]["Row"];
