@@ -60,7 +60,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     // Append images as patterns
     const svg = d3.select(ref.current);
     const root = d3.hierarchy(formattedData).sum(function (d) {
-      return d.value;
+      return Number(d.value);
     });
 
     // Give the data to this cluster layout:

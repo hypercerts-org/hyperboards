@@ -41,21 +41,50 @@ export const useListRegistries = () => {
 const processRegistryForDisplay = async (
   registry: RegistryEntity & { claims: ClaimEntity[] },
   label: string | null,
-  totalOfAllDisplaySizes: number,
+  totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
-  const claims = registry.claims;
+  const allClaims = await Promise.all(
+    registry.claims.map(async (claim) => {
+      const claimData = await client.indexer.claimById(claim.hypercert_id);
+      return {
+        claim,
+        claimData: claimData.claim,
+      };
+    }),
+  );
+
+  const totalUnitsInAllClaims =
+    allClaims.reduce(
+      (acc, curr) => acc + BigInt(curr.claimData?.totalUnits || 0),
+      0n,
+    ) *
+    10n ** 18n;
+
+  // Calculate the amount of surface per display size unit
+  const displayPerUnit = totalUnitsInAllClaims / totalOfAllDisplaySizes;
+
   const fractionsResults = await Promise.all(
-    claims.map(async (claim) => {
+    registry.claims.map(async (claim) => {
+      // The total number of 'display units' available for this claim
+      const totalDisplayUnitsForClaim =
+        BigInt(claim.display_size) * displayPerUnit;
+
+      // Fetch all fractions for claim and calculate the total number of units
       const fractions = await client.indexer.fractionsByClaim(
         claim.hypercert_id,
       );
-      const displaySizeCoefficient =
-        claim.display_size / totalOfAllDisplaySizes;
+      const totalUnitsInClaim = fractions.claimTokens.reduce(
+        (acc, curr) => acc + BigInt(curr.units),
+        0n,
+      );
+
+      // Calculate the number of units per display unit
+      const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
       return fractions.claimTokens.map((fraction) => ({
         ...fraction,
         unitsAdjustedForDisplaySize:
-          parseInt(fraction.units, 10) * displaySizeCoefficient,
+          (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
       }));
     }),
   );
@@ -75,9 +104,9 @@ const processRegistryForDisplay = async (
       return {
         fractions: fractionsPerOwner,
         displayData: claimDisplayData[owner],
-        totalValue: _.sumBy(
-          fractionsPerOwner,
-          (x) => x.unitsAdjustedForDisplaySize,
+        totalValue: fractionsPerOwner.reduce(
+          (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
+          0n,
         ),
       };
     })
@@ -145,7 +174,7 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
           return await processRegistryForDisplay(
             registry.registries!,
             registry.label,
-            totalOfAllDisplaySizes,
+            BigInt(totalOfAllDisplaySizes),
             client,
           );
         }),
@@ -171,7 +200,7 @@ export const getEntriesDisplayData = async (addresses: string[]) => {
 
 export const registryContentItemToHyperboardEntry = (item: {
   displayData: DefaultSponsorMetadataEntity;
-  totalValue: number;
+  totalValue: bigint;
 }): HyperboardEntry => {
   if (!item.displayData) {
     return {

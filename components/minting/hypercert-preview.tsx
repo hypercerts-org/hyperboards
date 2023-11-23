@@ -11,6 +11,7 @@ export const HypercertPreview = ({
   values: Partial<MintingFormValues>;
 }) => {
   // TODO: Make background color variable
+  // TODO: Fix vertical offsets when rendering
   return (
     <Flex
       ref={imageRef}

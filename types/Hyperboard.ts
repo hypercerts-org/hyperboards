@@ -5,5 +5,5 @@ export interface HyperboardEntry {
   firstName: string | null;
   lastName: string | null;
   image: string;
-  value: number;
+  value: bigint;
 }

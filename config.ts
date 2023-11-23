@@ -76,3 +76,5 @@ export const ZUZALU_DONATION_SAFE_ADDRESS = requireEnv(
 );
 
 export const DEFAULT_RENDER_METHOD = "full";
+
+export const NUMBER_OF_UNITS_IN_HYPERCERT = 1n * 10n ** 18n;
