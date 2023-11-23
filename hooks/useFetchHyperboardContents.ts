@@ -13,25 +13,6 @@ import {
 } from "@/types/database-entities";
 import { sift } from "@/utils/sift";
 
-// interface EntryDisplayData {
-//   image: string;
-//   address: string;
-//   type: "person" | "company" | "speaker";
-//   companyName?: string;
-//   firstName: string;
-//   lastName: string;
-//   name: string;
-// }
-
-// interface RegistryContentItem {
-//   fractions: Pick<
-//     ClaimToken,
-//     "id" | "chainName" | "owner" | "tokenID" | "units"
-//   >[];
-//   displayData: EntryDisplayData;
-//   totalValue: number;
-// }
-
 export const useListRegistries = () => {
   return useQuery(["list-registries"], async () =>
     supabase.from("registries").select("*").neq("hidden", true),
@@ -44,54 +25,57 @@ const processRegistryForDisplay = async (
   totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
-  const allClaims = await Promise.all(
+  // Fetch all fractions per all claims
+  const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
-      const claimData = await client.indexer.claimById(claim.hypercert_id);
+      const fractions = await client.indexer.fractionsByClaim(
+        claim.hypercert_id,
+      );
+
       return {
         claim,
-        claimData: claimData.claim,
+        fractions: fractions.claimTokens,
       };
     }),
   );
 
-  const totalUnitsInAllClaims =
-    allClaims.reduce(
-      (acc, curr) => acc + BigInt(curr.claimData?.totalUnits || 0),
-      0n,
-    ) *
-    10n ** 18n;
+  // Calculate the total number of units in all claims
+  const totalUnitsInAllClaims = claimsAndFractions
+    .map((claim) => claim.fractions)
+    .flat()
+    .reduce((acc, fraction) => acc + BigInt(fraction.units || 0), 0n);
 
   // Calculate the amount of surface per display size unit
-  const displayPerUnit = totalUnitsInAllClaims / totalOfAllDisplaySizes;
+  const displayPerUnit =
+    (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
 
-  const fractionsResults = await Promise.all(
-    registry.claims.map(async (claim) => {
-      // The total number of 'display units' available for this claim
-      const totalDisplayUnitsForClaim =
-        BigInt(claim.display_size) * displayPerUnit;
+  const fractionsResults = claimsAndFractions.map(({ claim, fractions }) => {
+    // The total number of 'display units' available for this claim
+    const totalDisplayUnitsForClaim =
+      BigInt(claim.display_size) * displayPerUnit;
 
-      // Fetch all fractions for claim and calculate the total number of units
-      const fractions = await client.indexer.fractionsByClaim(
-        claim.hypercert_id,
-      );
-      const totalUnitsInClaim = fractions.claimTokens.reduce(
-        (acc, curr) => acc + BigInt(curr.units),
-        0n,
-      );
+    // The total number of units in this claim
+    const totalUnitsInClaim = fractions.reduce(
+      (acc, curr) => acc + BigInt(curr.units),
+      0n,
+    );
 
-      // Calculate the number of units per display unit
-      const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
-      return fractions.claimTokens.map((fraction) => ({
-        ...fraction,
-        unitsAdjustedForDisplaySize:
-          (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
-      }));
-    }),
-  );
+    // Calculate the number of units per display unit
+    const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
 
-  const fractions = _.flatMap(fractionsResults, (x) => x);
+    // Calculate the relative number of units per fraction
+    return fractions.map((fraction) => ({
+      ...fraction,
+      unitsAdjustedForDisplaySize:
+        (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+    }));
+  });
+
+  // Get a deduplicated list of all owners
+  const fractions = fractionsResults.flat();
   const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
 
+  // Fetch display data for all owners
   const claimDisplayDataResponse = await getEntriesDisplayData(ownerAddresses);
   const claimDisplayData = _.keyBy(claimDisplayDataResponse?.data || [], (x) =>
     x.address.toLowerCase(),
