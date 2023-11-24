@@ -19,38 +19,10 @@ import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { FallbackProvider, JsonRpcProvider } from "ethers";
-import {
-  decodeEventLog,
-  HttpTransport,
-  parseAbi,
-  PublicClient,
-  TransactionReceipt,
-} from "viem";
+import { decodeEventLog, parseAbi, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
-
-export function publicClientToProvider(publicClient: PublicClient) {
-  console.log("publicClientToProvider", publicClient);
-  const { chain, transport } = publicClient;
-  if (!chain) {
-    return;
-  }
-  const network = {
-    chainId: chain.id,
-    name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
-  };
-  if (transport.type === "fallback")
-    return new FallbackProvider(
-      (transport.transports as ReturnType<HttpTransport>[]).map(
-        ({ value }) => new JsonRpcProvider(value?.url, network),
-      ),
-    );
-  return new JsonRpcProvider(
-    publicClient.chain?.rpcUrls?.default.http[0],
-    network,
-  );
-}
+import { useEthersProvider } from "@/components/marketplace/create-order-form";
+import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -161,6 +133,7 @@ export const BlueprintMinter = ({
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
   const getClient = useGetAuthenticatedClient();
+  const provider = useEthersProvider();
 
   const chainId = useChainId();
   const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
@@ -250,14 +223,11 @@ export const BlueprintMinter = ({
       const claimData = formValuesToHypercertMetadata(values, image);
       const transactionHash = await client.mintClaim(
         claimData,
-        1000n,
+        NUMBER_OF_UNITS_IN_HYPERCERT,
         TransferRestrictions.FromCreatorOnly,
       );
-      const config = client.config;
-      const provider = publicClientToProvider(config.publicClient!);
-      console.log(config, provider);
       // @ts-ignore
-      transactionReceipt = await provider?.waitForTransaction(transactionHash);
+      transactionReceipt = await provider.waitForTransaction(transactionHash);
     } catch (e) {
       console.error(e);
       toast({

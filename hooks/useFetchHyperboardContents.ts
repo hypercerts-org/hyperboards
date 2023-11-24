@@ -7,30 +7,13 @@ import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
 import { useToast } from "@chakra-ui/react";
 import {
+  BlueprintEntity,
   ClaimEntity,
   DefaultSponsorMetadataEntity,
   RegistryEntity,
 } from "@/types/database-entities";
 import { sift } from "@/utils/sift";
-
-// interface EntryDisplayData {
-//   image: string;
-//   address: string;
-//   type: "person" | "company" | "speaker";
-//   companyName?: string;
-//   firstName: string;
-//   lastName: string;
-//   name: string;
-// }
-
-// interface RegistryContentItem {
-//   fractions: Pick<
-//     ClaimToken,
-//     "id" | "chainName" | "owner" | "tokenID" | "units"
-//   >[];
-//   displayData: EntryDisplayData;
-//   totalValue: number;
-// }
+import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 
 export const useListRegistries = () => {
   return useQuery(["list-registries"], async () =>
@@ -39,45 +22,106 @@ export const useListRegistries = () => {
 };
 
 const processRegistryForDisplay = async (
-  registry: RegistryEntity & { claims: ClaimEntity[] },
+  {
+    blueprints,
+    ...registry
+  }: RegistryEntity & {
+    claims: ClaimEntity[];
+    blueprints: BlueprintEntity[];
+  },
   label: string | null,
-  totalOfAllDisplaySizes: number,
+  totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
-  const claims = registry.claims;
-  const fractionsResults = await Promise.all(
-    claims.map(async (claim) => {
+  // Fetch all fractions per all claims
+  const claimsAndFractions = await Promise.all(
+    registry.claims.map(async (claim) => {
       const fractions = await client.indexer.fractionsByClaim(
         claim.hypercert_id,
       );
-      const displaySizeCoefficient =
-        claim.display_size / totalOfAllDisplaySizes;
-      return fractions.claimTokens.map((fraction) => ({
-        ...fraction,
-        unitsAdjustedForDisplaySize:
-          parseInt(fraction.units, 10) * displaySizeCoefficient,
-      }));
+
+      return {
+        claim,
+        fractions: fractions.claimTokens,
+      };
     }),
   );
 
-  const fractions = _.flatMap(fractionsResults, (x) => x);
-  const ownerAddresses = _.uniq(fractions.map((x) => x.owner)) as string[];
+  // Calculate the total number of units in all claims
+  const totalUnitsInBlueprints =
+    BigInt(blueprints.length) * NUMBER_OF_UNITS_IN_HYPERCERT;
+  const totalUnitsInAllClaims =
+    claimsAndFractions
+      .map((claim) => claim.fractions)
+      .flat()
+      .reduce((acc, fraction) => acc + BigInt(fraction.units || 0), 0n) +
+    totalUnitsInBlueprints;
 
+  // Calculate the amount of surface per display size unit
+  const displayPerUnit =
+    (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
+
+  const fractionsResults = claimsAndFractions.map(({ claim, fractions }) => {
+    // The total number of 'display units' available for this claim
+    const totalDisplayUnitsForClaim =
+      BigInt(claim.display_size) * displayPerUnit;
+
+    // The total number of units in this claim
+    const totalUnitsInClaim = fractions.reduce(
+      (acc, curr) => acc + BigInt(curr.units),
+      0n,
+    );
+
+    // Calculate the number of units per display unit
+    const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
+
+    // Calculate the relative number of units per fraction
+    return fractions.map((fraction) => ({
+      owner: fraction.owner.toLowerCase(),
+      unitsAdjustedForDisplaySize:
+        (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+    }));
+  });
+
+  const blueprintResults = blueprints.map((blueprint) => {
+    const totalDisplayUnitsForClaim =
+      BigInt(blueprint.display_size) * displayPerUnit;
+
+    // The total number of units in this claim
+
+    // Calculate the number of units per display unit
+    const displayUnitsPerUnit =
+      totalDisplayUnitsForClaim / NUMBER_OF_UNITS_IN_HYPERCERT;
+    return {
+      owner: blueprint.minter_address.toLowerCase(),
+      unitsAdjustedForDisplaySize:
+        (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
+    };
+  });
+
+  // Get a deduplicated list of all owners
+  const fractions = fractionsResults.flat();
+  const ownerAddresses = _.uniq([
+    ...fractions.map((x) => x.owner),
+    blueprints.map((b) => b.minter_address.toLowerCase()),
+  ]) as string[];
+
+  // Fetch display data for all owners
   const claimDisplayDataResponse = await getEntriesDisplayData(ownerAddresses);
   const claimDisplayData = _.keyBy(claimDisplayDataResponse?.data || [], (x) =>
     x.address.toLowerCase(),
   );
 
   // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const content = _.chain(fractions)
+  const content = _.chain({ ...fractions, ...blueprintResults })
     .groupBy((fraction) => fraction.owner)
     .mapValues((fractionsPerOwner, owner) => {
       return {
         fractions: fractionsPerOwner,
         displayData: claimDisplayData[owner],
-        totalValue: _.sumBy(
-          fractionsPerOwner,
-          (x) => x.unitsAdjustedForDisplaySize,
+        totalValue: fractionsPerOwner.reduce(
+          (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
+          0n,
         ),
       };
     })
@@ -112,7 +156,7 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
         await supabase
           .from("hyperboards")
           .select(
-            "*, hyperboard_registries ( *, registries ( *, claims ( * ) ) )",
+            "*, hyperboard_registries ( *, registries ( *, claims ( * ), blueprints ( * ) ) )",
           )
           .eq("id", hyperboardId)
           .single();
@@ -145,7 +189,7 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
           return await processRegistryForDisplay(
             registry.registries!,
             registry.label,
-            totalOfAllDisplaySizes,
+            BigInt(totalOfAllDisplaySizes),
             client,
           );
         }),
@@ -171,7 +215,7 @@ export const getEntriesDisplayData = async (addresses: string[]) => {
 
 export const registryContentItemToHyperboardEntry = (item: {
   displayData: DefaultSponsorMetadataEntity;
-  totalValue: number;
+  totalValue: bigint;
 }): HyperboardEntry => {
   if (!item.displayData) {
     return {

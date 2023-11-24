@@ -19,6 +19,7 @@ import Fonts from "@/fonts";
 import { theme } from "@/theme";
 import {
   ALCHEMY_KEY_GOERLI,
+  EAS_CONTRACT_ADDRESS,
   NFT_STORAGE_TOKEN,
   WALLETCONNECT_ID,
   WEB3_STORAGE_TOKEN,
@@ -83,8 +84,6 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
   const [client, setClient] = useState<HypercertClient>();
 
   useEffect(() => {
-    console.log("creating hypercert client", chainId, walletClient);
-
     if (!chainId) {
       return;
     }
@@ -97,6 +96,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       chain: { id: chainId },
       nftStorageToken: NFT_STORAGE_TOKEN,
       web3StorageToken: WEB3_STORAGE_TOKEN,
+      easContractAddress: EAS_CONTRACT_ADDRESS,
       walletClient,
     });
 

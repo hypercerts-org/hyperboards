@@ -22,6 +22,8 @@ export interface MintingFormValues {
   workStart: Date;
   workEnd: Date;
   contributors: string;
+  backgroundColor: string;
+  textColor: string;
 }
 
 // Default values minting form for testing
@@ -33,6 +35,8 @@ export const defaultMintingFormValues: MintingFormValues = {
   workStart: new Date(),
   workEnd: new Date(),
   contributors: "Test",
+  backgroundColor: "#73C9CC",
+  textColor: "#194446",
 };
 
 const useMintingForm = (initialValues?: MintingFormValues) =>
@@ -63,6 +67,8 @@ export const MintingForm = ({
 
   const isDisabled = isSubmitting || disabled;
   const values = watch();
+
+  console.log(values);
 
   return (
     <HStack w={"100%"} minW={0}>
@@ -116,13 +122,41 @@ export const MintingForm = ({
                 {errors.contributors?.message}
               </FormErrorMessage>
             </FormControl>
+            <FormControl isInvalid={!!errors.backgroundColor?.message}>
+              <FormLabel>Background</FormLabel>
+              <Input
+                type={"color"}
+                isDisabled={isDisabled}
+                defaultValue={values.backgroundColor}
+                {...register("backgroundColor")}
+              />
+              <FormErrorMessage>
+                {errors.backgroundColor?.message}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.textColor?.message}>
+              <FormLabel>Text</FormLabel>
+              <Input
+                type={"color"}
+                isDisabled={isDisabled}
+                defaultValue={values.textColor}
+                {...register("textColor")}
+              />
+              <FormErrorMessage>{errors.textColor?.message}</FormErrorMessage>
+            </FormControl>
+
             <Button type={"submit"} isDisabled={isDisabled}>
               {buttonLabel}
             </Button>
           </VStack>
         </Flex>
       </form>
-      <HypercertPreview imageRef={imageRef} values={values} />
+      <HypercertPreview
+        imageRef={imageRef}
+        values={values}
+        backgroundColor={values.backgroundColor}
+        textColor={values.textColor}
+      />
     </HStack>
   );
 };

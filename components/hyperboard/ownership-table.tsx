@@ -51,7 +51,10 @@ const useHyperboardOwnership = (hyperboardId: string) => {
                 claimResult.claim.uri,
               );
               return {
-                claim: claimResult.claim,
+                claim: {
+                  ...claim,
+                  ...claimResult.claim,
+                },
                 metadata,
               };
             }
@@ -60,7 +63,9 @@ const useHyperboardOwnership = (hyperboardId: string) => {
         );
 
         const totalValueInRegistry = _.sum(
-          sift(claims).map((claim) => parseInt(claim.claim.totalUnits, 10)),
+          sift(hyperboardRegistry.registries.claims).map(
+            (claim) => claim.display_size,
+          ),
         );
 
         return {
@@ -187,7 +192,7 @@ export const OwnershipTable = ({
                         isLast={isLastClaim}
                         text={claim.metadata.name || "No name"}
                         percentage={(
-                          (parseInt(claim.claim.totalUnits, 10) /
+                          (claim.claim.display_size /
                             registry.totalValueInRegistry) *
                           100
                         ).toPrecision(2)}
@@ -328,16 +333,42 @@ const useClaimOwnership = (claimIds: string[]) => {
       return null;
     }
 
+    const { data: claimsFromSupabase } = await supabase
+      .from("claims")
+      .select("*")
+      .in("hypercert_id", [...claimIds])
+      .throwOnError();
+
     const results = await Promise.all(
       claimIds.map(async (claimId) => {
+        const claimFromSupabase = claimsFromSupabase?.find(
+          (claim) => claim.hypercert_id === claimId,
+        );
+        if (!claimFromSupabase) {
+          throw new Error("Claim not found");
+        }
         const fractions = await client.indexer.fractionsByClaim(claimId);
 
-        return fractions.claimTokens;
+        return {
+          claim: claimFromSupabase,
+          fractions: fractions.claimTokens,
+        };
       }),
     );
-
-    const allFractions = results.flat();
+    const allFractions = results.flatMap((x) => x.fractions);
     const allOwnerIds = _.uniq(allFractions.map((fraction) => fraction.owner));
+
+    const totalOfAllDisplaySizes = BigInt(
+      _.sum(claimsFromSupabase?.map((claim) => claim.display_size) || []),
+    );
+    const totalUnitsInAllClaims = allFractions.reduce(
+      (acc, fraction) => acc + BigInt(fraction.units || 0),
+      0n,
+    );
+
+    // Calculate the amount of surface per display size unit
+    const displayPerUnit =
+      (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
 
     const ownerMetadata = await getEntriesDisplayData(allOwnerIds);
 
@@ -345,14 +376,41 @@ const useClaimOwnership = (claimIds: string[]) => {
       metadata.address.toLowerCase(),
     );
 
-    const totalValueForAllFractions = _.sum(
-      allFractions.map((fraction) => parseInt(fraction.units, 10)),
-    );
+    const fractionsResults = results.map(({ claim, fractions }) => {
+      // The total number of 'display units' available for this claim
+      const totalDisplayUnitsForClaim =
+        BigInt(claim.display_size) * displayPerUnit;
 
-    const data = _.chain(allFractions)
-      .groupBy((x) => x.owner)
+      // The total number of units in this claim
+      const totalUnitsInClaim = fractions.reduce(
+        (acc, curr) => acc + BigInt(curr.units),
+        0n,
+      );
+
+      // Calculate the number of units per display unit
+      const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
+
+      // Calculate the relative number of units per fraction
+      const newFractions = fractions.map((fraction) => ({
+        ...fraction,
+        unitsAdjustedForDisplaySize:
+          (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+      }));
+
+      return {
+        claim,
+        fractions: newFractions,
+      };
+    });
+
+    const data = _.chain(fractionsResults)
+      .groupBy((x) => x.claim.owner_id.toLowerCase())
       .mapValues((value, key) => ({
-        total: _.sum(value.map((x) => parseInt(x.units, 10))),
+        total: value
+          .flatMap((x) =>
+            x.fractions.map((fraction) => fraction.unitsAdjustedForDisplaySize),
+          )
+          .reduce((acc, curr) => acc + curr, 0n),
         metadata: metadataByAddress[key],
       }))
       .sortBy((x) => x.total)
@@ -362,13 +420,21 @@ const useClaimOwnership = (claimIds: string[]) => {
 
     return {
       data,
-      totalValueForAllFractions,
+      totalValueForAllFractions: data.reduce((acc, x) => acc + x.total, 0n),
     };
   });
 };
 
 const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
   const { data, isLoading } = useClaimOwnership(claimIds);
+
+  if (claimIds.length === 0) {
+    return (
+      <Center height={"100%"} width={"100%"}>
+        Select board to see ownership stats
+      </Center>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -379,14 +445,19 @@ const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
   }
 
   if (!data) {
-    return <div>No data</div>;
+    return (
+      <Center height={"100%"} width={"100%"}>
+        No data
+      </Center>
+    );
   }
 
   return (
     <>
       {data.data.map((ownership) => {
         const percentage =
-          (ownership.total / data.totalValueForAllFractions) * 100;
+          Number((ownership.total * 10000n) / data.totalValueForAllFractions) /
+          100;
         return (
           <Flex key={ownership.metadata?.address} backgroundColor={"white"}>
             <Flex

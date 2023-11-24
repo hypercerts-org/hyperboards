@@ -118,6 +118,7 @@ export const RegistriesAdmin = () => {
                       <Th>Name</Th>
                       <Th>Minter address</Th>
                       <Th>Created on</Th>
+                      <Th>Display size</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -132,6 +133,7 @@ export const RegistriesAdmin = () => {
                         <Td>
                           {new Date(blueprint.created_at).toLocaleDateString()}
                         </Td>
+                        <Td>{blueprint.display_size}</Td>
                         <Td textAlign={"end"}>
                           <DeleteBlueprintButton
                             size="xs"

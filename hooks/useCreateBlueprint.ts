@@ -11,8 +11,13 @@ export const useCreateBlueprint = () => {
     async ({
       address,
       registryId,
+      displaySize,
       ...values
-    }: { address: string; registryId: string } & MintingFormValues) => {
+    }: {
+      address: string;
+      registryId: string;
+      displaySize: number;
+    } & MintingFormValues) => {
       if (!admin_id) {
         throw new Error("No address found");
       }
@@ -29,6 +34,7 @@ export const useCreateBlueprint = () => {
             admin_id,
             registry_id: registryId,
             minter_address: address,
+            display_size: displaySize,
             form_values: JSON.parse(JSON.stringify(values)),
           },
         ])

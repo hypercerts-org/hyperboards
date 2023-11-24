@@ -16,6 +16,20 @@ export const exportAsImage = async (
     //useCORS: true,
     proxy: "https://cors-proxy.hypercerts.workers.dev/",
     imageTimeout: 0,
+    onclone: (el) => {
+      const elementsWithShiftedDownwardText =
+        el.querySelectorAll(".shifted-text");
+      console.log(elementsWithShiftedDownwardText);
+      elementsWithShiftedDownwardText.forEach((el) => {
+        // adjust styles or do whatever you want here
+        // @ts-ignore
+        if (el.style) {
+          // @ts-ignore
+          el.style.transform = `${el.style.transform} translateY(-40%)`;
+          return;
+        }
+      });
+    },
   });
   return canvas.toDataURL("image/png", 1.0);
 };

@@ -3,14 +3,19 @@ import { MutableRefObject } from "react";
 import { Flex, HStack, Image, Text } from "@chakra-ui/react";
 import { format } from "date-fns";
 
+const backgroundVectorColor = "#33898C";
+
 export const HypercertPreview = ({
   values,
   imageRef,
+  backgroundColor = "#73C9CC",
+  textColor = "#194446",
 }: {
   imageRef?: MutableRefObject<HTMLDivElement | null>;
   values: Partial<MintingFormValues>;
+  backgroundColor?: string;
+  textColor?: string;
 }) => {
-  // TODO: Make background color variable
   return (
     <Flex
       ref={imageRef}
@@ -19,7 +24,7 @@ export const HypercertPreview = ({
       minW={"320px"}
       minH={"400px"}
       borderRadius={"22px"}
-      backgroundColor={"#73C9CC"}
+      backgroundColor={backgroundColor}
       position={"relative"}
       flexDirection={"column"}
     >
@@ -66,9 +71,7 @@ export const HypercertPreview = ({
         left={"0px"}
         top={"0px"}
         overflow={"hidden"}
-        background={
-          "linear-gradient(0deg,#73C9CC 0%,#73C9CC00 100%) 0% 0% / 100% 100% repeat"
-        }
+        background={`linear-gradient(0deg,${backgroundColor} 0%,${backgroundColor}00 100%) 0% 0% / 100% 100% repeat`}
         minW={"0"}
         minH={"0"}
       />
@@ -87,7 +90,7 @@ export const HypercertPreview = ({
         minW={"0"}
         minH={"0"}
         borderRadius={"22px"}
-        color={"#33898C"}
+        color={backgroundVectorColor}
       />
       <Flex
         display={"flex"}
@@ -117,7 +120,7 @@ export const HypercertPreview = ({
           background={"white"}
           flexShrink={"0"}
           borderRadius={"2000px"}
-          border={"1px solid #225B5E"}
+          border={`1px solid ${textColor}`}
         >
           <Image src="https://i.imgur.com/sDQhp3Y.png" alt={"Logo image"} />
         </Flex>
@@ -129,16 +132,17 @@ export const HypercertPreview = ({
           paddingTop={"8px"}
           paddingBottom={"8px"}
           minWidth={"0"}
-          borderTop={"2px solid #194446"}
-          borderColor={"#194446"}
+          borderTop={`2px solid ${textColor}`}
+          borderColor={textColor}
           minHeight={"114.5px"}
         >
           <Text
             fontSize={"24px"}
             fontWeight={"700"}
-            color={"#194446"}
+            color={textColor}
             lineHeight={"1.2"}
             textAlign={"left"}
+            className={"shifted-text"}
           >
             {values.name}
           </Text>
@@ -172,14 +176,23 @@ export const HypercertPreview = ({
             maxWidth="100%"
             minWidth="0"
             padding="6px 0 6px 0"
-            borderTop="1px solid #225B5E"
+            borderTop={`1px solid ${textColor}`}
           >
             <Flex maxWidth="100%" width="100%" justifyContent={"space-between"}>
-              <Text fontSize={"12px"} fontWeight={500}>
+              <Text
+                fontSize={"12px"}
+                fontWeight={500}
+                className={"shifted-text"}
+                color={textColor}
+              >
                 WORK
               </Text>
               {values.workStart && values.workEnd && (
-                <Text fontSize={"12px"}>
+                <Text
+                  fontSize={"12px"}
+                  className={"shifted-text"}
+                  color={textColor}
+                >
                   {formatDate(values.workStart)} → {formatDate(values.workEnd)}
                 </Text>
               )}
@@ -190,19 +203,20 @@ export const HypercertPreview = ({
                 .map((x) => x.trim())
                 .map((workScope) => (
                   <Flex
-                    backgroundColor={"#73C9CC"}
+                    backgroundColor={backgroundColor}
                     paddingX={2}
                     paddingY={1}
                     key={workScope}
-                    border={"1px solid #225B5E"}
+                    border={`1px solid ${textColor}`}
                     borderRadius={"6px"}
                     fontSize={"14px"}
                   >
-                    {workScope.toLowerCase()}
+                    <Text className={"shifted-text"} color={textColor}>
+                      {workScope.toLowerCase()}
+                    </Text>
                   </Flex>
                 ))}
             </HStack>
-            {/* Child components go here */}
           </Flex>
         </Flex>
       </Flex>
