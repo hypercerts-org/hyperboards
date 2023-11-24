@@ -59,7 +59,7 @@ export const theme: ThemeOverride = extendTheme({
       fontFamily: `'Switzer', sans-serif`,
     },
     secondary: {
-      "font-family": `'Director-Variable', sans-serif`,
+      fontFamily: `'Director-Variable', sans-serif`,
       fontWeight: 100,
       textTransform: "uppercase",
     },

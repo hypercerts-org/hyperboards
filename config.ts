@@ -75,6 +75,11 @@ export const ZUZALU_DONATION_SAFE_ADDRESS = requireEnv(
   "NEXT_PUBLIC_ZUZALU_DONATION_SAFE",
 );
 
+export const EAS_CONTRACT_ADDRESS = requireEnv(
+  process.env.NEXT_PUBLIC_EAS_CONTRACT_ADDRESS,
+  "NEXT_PUBLIC_EAS_CONTRACT_ADDRESS",
+);
+
 export const DEFAULT_RENDER_METHOD = "full";
 
 export const NUMBER_OF_UNITS_IN_HYPERCERT = 1n * 10n ** 18n;
