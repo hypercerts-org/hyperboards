@@ -11,7 +11,6 @@ export const HypercertPreview = ({
   values: Partial<MintingFormValues>;
 }) => {
   // TODO: Make background color variable
-  // TODO: Fix vertical offsets when rendering
   return (
     <Flex
       ref={imageRef}
@@ -140,6 +139,7 @@ export const HypercertPreview = ({
             color={"#194446"}
             lineHeight={"1.2"}
             textAlign={"left"}
+            className={"shifted-text"}
           >
             {values.name}
           </Text>
@@ -176,11 +176,15 @@ export const HypercertPreview = ({
             borderTop="1px solid #225B5E"
           >
             <Flex maxWidth="100%" width="100%" justifyContent={"space-between"}>
-              <Text fontSize={"12px"} fontWeight={500}>
+              <Text
+                fontSize={"12px"}
+                fontWeight={500}
+                className={"shifted-text"}
+              >
                 WORK
               </Text>
               {values.workStart && values.workEnd && (
-                <Text fontSize={"12px"}>
+                <Text fontSize={"12px"} className={"shifted-text"}>
                   {formatDate(values.workStart)} → {formatDate(values.workEnd)}
                 </Text>
               )}
@@ -199,7 +203,9 @@ export const HypercertPreview = ({
                     borderRadius={"6px"}
                     fontSize={"14px"}
                   >
-                    {workScope.toLowerCase()}
+                    <Text className={"shifted-text"}>
+                      {workScope.toLowerCase()}
+                    </Text>
                   </Flex>
                 ))}
             </HStack>
