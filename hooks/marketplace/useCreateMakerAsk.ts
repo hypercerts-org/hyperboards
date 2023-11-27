@@ -2,15 +2,13 @@ import { useAccount, useChainId, useMutation, useWalletClient } from "wagmi";
 import { isAddress, parseEther } from "viem";
 import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
-import {
-  Order,
-  useEthersProvider,
-  useEthersSigner,
-} from "@/components/marketplace/create-order-form";
+import { Order } from "@/components/marketplace/create-order-form";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useHypercertClient } from "@/components/providers";
 import { QuoteType, LooksRare } from "@hypercerts-org/marketplace-sdk";
 import { useCreateOrderInSupabase } from "@/hooks/marketplace/useCreateOrderInSupabase";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { useEthersSigner } from "@/hooks/useEthersSigner";
 
 export const useCreateMakerAsk = () => {
   const { onOpen, onClose, setStep } = useInteractionModal();

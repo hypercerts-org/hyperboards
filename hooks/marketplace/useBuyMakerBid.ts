@@ -5,10 +5,8 @@ import { decodeErrorResult } from "viem";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { MarketplaceOrderEntity } from "@/types/database-entities";
 import { LooksRare } from "@hypercerts-org/marketplace-sdk";
-import {
-  useEthersProvider,
-  useEthersSigner,
-} from "@/components/marketplace/create-order-form";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { useEthersSigner } from "@/hooks/useEthersSigner";
 
 export const useBuyMakerBid = () => {
   const chainId = useChainId();

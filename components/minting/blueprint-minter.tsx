@@ -21,8 +21,8 @@ import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
 import { decodeEventLog, parseAbi, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
-import { useEthersProvider } from "@/components/marketplace/create-order-form";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,

@@ -2478,10 +2478,10 @@
   resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-0.8.11.tgz#e8e5f9277f54b5d38c0a79ea9ba3ba5e051a38d0"
   integrity sha512-n6fwMsaoR50VITM2upR4OOi4EZJmZvU6vvXrHWCSakP9e1OeDuAOk+kHiK+egqDRYj6uKtg9VTUFKZBYvu3jRg==
 
-"@hypercerts-org/contracts@1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.0.0-alpha.4.tgz#995f9a0066f8a9450541161b340d0cfc231b106e"
-  integrity sha512-xpwvE7xlOJaaP8nTB8LSwntltIn3cC1YchAskxrO9kNginp5qyhyrMx4o7FNhqjHUTsxA6VG0D7r2mzUppEBGw==
+"@hypercerts-org/contracts@1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.0.0-alpha.5.tgz#13bd3fd6cfcbeca876d0fc7c8b7320b22675e25f"
+  integrity sha512-R9xE8QLja5keXEH++1L0EP3Y4+pn/Fv0NTm1vhqRazJgEYZ5GsZ8SZiqE1l5fSkTMUFHz+lKdcynjmEi4Kz7/w==
   dependencies:
     hardhat "^2.18.3"
 
