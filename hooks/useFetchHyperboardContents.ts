@@ -80,6 +80,7 @@ const processRegistryForDisplay = async (
       owner: fraction.owner.toLowerCase(),
       unitsAdjustedForDisplaySize:
         (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+      isBlueprint: false,
     }));
   });
 
@@ -96,6 +97,7 @@ const processRegistryForDisplay = async (
       owner: blueprint.minter_address.toLowerCase(),
       unitsAdjustedForDisplaySize:
         (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
+      isBlueprint: true,
     };
   });
 
@@ -119,6 +121,7 @@ const processRegistryForDisplay = async (
       return {
         fractions: fractionsPerOwner,
         displayData: claimDisplayData[owner],
+        isBlueprint: fractionsPerOwner.every((x) => x.isBlueprint),
         totalValue: fractionsPerOwner.reduce(
           (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
           0n,
@@ -213,8 +216,12 @@ export const getEntriesDisplayData = async (addresses: string[]) => {
     .in("address", addresses);
 };
 
-export const registryContentItemToHyperboardEntry = (item: {
+export const registryContentItemToHyperboardEntry = ({
+  isBlueprint,
+  ...item
+}: {
   displayData: DefaultSponsorMetadataEntity;
+  isBlueprint: boolean;
   totalValue: bigint;
 }): HyperboardEntry => {
   if (!item.displayData) {
@@ -226,6 +233,7 @@ export const registryContentItemToHyperboardEntry = (item: {
       image: "",
       value: item.totalValue,
       id: "",
+      isBlueprint,
     };
   }
   return {
@@ -236,5 +244,6 @@ export const registryContentItemToHyperboardEntry = (item: {
     image: item.displayData.image,
     value: item.totalValue,
     id: item.displayData.address,
+    isBlueprint,
   };
 };

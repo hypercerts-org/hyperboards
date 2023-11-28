@@ -1,10 +1,17 @@
 import { useBlueprintById } from "@/hooks/useBlueprintById";
-import { Heading, HStack, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Heading,
+  HStack,
+  Spinner,
+  useToast,
+  Image,
+  Button,
+} from "@chakra-ui/react";
 import {
   MintingForm,
   MintingFormValues,
 } from "@/components/minting/minting-form";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
 import { useHypercertClient } from "@/components/providers";
 import {
@@ -137,6 +144,20 @@ export const BlueprintMinter = ({
 
   const chainId = useChainId();
   const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
+
+  const [previewImageSrc, setPreviewImageSrc] = useState<string | undefined>(
+    undefined,
+  );
+
+  const syncPreviewImage = async () => {
+    const imagePreviewSrc = await exportAsImage(ref);
+
+    setPreviewImageSrc(imagePreviewSrc);
+  };
+
+  useEffect(() => {
+    syncPreviewImage();
+  }, []);
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -330,7 +351,9 @@ export const BlueprintMinter = ({
           buttonLabel="Mint"
           imageRef={ref}
         />
+        <Image src={previewImageSrc} h={"400px"} w={"320px"} />
       </HStack>
+      <Button onClick={syncPreviewImage}>Sync preview image</Button>
     </>
   );
 };
