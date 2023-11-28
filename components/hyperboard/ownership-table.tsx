@@ -506,7 +506,6 @@ const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
       }) || [];
 
     const data = _.chain([...fractionsResults, ...blueprintsResults])
-      .tap((x) => console.log(x))
       .groupBy((x) => x.claim.owner_id.toLowerCase())
       .mapValues((value, key) => ({
         total: value
