@@ -26,10 +26,11 @@ import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { decodeEventLog, parseAbi, TransactionReceipt } from "viem";
+import { decodeEventLog, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { debugLog } from "@/utils/debugLog";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -87,21 +88,21 @@ const formValuesToHypercertMetadata = (
 };
 
 const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
-  console.log(receipt);
+  debugLog(receipt);
   const events = receipt.logs.map((log) =>
     decodeEventLog({
-      abi: parseAbi(HypercertMinterAbi),
+      abi: HypercertMinterAbi,
       data: log.data,
       topics: log.topics,
     }),
   );
 
-  console.log("events", events);
+  debugLog("events", events);
   if (!events) {
     throw new Error("No events in receipt");
   }
 
-  const claimEvent = events.find((e) => e.eventName === "TransferSingle");
+  const claimEvent = events.find((e) => e.eventName === "ClaimStored");
 
   if (!claimEvent) {
     throw new Error("TransferSingle event not found");
@@ -114,7 +115,7 @@ const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
   }
 
   // @ts-ignore
-  const tokenIdBigNumber = args[3] as BigNumber;
+  const tokenIdBigNumber = args["claimID"] as BigNumber;
 
   if (!tokenIdBigNumber) {
     throw new Error("No tokenId arg in event");

@@ -30,12 +30,14 @@ type Step = {
 };
 
 interface Props {
+  getCurrentStep: () => string;
   onOpen: (steps: Step[]) => void;
   onClose: () => void;
   setStep: (step: string) => void;
 }
 
 const defaultValues = {
+  getCurrentStep: () => "",
   setStep: () => {},
   onOpen: () => {},
   onClose: () => {},
@@ -79,9 +81,12 @@ export const InteractionDialogProvider = ({ children }: PropsWithChildren) => {
     onClose();
   };
 
+  const getCurrentStep = () => stepsRef.current[activeStep]?.title;
+
   return (
     <InteractionModalContext.Provider
       value={{
+        getCurrentStep,
         onOpen: onOpenAndSetSteps,
         onClose: onCloseAndResetSteps,
         setStep: onSetStep,

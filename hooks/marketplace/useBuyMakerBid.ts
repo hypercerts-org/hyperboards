@@ -76,14 +76,20 @@ export const useBuyMakerBid = () => {
     } catch (e) {
       console.error(e);
       let description = "Order execution error";
-      if (isObject(e)) {
-        const decodedError = decodeErrorResult({
-          abi: looksRareABI,
-          data: (e as any).error?.data?.originalError?.data,
-        });
-        description = decodedError?.errorName || description;
-      }
+      // console.log({ ...e });
+      // @ts-ignore
+      const transactionData = e.info.error.data.originalError.data;
+      const currentStep = getCurrentStep();
+      console.error(`Error during step \"${currentStep}\"`, { ...e });
+      // if (isObject(e)) {
+      //   const decodedError = decodeErrorResult({
+      //     abi: HypercertExchangeAbi,
+      //     data: transactionData,
+      //   });
+      //   description = decodedError?.errorName || description;
+      // }
 
+      onClose();
       throw new Error(description);
     }
   });
