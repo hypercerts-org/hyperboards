@@ -1,10 +1,17 @@
 import { useBlueprintById } from "@/hooks/useBlueprintById";
-import { Heading, HStack, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Heading,
+  HStack,
+  Spinner,
+  useToast,
+  Image,
+  Button,
+} from "@chakra-ui/react";
 import {
   MintingForm,
   MintingFormValues,
 } from "@/components/minting/minting-form";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
 import { useHypercertClient } from "@/components/providers";
 import {
@@ -19,10 +26,11 @@ import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { decodeEventLog, parseAbi, TransactionReceipt } from "viem";
+import { decodeEventLog, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
-import { useEthersProvider } from "@/components/marketplace/create-order-form";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { debugLog } from "@/utils/debugLog";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -80,21 +88,21 @@ const formValuesToHypercertMetadata = (
 };
 
 const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
-  console.log(receipt);
+  debugLog(receipt);
   const events = receipt.logs.map((log) =>
     decodeEventLog({
-      abi: parseAbi(HypercertMinterAbi),
+      abi: HypercertMinterAbi,
       data: log.data,
       topics: log.topics,
     }),
   );
 
-  console.log("events", events);
+  debugLog("events", events);
   if (!events) {
     throw new Error("No events in receipt");
   }
 
-  const claimEvent = events.find((e) => e.eventName === "TransferSingle");
+  const claimEvent = events.find((e) => e.eventName === "ClaimStored");
 
   if (!claimEvent) {
     throw new Error("TransferSingle event not found");
@@ -107,7 +115,7 @@ const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
   }
 
   // @ts-ignore
-  const tokenIdBigNumber = args[3] as BigNumber;
+  const tokenIdBigNumber = args["claimID"] as BigNumber;
 
   if (!tokenIdBigNumber) {
     throw new Error("No tokenId arg in event");
@@ -137,6 +145,20 @@ export const BlueprintMinter = ({
 
   const chainId = useChainId();
   const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
+
+  const [previewImageSrc, setPreviewImageSrc] = useState<string | undefined>(
+    undefined,
+  );
+
+  const syncPreviewImage = async () => {
+    const imagePreviewSrc = await exportAsImage(ref);
+
+    setPreviewImageSrc(imagePreviewSrc);
+  };
+
+  useEffect(() => {
+    syncPreviewImage();
+  }, []);
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -330,7 +352,9 @@ export const BlueprintMinter = ({
           buttonLabel="Mint"
           imageRef={ref}
         />
+        <Image src={previewImageSrc} h={"400px"} w={"320px"} />
       </HStack>
+      <Button onClick={syncPreviewImage}>Sync preview image</Button>
     </>
   );
 };

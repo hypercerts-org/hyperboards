@@ -469,6 +469,27 @@ export interface Database {
         }
         Relationships: []
       }
+      "marketplace-order-nonces": {
+        Row: {
+          address: string
+          chain_id: number
+          created_at: string
+          nonce_counter: number
+        }
+        Insert: {
+          address: string
+          chain_id: number
+          created_at?: string
+          nonce_counter?: number
+        }
+        Update: {
+          address?: string
+          chain_id?: number
+          created_at?: string
+          nonce_counter?: number
+        }
+        Relationships: []
+      }
       "marketplace-orders": {
         Row: {
           additionalParameters: string
@@ -482,7 +503,7 @@ export interface Database {
           globalNonce: string
           id: string
           itemIds: string[]
-          orderNonce: number
+          orderNonce: string
           price: string
           quoteType: number
           signature: string
@@ -503,7 +524,7 @@ export interface Database {
           globalNonce: string
           id?: string
           itemIds: string[]
-          orderNonce: number
+          orderNonce: string
           price: string
           quoteType: number
           signature: string
@@ -524,7 +545,7 @@ export interface Database {
           globalNonce?: string
           id?: string
           itemIds?: string[]
-          orderNonce?: number
+          orderNonce?: string
           price?: string
           quoteType?: number
           signature?: string
@@ -559,6 +580,27 @@ export interface Database {
           hidden?: boolean
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      "zuconnect-funders": {
+        Row: {
+          budget: number | null
+          created_at: string
+          fid: string | null
+          id: number
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          fid?: string | null
+          id?: number
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          fid?: string | null
+          id?: number
         }
         Relationships: []
       }

@@ -1,12 +1,14 @@
 import {
   Badge,
   Card,
+  Center,
   Flex,
   Spinner,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -44,6 +46,10 @@ export const MyBlueprintsAdmin = () => {
               blueprintId={parsedBluePrintId}
               onComplete={() => push("/admin/my-claims/")}
             />
+          ) : data.data?.length === 0 ? (
+            <Center>
+              <Text>You don{"'"}t have any blueprints yet</Text>
+            </Center>
           ) : (
             <TableContainer width={"100%"} height={"100%"}>
               <Table variant={"striped"} colorScheme="blue" size={"sm"}>

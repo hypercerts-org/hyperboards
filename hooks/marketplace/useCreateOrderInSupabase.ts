@@ -1,7 +1,6 @@
 import { useChainId, useMutation } from "wagmi";
-import { Order } from "@/components/marketplace/create-order-form";
 import { HYPERCERTS_MARKETPLACE_API_URL } from "@/config";
-import { QuoteType } from "@hypercerts-org/marketplace-sdk";
+import { QuoteType, Maker } from "@hypercerts-org/marketplace-sdk";
 
 export const useCreateOrderInSupabase = () => {
   const chainId = useChainId();
@@ -12,34 +11,32 @@ export const useCreateOrderInSupabase = () => {
       signer,
       signature,
       quoteType,
-      globalNonce,
     }: {
-      order: Order;
+      order: Maker;
       signer: string;
       signature: string;
       quoteType: QuoteType;
-      globalNonce: number;
       // currency: string;
     }) => {
       if (!chainId) {
         throw new Error("No chainId");
       }
 
-      const { additionalParams, ...orderWithoutAdditionalParams } = order;
+      const { globalNonce, ...orderWithoutGlobalNonce } = order;
+
       return fetch(`${HYPERCERTS_MARKETPLACE_API_URL}/marketplace/order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...orderWithoutAdditionalParams,
-          additionalParameters: additionalParams,
+          ...orderWithoutGlobalNonce,
+          globalNonce: globalNonce.toString(10),
           price: order.price.toString(10),
           quoteType,
           signer,
           signature,
           chainId,
-          globalNonce,
         }),
       }).then((res) => res.json() as Promise<{ success: boolean }>);
     },

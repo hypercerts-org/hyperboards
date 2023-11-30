@@ -1,6 +1,7 @@
 import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Flex, Image, Text } from "@chakra-ui/react";
+import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 
 const borderRadius = "8px";
 const logosAndText = "black";
@@ -18,6 +19,7 @@ export const Tile = ({
   left: number;
   padding: number;
 }) => {
+  const opacity = entry.isBlueprint ? 0.5 : 1;
   if (entry.type === "company") {
     return (
       <Wrapper {...wrapperProps}>
@@ -36,6 +38,7 @@ export const Tile = ({
             filter={
               "invert(0%) sepia(0%) saturate(1081%) hue-rotate(270deg) brightness(101%) contrast(106%) !important"
             }
+            opacity={opacity}
             className={"company-logo"}
             maxWidth={"60%"}
             maxHeight={"80%"}
@@ -56,20 +59,27 @@ export const Tile = ({
           position={"relative"}
           height={"100%"}
           justifyContent={"space-between"}
+          backgroundColor={entry.isBlueprint ? "gray.100" : undefined}
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
             <Text
               fontSize={`${layout.font}px`}
               color={logosAndText}
               fontFamily={"Switzer"}
+              opacity={opacity}
             >
               {entry.firstName}
             </Text>
-            <Text fontSize={`${layout.font}px`} color={logosAndText}>
+            <Text
+              opacity={opacity}
+              fontSize={`${layout.font}px`}
+              color={logosAndText}
+            >
               {entry.lastName}
             </Text>
           </Flex>
           <Image
+            opacity={opacity}
             borderTopRightRadius={borderRadius}
             borderBottomLeftRadius={borderRadius}
             marginBottom={"auto"}
@@ -79,8 +89,16 @@ export const Tile = ({
             width={`${layout.image}px`}
             maxWidth={`${layout.image}px`}
             maxHeight={`${layout.image}px`}
+            objectFit={"cover"}
           />
         </Flex>
+        {entry.isBlueprint && (
+          <BlueprintTooltip
+            position={"absolute"}
+            top={padding}
+            left={padding}
+          />
+        )}
       </Wrapper>
     );
   }
@@ -94,6 +112,7 @@ export const Tile = ({
           position={"relative"}
           height={"100%"}
           justifyContent={"space-between"}
+          backgroundColor={entry.isBlueprint ? "gray.100" : undefined}
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
             <Text

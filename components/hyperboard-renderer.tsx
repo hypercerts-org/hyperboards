@@ -113,9 +113,7 @@ export const HyperboardRenderer = ({
                       data={
                         (Object.values(x.content) || {})
                           .filter((x) => x.displayData)
-                          .map((x) =>
-                            registryContentItemToHyperboardEntry(x),
-                          ) || []
+                          .map(registryContentItemToHyperboardEntry) || []
                       }
                     />
                   </Flex>

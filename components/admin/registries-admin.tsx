@@ -198,6 +198,14 @@ export const ClaimRow = ({
     return (
       <Tr>
         <Td>Hypercert not found</Td>
+        <Td>N/A</Td>
+        <Td>N/A</Td>
+        <Td>N/A</Td>
+        <Td>N/A</Td>
+        <Td>N/A</Td>
+        <Td textAlign={"end"}>
+          <DeleteClaimButton size="xs" claimId={id} />
+        </Td>
       </Tr>
     );
   }

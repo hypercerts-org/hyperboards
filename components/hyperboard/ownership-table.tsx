@@ -10,6 +10,8 @@ import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
 import { getEntriesDisplayData } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
+import { BlueprintTooltip } from "@/components/blueprint-tooltip";
+import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -28,7 +30,9 @@ const useHyperboardOwnership = (hyperboardId: string) => {
 
     const { data } = await supabase
       .from("hyperboards")
-      .select("*, hyperboard_registries ( *, registries ( *, claims ( * ) ) )")
+      .select(
+        "*, hyperboard_registries ( *, registries ( *, claims ( * ), blueprints ( * ) ) )",
+      )
       .eq("id", hyperboardId)
       .single();
 
@@ -62,16 +66,20 @@ const useHyperboardOwnership = (hyperboardId: string) => {
           }),
         );
 
-        const totalValueInRegistry = _.sum(
-          sift(hyperboardRegistry.registries.claims).map(
+        const totalValueInRegistry = _.sum([
+          ...sift(hyperboardRegistry.registries.claims).map(
             (claim) => claim.display_size,
           ),
-        );
+          ...hyperboardRegistry.registries.blueprints.map(
+            (blueprint) => blueprint.display_size,
+          ),
+        ]);
 
         return {
           label: hyperboardRegistry.label,
           totalValueInRegistry,
           claims: sift(claims),
+          blueprints: hyperboardRegistry.registries.blueprints,
           hyperboardRegistry,
         };
       }),
@@ -87,9 +95,10 @@ export const OwnershipTable = ({
   selectedRegistry,
   onSelectRegistry,
 }: OwnershipTableProps) => {
-  // const data = [];
+  // TODO: Show blueprints in ownership table
   const { data } = useHyperboardOwnership(hyperboardId);
   const [selectedClaim, setSelectedClaim] = useState<string>();
+  const [selectedBlueprint, setSelectedBlueprint] = useState<number>();
 
   if (!data) {
     return null;
@@ -97,7 +106,17 @@ export const OwnershipTable = ({
 
   const getClaimIds = () => {
     if (selectedClaim) {
-      return [selectedClaim];
+      return {
+        claimIds: [selectedClaim],
+        blueprintIds: [],
+      };
+    }
+
+    if (selectedBlueprint) {
+      return {
+        claimIds: [],
+        blueprintIds: [selectedBlueprint],
+      };
     }
 
     if (selectedRegistry) {
@@ -106,14 +125,20 @@ export const OwnershipTable = ({
           registry.hyperboardRegistry.registry_id === selectedRegistry,
       );
       if (registry) {
-        return registry.claims.map((claim) => claim.claim.id);
+        return {
+          claimIds: registry.claims.map((claim) => claim.claim.id),
+          blueprintIds: registry.blueprints.map((blueprint) => blueprint.id),
+        };
       }
     }
 
-    return [];
+    return {
+      claimIds: [],
+      blueprintIds: [],
+    };
   };
 
-  const claimIds = getClaimIds();
+  const { claimIds, blueprintIds } = getClaimIds();
 
   const indexOfSelectedRegistry = data.findIndex(
     (registry) => registry.hyperboardRegistry.registry_id === selectedRegistry,
@@ -149,6 +174,7 @@ export const OwnershipTable = ({
           {data.map((registry, index) => {
             const isRegistrySelected =
               !selectedClaim &&
+              !selectedBlueprint &&
               selectedRegistry === registry.hyperboardRegistry.registry_id;
             const isFirstAfterSelected =
               indexOfSelectedRegistry !== -1 &&
@@ -167,6 +193,7 @@ export const OwnershipTable = ({
                       onSelectRegistry?.(undefined);
                     } else {
                       setSelectedClaim(undefined);
+                      setSelectedBlueprint(undefined);
                       onSelectRegistry?.(
                         registry.hyperboardRegistry.registry_id,
                       );
@@ -180,35 +207,73 @@ export const OwnershipTable = ({
                     />
                   }
                 />
-                {selectedRegistry === registry.hyperboardRegistry.registry_id &&
-                  registry.claims.map((claim, index) => {
-                    const isClaimSelected = claim.claim.id === selectedClaim;
-                    const isLastClaim =
-                      !isLastRegistry && index === registry.claims.length - 1;
-                    return (
-                      <ClaimRow
-                        key={claim.claim.id}
-                        isSelected={isClaimSelected}
-                        isLast={isLastClaim}
-                        text={claim.metadata.name || "No name"}
-                        percentage={(
-                          (claim.claim.display_size /
-                            registry.totalValueInRegistry) *
-                          100
-                        ).toPrecision(2)}
-                        onClick={() => {
-                          setSelectedClaim(claim.claim.id);
-                        }}
-                        icon={
-                          <Image
-                            alt={"Claim icon"}
-                            src={"/icons/claim.svg"}
-                            width={"12px"}
-                          />
-                        }
-                      />
-                    );
-                  })}
+                {selectedRegistry ===
+                  registry.hyperboardRegistry.registry_id && (
+                  <>
+                    {registry.claims.map((claim, index) => {
+                      const isClaimSelected = claim.claim.id === selectedClaim;
+                      const isLastClaim =
+                        !isLastRegistry && index === registry.claims.length - 1;
+                      return (
+                        <ClaimRow
+                          key={claim.claim.id}
+                          isSelected={isClaimSelected}
+                          isLast={isLastClaim}
+                          text={claim.metadata.name || "No name"}
+                          percentage={(
+                            (claim.claim.display_size /
+                              registry.totalValueInRegistry) *
+                            100
+                          ).toPrecision(2)}
+                          onClick={() => {
+                            setSelectedBlueprint(undefined);
+                            setSelectedClaim(claim.claim.id);
+                          }}
+                          icon={
+                            <Image
+                              alt={"Claim icon"}
+                              src={"/icons/claim.svg"}
+                              width={"12px"}
+                            />
+                          }
+                        />
+                      );
+                    })}
+                    {registry.blueprints.map((blueprint) => {
+                      const isBlueprintSelected =
+                        blueprint.id === selectedBlueprint;
+                      return (
+                        <ClaimRow
+                          key={blueprint.id}
+                          isSelected={isBlueprintSelected}
+                          isLast={false}
+                          text={
+                            (
+                              blueprint.form_values as unknown as {
+                                name: string;
+                              }
+                            )?.name || "No name"
+                          }
+                          percentage={(
+                            (blueprint.display_size /
+                              registry.totalValueInRegistry) *
+                            100
+                          ).toPrecision(2)}
+                          onClick={() => {
+                            setSelectedClaim(undefined);
+                            setSelectedBlueprint(blueprint.id);
+                          }}
+                          icon={
+                            <BlueprintTooltip
+                              width={"12p"}
+                              alignItems={"center"}
+                            />
+                          }
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </div>
             );
           })}
@@ -221,7 +286,10 @@ export const OwnershipTable = ({
           overflowY={"auto"}
           className={"custom-scrollbar"}
         >
-          <ClaimOwnershipOverview claimIds={claimIds} />
+          <ClaimOwnershipOverview
+            claimIds={claimIds}
+            blueprintIds={blueprintIds}
+          />
         </Flex>
       </Flex>
     </>
@@ -325,19 +393,27 @@ const SelectedIcon = () => (
   />
 );
 
-const useClaimOwnership = (claimIds: string[]) => {
+const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
   const client = useHypercertClient();
 
-  return useQuery(["claim-ownership", claimIds], async () => {
+  return useQuery(["claim-ownership", claimIds, blueprintIds], async () => {
     if (!client) {
       return null;
     }
 
-    const { data: claimsFromSupabase } = await supabase
-      .from("claims")
-      .select("*")
-      .in("hypercert_id", [...claimIds])
-      .throwOnError();
+    const [{ data: blueprintData }, { data: claimsFromSupabase }] =
+      await Promise.all([
+        supabase.from("blueprints").select("*").in("id", blueprintIds),
+        supabase
+          .from("claims")
+          .select("*")
+          .in("hypercert_id", [...claimIds])
+          .throwOnError(),
+      ]);
+
+    if (!claimsFromSupabase?.length && !blueprintData?.length) {
+      return null;
+    }
 
     const results = await Promise.all(
       claimIds.map(async (claimId) => {
@@ -356,22 +432,29 @@ const useClaimOwnership = (claimIds: string[]) => {
       }),
     );
     const allFractions = results.flatMap((x) => x.fractions);
-    const allOwnerIds = _.uniq(allFractions.map((fraction) => fraction.owner));
+    const allOwnerIds = _.uniq([
+      ...allFractions.map((fraction) => fraction.owner),
+      ...(blueprintData || []).map((blueprint) => blueprint.minter_address),
+    ]);
 
     const totalOfAllDisplaySizes = BigInt(
-      _.sum(claimsFromSupabase?.map((claim) => claim.display_size) || []),
+      _.sum([
+        ...(claimsFromSupabase || [])?.map((claim) => claim.display_size),
+        ...(blueprintData || [])?.map((blueprint) => blueprint.display_size),
+      ]),
     );
-    const totalUnitsInAllClaims = allFractions.reduce(
-      (acc, fraction) => acc + BigInt(fraction.units || 0),
-      0n,
-    );
+    const totalUnitsInAllClaims =
+      allFractions.reduce(
+        (acc, fraction) => acc + BigInt(fraction.units || 0),
+        0n,
+      ) +
+      BigInt(blueprintData?.length || 0) * NUMBER_OF_UNITS_IN_HYPERCERT;
 
     // Calculate the amount of surface per display size unit
     const displayPerUnit =
       (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
 
     const ownerMetadata = await getEntriesDisplayData(allOwnerIds);
-
     const metadataByAddress = _.keyBy(ownerMetadata.data, (metadata) =>
       metadata.address.toLowerCase(),
     );
@@ -403,7 +486,26 @@ const useClaimOwnership = (claimIds: string[]) => {
       };
     });
 
-    const data = _.chain(fractionsResults)
+    const blueprintsResults =
+      blueprintData?.map((blueprint) => {
+        const totalDisplayUnitsForBlueprint =
+          BigInt(blueprint.display_size) * displayPerUnit;
+
+        return {
+          claim: {
+            owner_id: blueprint.minter_address,
+            display_size: blueprint.display_size,
+          },
+          fractions: [
+            {
+              unitsAdjustedForDisplaySize:
+                totalDisplayUnitsForBlueprint / 10n ** 14n,
+            },
+          ],
+        };
+      }) || [];
+
+    const data = _.chain([...fractionsResults, ...blueprintsResults])
       .groupBy((x) => x.claim.owner_id.toLowerCase())
       .mapValues((value, key) => ({
         total: value
@@ -425,10 +527,16 @@ const useClaimOwnership = (claimIds: string[]) => {
   });
 };
 
-const ClaimOwnershipOverview = ({ claimIds }: { claimIds: string[] }) => {
-  const { data, isLoading } = useClaimOwnership(claimIds);
+const ClaimOwnershipOverview = ({
+  claimIds,
+  blueprintIds,
+}: {
+  claimIds: string[];
+  blueprintIds: number[];
+}) => {
+  const { data, isLoading } = useClaimOwnership(claimIds, blueprintIds);
 
-  if (claimIds.length === 0) {
+  if (data?.data.length === 0) {
     return (
       <Center height={"100%"} width={"100%"}>
         Select board to see ownership stats

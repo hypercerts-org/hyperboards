@@ -10,6 +10,7 @@ import { OrderStatus } from "@/types/api";
 import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
 import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
 import { Database } from "@/types/hypercerts-database";
+import { deployments } from "@hypercerts-org/contracts";
 
 /**
  * Given an array of params, returns the encoded params.
@@ -47,9 +48,9 @@ const inputSchemaPost = z.object({
   signature: z.string(),
   chainId: z.number(),
   quoteType: z.number(),
-  globalNonce: z.number(),
+  globalNonce: z.string(),
   subsetNonce: z.number(),
-  orderNonce: z.number(),
+  orderNonce: z.string(),
   strategyId: z.number(),
   collectionType: z.number(),
   collection: z.string(),
@@ -69,8 +70,8 @@ const getTypedData = (chainId: number) => ({
   chainId,
   // TODO: Get correct contract address
   // @ts-ignore
-  verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
-  // verifyingContract: deployments[chainId].HypercertExchange,
+  // verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
+  verifyingContract: deployments[chainId].HypercertExchange,
 });
 
 export const makerTypes = {
@@ -106,7 +107,7 @@ export default async function handler(
       quoteType: number;
       globalNonce: string;
       subsetNonce: number;
-      orderNonce: number;
+      orderNonce: string;
       strategyId: number;
       collectionType: number;
       collection: string;
@@ -174,7 +175,6 @@ export default async function handler(
     );
     const insertEntity = {
       ...makerOrder,
-      globalNonce: makerOrder.globalNonce.toString(10),
       chainId,
       signature,
     };

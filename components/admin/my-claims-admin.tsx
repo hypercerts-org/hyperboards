@@ -38,6 +38,7 @@ export const MyClaimsAdmin = () => {
                     <Th>Admin</Th>
                     <Th>External url</Th>
                     <Th>Description</Th>
+                    <Th>Display size</Th>
                   </Tr>
                 </Thead>
                 <Tbody>

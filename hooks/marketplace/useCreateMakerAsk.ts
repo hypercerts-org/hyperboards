@@ -2,15 +2,13 @@ import { useAccount, useChainId, useMutation, useWalletClient } from "wagmi";
 import { isAddress, parseEther } from "viem";
 import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
-import {
-  Order,
-  useEthersProvider,
-  useEthersSigner,
-} from "@/components/marketplace/create-order-form";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useHypercertClient } from "@/components/providers";
 import { QuoteType, LooksRare } from "@hypercerts-org/marketplace-sdk";
 import { useCreateOrderInSupabase } from "@/hooks/marketplace/useCreateOrderInSupabase";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { useEthersSigner } from "@/hooks/useEthersSigner";
+import { fetchOrderNonce } from "@/hooks/marketplace/fetchOrderNonce";
 
 export const useCreateMakerAsk = () => {
   const { onOpen, onClose, setStep } = useInteractionModal();
@@ -102,29 +100,31 @@ export const useCreateMakerAsk = () => {
         // @ts-ignore
         signer,
       );
-      const order: Order = {
-        collection: contractAddress,
-        collectionType: 2,
-        strategyId: 0,
-        subsetNonce: 0, // keep 0 if you don't know what it is used for
-        orderNonce: 0, // You need to retrieve this value from the API
-        startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
-        endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
-        price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
-        itemIds: [tokenIdBigInt.toString(10)], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
-        additionalParams: "0x",
-        amounts: [1],
-        currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-      };
 
       let signature: string | undefined;
 
       try {
         setStep("Create");
+        const { nonce_counter } = await fetchOrderNonce({
+          address,
+          chainId,
+        });
         const { maker, isCollectionApproved, isTransferManagerApproved } =
           await lr.createMakerAsk({
-            ...order,
+            collection: contractAddress,
+            collectionType: 2,
+            strategyId: 0,
+            subsetNonce: 0, // keep 0 if you don't know what it is used for
+            orderNonce: nonce_counter.toString(), // You need to retrieve this value from the API
+            startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
+            endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
+            price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
+            itemIds: [tokenIdBigInt.toString(10)], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
+            amounts: [1],
+            currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
           });
+
+        console.log(maker);
 
         // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
         setStep("Approve transfer manager");
@@ -147,6 +147,14 @@ export const useCreateMakerAsk = () => {
         // Sign your maker order
         setStep("Sign order");
         signature = await lr.signMakerOrder(maker);
+
+        setStep("Create order");
+        await createOrder({
+          order: maker,
+          signature: signature!,
+          signer: address,
+          quoteType: QuoteType.Ask,
+        });
       } catch (e) {
         console.error(e);
         throw new Error("Error signing order");
@@ -154,19 +162,6 @@ export const useCreateMakerAsk = () => {
 
       if (!signature) {
         throw new Error("Error signing order");
-      }
-
-      try {
-        setStep("Create order");
-        await createOrder({
-          order,
-          signature: signature!,
-          signer: address,
-          globalNonce: 0,
-          quoteType: QuoteType.Ask,
-        });
-      } catch (e) {
-        throw new Error("Error creating order");
       }
     },
     {

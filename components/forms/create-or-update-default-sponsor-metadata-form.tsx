@@ -36,6 +36,7 @@ const defaultPreviewValues: HyperboardEntry = {
   type: "Test",
   firstName: "First",
   lastName: "Last",
+  isBlueprint: true,
 };
 
 const previewSize = 120;
