@@ -10,6 +10,6 @@ export const useFetchDefaultSponsorMetadataByAddress = (address?: string) => {
       .from("default_sponsor_metadata")
       .select("*")
       .eq("address", address)
-      .single();
+      .maybeSingle();
   });
 };
