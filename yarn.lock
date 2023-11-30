@@ -2478,17 +2478,17 @@
   resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-0.8.11.tgz#e8e5f9277f54b5d38c0a79ea9ba3ba5e051a38d0"
   integrity sha512-n6fwMsaoR50VITM2upR4OOi4EZJmZvU6vvXrHWCSakP9e1OeDuAOk+kHiK+egqDRYj6uKtg9VTUFKZBYvu3jRg==
 
-"@hypercerts-org/contracts@1.0.0-alpha.5":
-  version "1.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.0.0-alpha.5.tgz#13bd3fd6cfcbeca876d0fc7c8b7320b22675e25f"
-  integrity sha512-R9xE8QLja5keXEH++1L0EP3Y4+pn/Fv0NTm1vhqRazJgEYZ5GsZ8SZiqE1l5fSkTMUFHz+lKdcynjmEi4Kz7/w==
+"@hypercerts-org/contracts@1.0.0-alpha.6":
+  version "1.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.0.0-alpha.6.tgz#ccbe8616751e1148fb4998c5aea2e6d7707ce2cc"
+  integrity sha512-8XV9jlj5P+WL+hFX56OP+cYpLDwicZoGteN3ZAPHc1Y07fy7I2tpx1/MU7Sg2GX2nVO46Xix1MblQxVzx0Xy8Q==
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/marketplace-sdk@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.3.tgz#6003c8535ae61be5de7a08a030b7395a3802d5b7"
-  integrity sha512-9QvPpX8UWhBssXDClnBkIdtC5DaYxhhW7KjyCD5t75lE663QLEhdFX3t5kukxCKNdxXtiGVNQtn6FAu9LswUkg==
+"@hypercerts-org/marketplace-sdk@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.6.tgz#273ea6767e5497728f49d0515312ec2e09119d31"
+  integrity sha512-AwPfi0W/eUD7kXmfz04b6aGxZ0VrDNeuP7USRmTefOUOZFdqvUyymoWagZq7/vcxS1fZ+zahw+/wTx2u+5FzDw==
   dependencies:
     merkletreejs "^0.3.9"
 

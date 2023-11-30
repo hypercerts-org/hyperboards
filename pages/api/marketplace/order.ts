@@ -48,9 +48,9 @@ const inputSchemaPost = z.object({
   signature: z.string(),
   chainId: z.number(),
   quoteType: z.number(),
-  globalNonce: z.number(),
+  globalNonce: z.string(),
   subsetNonce: z.number(),
-  orderNonce: z.number(),
+  orderNonce: z.string(),
   strategyId: z.number(),
   collectionType: z.number(),
   collection: z.string(),
@@ -107,7 +107,7 @@ export default async function handler(
       quoteType: number;
       globalNonce: string;
       subsetNonce: number;
-      orderNonce: number;
+      orderNonce: string;
       strategyId: number;
       collectionType: number;
       collection: string;
@@ -175,7 +175,6 @@ export default async function handler(
     );
     const insertEntity = {
       ...makerOrder,
-      globalNonce: makerOrder.globalNonce.toString(10),
       chainId,
       signature,
     };
