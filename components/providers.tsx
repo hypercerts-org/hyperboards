@@ -9,7 +9,10 @@ import {
 import { goerli, optimism } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  connectorsForWallets,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -24,6 +27,35 @@ import {
   WALLETCONNECT_ID,
   WEB3_STORAGE_TOKEN,
 } from "@/config";
+import {
+  argentWallet,
+  bitskiWallet,
+  braveWallet,
+  coinbaseWallet,
+  dawnWallet,
+  imTokenWallet,
+  injectedWallet,
+  ledgerWallet,
+  metaMaskWallet,
+  mewWallet,
+  okxWallet,
+  omniWallet,
+  phantomWallet,
+  rabbyWallet,
+  rainbowWallet,
+  safeWallet,
+  tahoWallet,
+  trustWallet,
+  walletConnectWallet,
+  xdefiWallet,
+  zerionWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import {
+  Valora,
+  CeloWallet,
+  CeloTerminal,
+  MetaMask as CeloMetaMask,
+} from "@celo/rainbowkit-celo/wallets";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, optimism],
@@ -35,11 +67,49 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ],
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "Hyperboards",
-  projectId: WALLETCONNECT_ID,
-  chains,
-});
+const projectId = WALLETCONNECT_ID;
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      argentWallet({ chains, projectId }),
+      bitskiWallet({ chains }),
+      braveWallet({ chains }),
+      coinbaseWallet({ chains, appName: "Hypercerts" }),
+      dawnWallet({ chains }),
+      imTokenWallet({ chains, projectId }),
+      ledgerWallet({ chains, projectId }),
+      metaMaskWallet({ chains, projectId }),
+      mewWallet({ chains }),
+      okxWallet({ chains, projectId }),
+      omniWallet({ chains, projectId }),
+      phantomWallet({ chains }),
+      rabbyWallet({ chains }),
+      rainbowWallet({ projectId, chains }),
+      walletConnectWallet({ projectId, chains }),
+      safeWallet({ chains }),
+      tahoWallet({ chains }),
+      trustWallet({ chains, projectId }),
+      xdefiWallet({ chains }),
+      zerionWallet({ chains, projectId }),
+    ],
+  },
+  {
+    groupName: "Recommended with CELO",
+    wallets: [
+      Valora({ chains, projectId }),
+      CeloWallet({ chains, projectId }),
+      CeloTerminal({ chains, projectId }),
+      CeloMetaMask({ chains, projectId }),
+      walletConnectWallet({ projectId, chains }),
+    ],
+  },
+  {
+    groupName: "Injected",
+    wallets: [injectedWallet({ chains })],
+  },
+]);
 
 const config = createConfig({
   autoConnect: true,
