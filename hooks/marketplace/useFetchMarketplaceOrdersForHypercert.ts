@@ -19,7 +19,7 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
       const { data: orders } = await supabaseHypercerts
         .from("marketplace-orders")
         .select("*")
-        .contains("itemIds", [tokenIds])
+        .containedBy("itemIds", tokenIds)
         .throwOnError();
 
       if (!orders) {
