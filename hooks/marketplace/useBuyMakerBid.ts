@@ -6,6 +6,7 @@ import { LooksRare } from "@hypercerts-org/marketplace-sdk";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { useAddress } from "@/hooks/useAddress";
+import { decodeContractError } from "@/utils/decodeContractError";
 
 export const useBuyMakerBid = () => {
   const chainId = useChainId();
@@ -87,22 +88,9 @@ export const useBuyMakerBid = () => {
       console.log(receipt);
     } catch (e) {
       console.error(e);
-      let description = "Order execution error";
-      // console.log({ ...e });
-      // @ts-ignore
-      // const transactionData = e.info.error.data.originalError.data;
       const currentStep = getCurrentStep();
-      // @ts-ignore
-      console.error(`Error during step \"${currentStep}\"`, { ...e });
-      // if (isObject(e)) {
-      //   const decodedError = decodeErrorResult({
-      //     abi: HypercertExchangeAbi,
-      //     data: transactionData,
-      //   });
-      //   description = decodedError?.errorName || description;
-      // }
-
-      throw new Error(description);
+      const defaultMessage = `Error during step \"${currentStep}\"`;
+      throw new Error(decodeContractError(e, defaultMessage));
     } finally {
       onClose();
     }

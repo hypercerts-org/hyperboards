@@ -8,6 +8,7 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { formatEther } from "viem";
@@ -21,6 +22,7 @@ export const AvailableOrders = ({
   orders: MarketplaceOrderEntity[];
 }) => {
   const { mutateAsync: buyFraction } = useBuyMakerBid();
+  const toast = useToast();
 
   return (
     <VStack>
@@ -41,7 +43,17 @@ export const AvailableOrders = ({
             <Tbody>
               {orders.map((order) => {
                 const onBuy = async () => {
-                  await buyFraction({ order });
+                  try {
+                    await buyFraction({ order });
+                  } catch (e) {
+                    toast({
+                      title: "Error",
+                      description: (e as Error).message,
+                      status: "error",
+                      duration: 5000,
+                      isClosable: true,
+                    });
+                  }
                 };
                 return (
                   <Tr key={order.id}>
