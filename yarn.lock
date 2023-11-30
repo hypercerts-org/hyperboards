@@ -2493,10 +2493,10 @@
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/marketplace-sdk@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.6.tgz#273ea6767e5497728f49d0515312ec2e09119d31"
-  integrity sha512-AwPfi0W/eUD7kXmfz04b6aGxZ0VrDNeuP7USRmTefOUOZFdqvUyymoWagZq7/vcxS1fZ+zahw+/wTx2u+5FzDw==
+"@hypercerts-org/marketplace-sdk@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.8.tgz#70d25c3b37f6e2563873ce1ecea297b9d581177a"
+  integrity sha512-nlSQswPMmo9G6Qo4SPHxfKz4VJ5QfRZdek5Ydew4w2+rZnPkBgQYYjHbx0KmRuO3J/I106+9+WYJsDeCePGvCw==
   dependencies:
     merkletreejs "^0.3.9"
 
