@@ -7,6 +7,7 @@ import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { useAddress } from "@/hooks/useAddress";
 import { decodeContractError } from "@/utils/decodeContractError";
+import { useGetCurrentERC20Allowance } from "@/hooks/marketplace/useGetCurrentERC20Allowance";
 
 export const useBuyMakerBid = () => {
   const chainId = useChainId();
@@ -15,6 +16,7 @@ export const useBuyMakerBid = () => {
   const provider = useEthersProvider();
   const signer = useEthersSigner();
   const address = useAddress();
+  const currentAllowance = useGetCurrentERC20Allowance();
 
   return useMutation(async ({ order }: { order: MarketplaceOrderEntity }) => {
     if (!chainId) {
@@ -54,13 +56,17 @@ export const useBuyMakerBid = () => {
 
     try {
       setStep("Setting approval");
-      const approveTx = await lr.approveErc20(lr.addresses.WETH);
-      await waitForTransactionReceipt(walletClientData, {
-        hash: approveTx.hash as `0x${string}`,
-      });
+      if (currentAllowance < BigInt(order.price)) {
+        const approveTx = await lr.approveErc20(
+          lr.addresses.WETH,
+          BigInt(order.price),
+        );
+        await waitForTransactionReceipt(walletClientData, {
+          hash: approveTx.hash as `0x${string}`,
+        });
+      }
 
       const isTransferManagerApproved = await lr.isTransferManagerApproved();
-
       if (!isTransferManagerApproved) {
         setStep("Setting approval");
         const transferManagerApprove = await lr
