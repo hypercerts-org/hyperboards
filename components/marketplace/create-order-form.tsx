@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Center,
+  CloseButton,
   Divider,
   Flex,
   FormControl,
@@ -67,7 +68,7 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
     (fraction) => fraction.id === selectedFractionId,
   );
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "listings",
     rules: {
@@ -227,7 +228,7 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
                             {...register(`listings.${index}.price`, {
                               required: "Required",
                             })}
-                            placeholder="0.000 ETH"
+                            placeholder="0.000"
                             variant="gray"
                             isDisabled={!selectedFraction}
                             isInvalid={!!errors.listings?.[index]?.price}
@@ -240,6 +241,10 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
                             ETH
                           </InputRightElement>
                         </InputGroup>
+                        <CloseButton
+                          onClick={() => remove(index)}
+                          isDisabled={fields.length === 1}
+                        />
                       </HStack>
                     ))}
                   </VStack>
