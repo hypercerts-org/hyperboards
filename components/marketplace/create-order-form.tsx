@@ -1,14 +1,21 @@
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import {
+  Box,
   Button,
   Center,
+  Divider,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
+  HStack,
   Input,
+  InputGroup,
+  InputRightElement,
   Select,
   Spinner,
+  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -22,19 +29,13 @@ import { Alert } from "@chakra-ui/alert";
 
 interface CreateOfferFormValues {
   fractionId: string;
-  price: string;
+  listings: {
+    percentage?: number;
+    price?: string;
+  }[];
 }
 
 export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateOfferFormValues>({
-    defaultValues: {
-      price: "0.000000000000001",
-    },
-  });
   const { data: fractions, isLoading: fractionsLoading } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
   const { data: currentOrdersForHypercert, isLoading: currentOrdersLoading } =
@@ -42,6 +43,57 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
   const toast = useToast();
   const { mutateAsync: createMakerAsk } = useCreateMakerAsk();
   const address = useAddress();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+    watch,
+  } = useForm<CreateOfferFormValues>({
+    defaultValues: {
+      listings: [
+        {
+          percentage: undefined,
+          price: undefined,
+        },
+      ],
+    },
+    reValidateMode: "onBlur",
+  });
+
+  const selectedFractionId = watch("fractionId");
+  const selectedFraction = fractions?.find(
+    (fraction) => fraction.id === selectedFractionId,
+  );
+
+  console.log(selectedFraction);
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: "listings",
+    rules: {
+      required: true,
+      minLength: 1,
+      validate: (value) => {
+        console.log("validate", value);
+        if (!selectedFraction) {
+          return "Fraction ID is required";
+        }
+
+        const sumOfAllPercentages = value.reduce(
+          (acc, { percentage }) => acc + (percentage ?? 0),
+          0,
+        );
+
+        console.log(sumOfAllPercentages, selectedFraction.percentage);
+
+        if (sumOfAllPercentages > selectedFraction.percentage) {
+          return "Sum of all percentages must be lower than fraction percentage";
+        }
+      },
+    },
+  });
 
   const onSubmit = async (values: CreateOfferFormValues) => {
     try {
@@ -98,49 +150,140 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
   const hasFractionsWithoutActiveOrder =
     yourFractionsWithoutActiveOrder.length > 0;
 
+  const listings = watch("listings");
+  const totalPercentage = listings.reduce(
+    (acc, { percentage }) => acc + (percentage ?? 0),
+    0,
+  );
+
+  console.log(errors);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-      <VStack>
-        {hasFractionsWithoutActiveOrder ? (
-          <>
-            <FormControl isInvalid={!!errors.fractionId}>
-              <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
-              <Select
-                {...register("fractionId", {
-                  required: "Fraction ID is required",
-                })}
-              >
-                {yourFractionsWithoutActiveOrder.map((fraction) => (
-                  <option key={fraction.id} value={fraction.id}>
-                    {formatAddress(fraction.id)} - {fraction.units} units
-                  </option>
-                ))}
-              </Select>
-              <FormErrorMessage>
-                {errors.fractionId && errors.fractionId.message}
-              </FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={!!errors.price}>
-              <FormLabel htmlFor="price">Price</FormLabel>
-              <Input
-                id="price"
-                placeholder="Price"
-                {...register("price", { required: "Price is required" })}
-              />
-              <FormErrorMessage>
-                {errors.price && errors.price.message}
-              </FormErrorMessage>
-            </FormControl>
-            <Center>
-              <Button colorScheme="teal" type="submit">
-                Put on sale
-              </Button>
-            </Center>
-          </>
-        ) : (
-          <Alert status="error">You don{"'"}t have any fractions to sell</Alert>
-        )}
-      </VStack>
-    </form>
+    <Flex height={"100%"}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{ width: "100%", minHeight: "500px" }}
+      >
+        <VStack height={"100%"} alignItems={"flex-start"}>
+          <Text
+            fontSize={"xl"}
+            fontWeight={500}
+            lineHeight={"28px"}
+            pb={"30px"}
+          >
+            Split your ownership part
+            <br /> into fractions to list them for sale.
+          </Text>
+          {hasFractionsWithoutActiveOrder ? (
+            <VStack height={"100%"}>
+              <FormControl isInvalid={!!errors.fractionId} pb={6}>
+                <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
+                <Select
+                  {...register("fractionId", {
+                    required: "Fraction ID is required",
+                  })}
+                >
+                  {yourFractionsWithoutActiveOrder.map((fraction) => (
+                    <option key={fraction.id} value={fraction.id}>
+                      {formatAddress(fraction.id)} - {fraction.percentage}%
+                    </option>
+                  ))}
+                </Select>
+                <FormErrorMessage>
+                  {errors.fractionId && errors.fractionId.message}
+                </FormErrorMessage>
+              </FormControl>
+              <VStack width={"100%"} divider={<Divider />}>
+                <FormControl isInvalid={!!errors.listings?.root}>
+                  <VStack width={"100%"} divider={<Divider />}>
+                    {fields.map((item, index) => (
+                      <HStack key={item.id}>
+                        <Text textStyle={"secondary"}>
+                          {(index + 1).toString().padStart(2, "0")}.
+                        </Text>
+
+                        <InputGroup>
+                          <Input
+                            type="number"
+                            {...register(`listings.${index}.percentage`, {
+                              valueAsNumber: true,
+                              min: 0,
+                              max: selectedFraction?.percentage,
+                              required: "Required",
+                            })}
+                            placeholder="0.00"
+                            variant="gray"
+                            isDisabled={!selectedFraction}
+                            isInvalid={!!errors.listings?.[index]?.percentage}
+                            _invalid={{
+                              borderWidth: "2px",
+                              borderColor: "red.300",
+                            }}
+                          />
+                          <InputRightElement opacity={0.6} ml={0}>
+                            %
+                          </InputRightElement>
+                        </InputGroup>
+
+                        <Text>for</Text>
+                        <InputGroup>
+                          <Input
+                            {...register(`listings.${index}.price`, {
+                              required: "Required",
+                            })}
+                            placeholder="0.000 ETH"
+                            variant="gray"
+                            isDisabled={!selectedFraction}
+                            isInvalid={!!errors.listings?.[index]?.price}
+                            _invalid={{
+                              borderWidth: "2px",
+                              borderColor: "red.300",
+                            }}
+                          />
+                          <InputRightElement opacity={0.6}>
+                            ETH
+                          </InputRightElement>
+                        </InputGroup>
+                      </HStack>
+                    ))}
+                  </VStack>
+                  <FormErrorMessage>
+                    {errors.listings?.root && errors.listings?.root.message}
+                  </FormErrorMessage>
+                </FormControl>
+                <Button
+                  onClick={() =>
+                    append({ percentage: undefined, price: undefined })
+                  }
+                  variant="gray"
+                  width={"100%"}
+                  justifyContent={"flex-start"}
+                >
+                  +
+                  <Box ml={2} as={"span"} opacity={0.5}>
+                    add fraction
+                  </Box>
+                </Button>
+              </VStack>
+              <Center width={"100%"} marginTop={"auto"}>
+                <Button
+                  width={"100%"}
+                  variant={"blackAndWhite"}
+                  colorScheme="teal"
+                  type="submit"
+                >
+                  List total of {isNaN(totalPercentage) ? 0 : totalPercentage}%
+                  for sale
+                </Button>
+              </Center>
+            </VStack>
+          ) : (
+            <Alert status="error">
+              You don{"'"}t have any fractions to sell
+            </Alert>
+          )}
+        </VStack>
+      </form>
+    </Flex>
   );
 };

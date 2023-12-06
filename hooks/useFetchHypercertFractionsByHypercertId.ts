@@ -22,7 +22,16 @@ export const useFetchHypercertFractionsByHypercertId = (
       }
 
       const fractions = await client.indexer.fractionsByClaim(hypercertId);
-      return fractions.claimTokens;
+      const totalUnitsForAllFractions = fractions.claimTokens.reduce(
+        (acc, cur) => acc + BigInt(cur.units),
+        0n,
+      );
+      return fractions.claimTokens.map((fraction) => ({
+        ...fraction,
+        percentage: Number(
+          (BigInt(fraction.units) * 100n) / totalUnitsForAllFractions,
+        ),
+      }));
     },
     {
       enabled: !!client && !!chainId,

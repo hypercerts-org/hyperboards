@@ -1,6 +1,11 @@
 import { Button, ButtonProps, Modal, useDisclosure } from "@chakra-ui/react";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
-import { ModalBody, ModalContent, ModalHeader } from "@chakra-ui/modal";
+import {
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+} from "@chakra-ui/modal";
 import { CreateOrderForm } from "@/components/marketplace/create-order-form";
 
 export const ListForSaleButton = ({
@@ -11,7 +16,9 @@ export const ListForSaleButton = ({
   hypercertId: string;
   text?: string;
 } & ButtonProps) => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen, onClose, onOpen } = useDisclosure({
+    defaultIsOpen: true,
+  });
   const { data: orderData } =
     useFetchMarketplaceOrdersForHypercert(hypercertId);
   return (
@@ -19,10 +26,11 @@ export const ListForSaleButton = ({
       <Button variant="blackAndWhite" onClick={onOpen} {...props}>
         {text}
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Sell fraction</ModalHeader>
-          <ModalBody>
+          <ModalCloseButton size={"lg"} />
+          <ModalBody p="40px" pt={"60px"}>
             {orderData && <CreateOrderForm hypercertId={hypercertId} />}
           </ModalBody>
         </ModalContent>

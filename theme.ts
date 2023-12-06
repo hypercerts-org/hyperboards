@@ -45,6 +45,11 @@ const Button = defineStyleConfig({
       border: "1px solid black",
       borderRadius: "8px",
     },
+    gray: {
+      backgroundColor: "rgba(242,242,242,1)",
+      color: "black",
+      borderRadius: "8px",
+    },
   },
   defaultProps: {},
 });
@@ -75,6 +80,16 @@ export const theme: ThemeOverride = extendTheme({
     Badge,
     Tag,
     Input: {
+      variants: {
+        gray: {
+          field: {
+            backgroundColor: "rgba(242,242,242,1)",
+            borderRadius: "8px",
+            textAlign: "right",
+          },
+          text: {},
+        },
+      },
       baseStyle: {
         field: {
           borderRadius: "0",
