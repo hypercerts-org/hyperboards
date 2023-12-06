@@ -24,7 +24,7 @@
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.0.0-alpha.6",
     "@hypercerts-org/marketplace-sdk": "^0.0.8",
-    "@hypercerts-org/sdk": "^1.0.0-alpha.8",
+    "@hypercerts-org/sdk": "^1.0.0-alpha.9",
     "@plasmicapp/cli": "^0.1.307",
     "@plasmicapp/loader-nextjs": "^1.0.309",
     "@plasmicapp/react-web": "^0.2.248",
@@ -62,8 +62,8 @@
     "slick-carousel": "^1.8.1",
     "supabase": "^1.106.1",
     "typescript": "5.2.2",
-    "viem": "^1.10.3",
-    "wagmi": "^1.4.1",
+    "viem":  "1.19.9",
+    "wagmi": "1.4.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {

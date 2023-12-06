@@ -4,13 +4,16 @@ import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useHypercertClient } from "@/components/providers";
-import { QuoteType, LooksRare } from "@hypercerts-org/marketplace-sdk";
+import { LooksRare, QuoteType } from "@hypercerts-org/marketplace-sdk";
 import { useCreateOrderInSupabase } from "@/hooks/marketplace/useCreateOrderInSupabase";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { fetchOrderNonce } from "@/hooks/marketplace/fetchOrderNonce";
+import { CreateOfferFormValues } from "@/components/marketplace/create-order-form";
+import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { constructTokenIdsFromSplitFractionContractReceipt } from "@/utils/constructTokenIdsFromSplitFractionContractReceipt";
 
-export const useCreateMakerAsk = () => {
+export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
   const { onOpen, onClose, setStep } = useInteractionModal();
   const { mutateAsync: createOrder } = useCreateOrderInSupabase();
 
@@ -20,9 +23,11 @@ export const useCreateMakerAsk = () => {
   const { data: walletClientData } = useWalletClient();
   const provider = useEthersProvider();
   const signer = useEthersSigner();
+  const { data: currentFractions } =
+    useFetchHypercertFractionsByHypercertId(hypercertId);
 
   return useMutation(
-    async (values: { fractionId: string; price: string }) => {
+    async (values: CreateOfferFormValues) => {
       if (!client) {
         throw new Error("Client not initialized");
       }
@@ -35,7 +40,19 @@ export const useCreateMakerAsk = () => {
         throw new Error("Address not initialized");
       }
 
+      if (!currentFractions) {
+        throw new Error("Fractions not found");
+      }
+
       onOpen([
+        {
+          title: "Splitting",
+          description: "Splitting fraction units on-chain",
+        },
+        {
+          title: "Waiting",
+          description: "Awaiting confirmation",
+        },
         {
           title: "Create",
           description: "Creating order in contract",
@@ -92,6 +109,58 @@ export const useCreateMakerAsk = () => {
         throw new Error("Wallet client not initialized");
       }
 
+      // Split the fraction into required parts
+      setStep("Splitting");
+      const selectedFraction = currentFractions.find(
+        (fraction) => fraction.id === values.fractionId,
+      );
+
+      if (!selectedFraction) {
+        throw new Error("Fraction not found");
+      }
+      const fractionAmounts = values.listings.map((listing) => {
+        if (!listing.percentage) {
+          throw new Error("Invalid percentage");
+        }
+
+        return (
+          (BigInt(selectedFraction.units) *
+            BigInt(listing.percentage * 10000)) /
+          1000000n
+        );
+      });
+
+      const restAmount =
+        BigInt(selectedFraction?.units) -
+        fractionAmounts.reduce((acc, cur) => acc + cur, 0n);
+
+      console.log(
+        selectedFraction.tokenID,
+        fractionAmounts,
+        client.config,
+        client.contract,
+      );
+      const hash = await client.splitFractionUnits(
+        BigInt(selectedFraction.tokenID),
+        [...fractionAmounts, restAmount],
+      );
+
+      // Await split confirmation
+      setStep("Waiting");
+      const publicClient = client.config.publicClient;
+      const receipt = await publicClient?.waitForTransactionReceipt({
+        confirmations: 3,
+        hash: hash,
+      });
+
+      if (!receipt || receipt?.status === "reverted") {
+        throw new Error("Splitting failed");
+      }
+      console.log(receipt);
+      const newTokenIds =
+        constructTokenIdsFromSplitFractionContractReceipt(receipt);
+      console.log(newTokenIds);
+
       const lr = new LooksRare(
         chainId,
         // TODO: Fix typing issue with provider
@@ -103,65 +172,74 @@ export const useCreateMakerAsk = () => {
 
       let signature: string | undefined;
 
-      try {
-        setStep("Create");
-        const { nonce_counter } = await fetchOrderNonce({
-          address,
-          chainId,
-        });
-        const { maker, isCollectionApproved, isTransferManagerApproved } =
-          await lr.createMakerAsk({
-            collection: contractAddress,
-            collectionType: 2,
-            strategyId: 0,
-            subsetNonce: 0, // keep 0 if you don't know what it is used for
-            orderNonce: nonce_counter.toString(), // You need to retrieve this value from the API
-            startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
-            endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
-            price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
-            itemIds: [tokenIdBigInt.toString(10)], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
-            amounts: [1],
-            currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-          });
+      for (let index = 0; index < values.listings.length; index++) {
+        const listing = values.listings[index];
+        const tokenId = newTokenIds[index];
 
-        console.log(maker);
-
-        // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
-        setStep("Approve transfer manager");
-        if (!isTransferManagerApproved) {
-          const tx = await lr.grantTransferManagerApproval().call();
-          await waitForTransactionReceipt(walletClientData, {
-            hash: tx.hash as `0x${string}`,
-          });
+        if (!listing.price) {
+          throw new Error("Invalid price");
         }
 
-        setStep("Approve collection");
-        // Approve the collection items to be transferred by the TransferManager
-        if (!isCollectionApproved) {
-          const tx = await lr.approveAllCollectionItems(maker.collection);
-          await waitForTransactionReceipt(walletClientData, {
-            hash: tx.hash as `0x${string}`,
+        try {
+          setStep("Create");
+          const { nonce_counter } = await fetchOrderNonce({
+            address,
+            chainId,
           });
+          const { maker, isCollectionApproved, isTransferManagerApproved } =
+            await lr.createMakerAsk({
+              collection: contractAddress,
+              collectionType: 2,
+              strategyId: 0,
+              subsetNonce: 0, // keep 0 if you don't know what it is used for
+              orderNonce: nonce_counter.toString(), // You need to retrieve this value from the API
+              startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
+              endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
+              price: parseEther(listing.price), // Be careful to use a price in wei, this example is for 1 ETH
+              itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
+              amounts: [1],
+              currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+            });
+
+          console.log(maker);
+
+          // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
+          setStep("Approve transfer manager");
+          if (!isTransferManagerApproved) {
+            const tx = await lr.grantTransferManagerApproval().call();
+            await waitForTransactionReceipt(walletClientData, {
+              hash: tx.hash as `0x${string}`,
+            });
+          }
+
+          setStep("Approve collection");
+          // Approve the collection items to be transferred by the TransferManager
+          if (!isCollectionApproved) {
+            const tx = await lr.approveAllCollectionItems(maker.collection);
+            await waitForTransactionReceipt(walletClientData, {
+              hash: tx.hash as `0x${string}`,
+            });
+          }
+
+          // Sign your maker order
+          setStep("Sign order");
+          signature = await lr.signMakerOrder(maker);
+
+          if (!signature) {
+            throw new Error("Error signing order");
+          }
+
+          setStep("Create order");
+          await createOrder({
+            order: maker,
+            signature: signature!,
+            signer: address,
+            quoteType: QuoteType.Ask,
+          });
+        } catch (e) {
+          console.error(e);
+          throw new Error("Error signing order");
         }
-
-        // Sign your maker order
-        setStep("Sign order");
-        signature = await lr.signMakerOrder(maker);
-
-        setStep("Create order");
-        await createOrder({
-          order: maker,
-          signature: signature!,
-          signer: address,
-          quoteType: QuoteType.Ask,
-        });
-      } catch (e) {
-        console.error(e);
-        throw new Error("Error signing order");
-      }
-
-      if (!signature) {
-        throw new Error("Error signing order");
       }
     },
     {

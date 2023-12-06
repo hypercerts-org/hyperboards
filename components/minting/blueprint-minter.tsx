@@ -20,17 +20,15 @@ import {
   validateMetaData,
   validateClaimData,
 } from "@hypercerts-org/sdk";
-import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useChainId } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
-import { decodeEventLog, TransactionReceipt } from "viem";
-import { HypercertMinterAbi } from "@hypercerts-org/contracts";
+import { TransactionReceipt } from "viem";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
-import { debugLog } from "@/utils/debugLog";
+import { constructClaimIdFromCreateClaimContractReceipt } from "@/utils/constructClaimIdFromCreateClaimContractReceipt";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -85,46 +83,6 @@ const formValuesToHypercertMetadata = (
   }
 
   return metaData;
-};
-
-const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
-  debugLog(receipt);
-  const events = receipt.logs.map((log) =>
-    decodeEventLog({
-      abi: HypercertMinterAbi,
-      data: log.data,
-      topics: log.topics,
-    }),
-  );
-
-  debugLog("events", events);
-  if (!events) {
-    throw new Error("No events in receipt");
-  }
-
-  const claimEvent = events.find((e) => e.eventName === "ClaimStored");
-
-  if (!claimEvent) {
-    throw new Error("TransferSingle event not found");
-  }
-
-  const { args } = claimEvent;
-
-  if (!args) {
-    throw new Error("No args in event");
-  }
-
-  // @ts-ignore
-  const tokenIdBigNumber = args["claimID"] as BigNumber;
-
-  if (!tokenIdBigNumber) {
-    throw new Error("No tokenId arg in event");
-  }
-
-  const contractId = receipt.to?.toLowerCase();
-  const tokenId = tokenIdBigNumber.toString();
-
-  return `${contractId}-${tokenId}`;
 };
 
 export const BlueprintMinter = ({
@@ -266,7 +224,9 @@ export const BlueprintMinter = ({
     let claimId: string | undefined;
 
     try {
-      claimId = constructClaimIdFromContractReceipt(transactionReceipt!);
+      claimId = constructClaimIdFromCreateClaimContractReceipt(
+        transactionReceipt!,
+      );
     } catch (e) {
       console.error(e);
       toast({

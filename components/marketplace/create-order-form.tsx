@@ -27,7 +27,7 @@ import { useAddress } from "@/hooks/useAddress";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
 import { Alert } from "@chakra-ui/alert";
 
-interface CreateOfferFormValues {
+export interface CreateOfferFormValues {
   fractionId: string;
   listings: {
     percentage?: number;
@@ -41,7 +41,7 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
   const { data: currentOrdersForHypercert, isLoading: currentOrdersLoading } =
     useFetchMarketplaceOrdersForHypercert(hypercertId);
   const toast = useToast();
-  const { mutateAsync: createMakerAsk } = useCreateMakerAsk();
+  const { mutateAsync: createMakerAsk } = useCreateMakerAsk({ hypercertId });
   const address = useAddress();
 
   const {
@@ -67,8 +67,6 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
     (fraction) => fraction.id === selectedFractionId,
   );
 
-  console.log(selectedFraction);
-
   const { fields, append } = useFieldArray({
     control,
     name: "listings",
@@ -85,8 +83,6 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
           (acc, { percentage }) => acc + (percentage ?? 0),
           0,
         );
-
-        console.log(sumOfAllPercentages, selectedFraction.percentage);
 
         if (sumOfAllPercentages > selectedFraction.percentage) {
           return "Sum of all percentages must be lower than fraction percentage";
@@ -156,8 +152,6 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
     0,
   );
 
-  console.log(errors);
-
   return (
     <Flex height={"100%"}>
       <form
@@ -205,9 +199,11 @@ export const CreateOrderForm = ({ hypercertId }: { hypercertId: string }) => {
                         <InputGroup>
                           <Input
                             type="number"
+                            step="0.01"
                             {...register(`listings.${index}.percentage`, {
                               valueAsNumber: true,
                               min: 0,
+
                               max: selectedFraction?.percentage,
                               required: "Required",
                             })}
