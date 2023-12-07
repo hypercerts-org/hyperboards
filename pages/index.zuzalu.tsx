@@ -7,7 +7,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { theme } from "@/theme";
+import { index } from "@/theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ALCHEMY_KEY_GOERLI, WALLETCONNECT_ID } from "@/config";
 
@@ -41,7 +41,7 @@ export const ZuconnectRetroactiveFundPage = () => {
     <WagmiConfig config={config}>
       <RainbowKitProvider chains={chains}>
         <QueryClientProvider client={queryClient}>
-          <ChakraProvider theme={theme}>
+          <ChakraProvider theme={index}>
             <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"} py={"80px"}>
               <Box maxW={"550px"}>
                 <ZuconnectRetroactiveFund />

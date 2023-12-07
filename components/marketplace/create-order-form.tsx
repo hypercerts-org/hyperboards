@@ -55,7 +55,7 @@ export const CreateOrderForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     control,
     watch,
   } = useForm<CreateOfferFormValues>({
@@ -158,12 +158,12 @@ export const CreateOrderForm = ({
 
   const listings = watch("listings");
   const totalPercentage = listings.reduce(
-    (acc, { percentage }) => acc + (percentage ?? 0),
+    (acc, { percentage }) => acc + (percentage || 0),
     0,
   );
 
   const disableInputs = isSubmitting;
-  const submitDisabled = disableInputs || totalPercentage === 0;
+  const submitDisabled = !isValid || disableInputs || totalPercentage === 0;
 
   return (
     <Flex height={"100%"}>
@@ -185,7 +185,9 @@ export const CreateOrderForm = ({
             {hasFractionsWithoutActiveOrder ? (
               <VStack height={"100%"}>
                 <FormControl isInvalid={!!errors.fractionId} pb={6}>
-                  <FormLabel htmlFor="fractionId">Fraction ID</FormLabel>
+                  <FormLabel htmlFor="fractionId">
+                    Fraction to sell from
+                  </FormLabel>
                   <Select
                     disabled={disableInputs}
                     {...register("fractionId", {
@@ -290,8 +292,9 @@ export const CreateOrderForm = ({
                     variant={"blackAndWhite"}
                     type="submit"
                   >
-                    List total of {isNaN(totalPercentage) ? 0 : totalPercentage}
-                    % for sale
+                    {totalPercentage === 0
+                      ? "List for sale"
+                      : `List total of ${totalPercentage}% for sale`}
                   </Button>
                 </Center>
               </VStack>
