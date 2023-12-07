@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
   Flex,
@@ -6,13 +6,19 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
+  IconButton,
   Input,
+  InputGroup,
+  InputRightElement,
   Textarea,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { HypercertPreview } from "@/components/minting/hypercert-preview";
 import { MutableRefObject } from "react";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 export interface MintingFormValues {
   name: string;
@@ -24,6 +30,7 @@ export interface MintingFormValues {
   contributors: string;
   backgroundColor: string;
   textColor: string;
+  allowlist?: { address: string; units: number }[];
 }
 
 // Default values minting form for testing
@@ -58,12 +65,18 @@ export const MintingForm = ({
   imageRef?: MutableRefObject<HTMLDivElement | null>;
 }) => {
   const {
+    control,
     register,
     setValue,
     watch,
     formState: { errors, isSubmitting },
     handleSubmit,
   } = useMintingForm(initialValues);
+
+  const { fields, append, update, remove } = useFieldArray({
+    control,
+    name: "allowlist",
+  });
 
   const isDisabled = isSubmitting || disabled;
   const values = watch();
@@ -73,7 +86,7 @@ export const MintingForm = ({
   return (
     <HStack w={"100%"} minW={0}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-        <Flex direction={"column"} width={"100%"} minWidth={0}>
+        <Flex width={"100%"} minWidth={0}>
           <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
             <FormControl isInvalid={!!errors.name?.message}>
               <FormLabel>Name</FormLabel>
@@ -121,6 +134,58 @@ export const MintingForm = ({
               <FormErrorMessage>
                 {errors.contributors?.message}
               </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.allowlist?.message}>
+              <FormLabel>Allowlist</FormLabel>
+              {fields.map((field, index) => (
+                <InputGroup key={field.id} marginTop={"1em"}>
+                  <Controller
+                    render={({ field }) => (
+                      <Input isDisabled={isDisabled} {...field} />
+                    )}
+                    name={`allowlist.${index}.address`}
+                    control={control}
+                  />
+                  <Controller
+                    render={({ field }) => (
+                      <Input isDisabled={isDisabled} type="number" {...field} />
+                    )}
+                    name={`allowlist.${index}.units`}
+                    control={control}
+                  />
+                  {index == fields.length - 1 ? (
+                    <InputRightElement>
+                      <Tooltip
+                        hasArrow
+                        label="Add another allowlist entry"
+                        aria-label="Add another allowlist entry"
+                      >
+                        <IconButton
+                          aria-label="Add another allowlist entry"
+                          onClick={() => append({ address: "", units: 10000 })}
+                          icon={<AddIcon />}
+                        />
+                      </Tooltip>
+                    </InputRightElement>
+                  ) : (
+                    <InputRightElement>
+                      <Tooltip
+                        hasArrow
+                        label="Remove allowlist entry"
+                        aria-label="Remove allowlist entry"
+                      >
+                        <IconButton
+                          aria-label="remove allowlist entry"
+                          background={"red.500"}
+                          onClick={() => remove(index)}
+                          icon={<DeleteIcon />}
+                        />
+                      </Tooltip>
+                    </InputRightElement>
+                  )}
+                </InputGroup>
+              ))}
+              <FormErrorMessage>{errors.allowlist?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.backgroundColor?.message}>
               <FormLabel>Background</FormLabel>

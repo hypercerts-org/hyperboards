@@ -11,6 +11,9 @@ const nextConfig = {
   pageExtensions: (() => {
     const { NEXT_PUBLIC_BUILDTYPE } = process.env;
     switch (NEXT_PUBLIC_BUILDTYPE) {
+      case "frontier-foundation":
+        console.log("frontier-foundation build");
+        return ["frontier.tsx"];
       case "zuzalu":
         console.log("zuzalu build");
         return ["zuzalu.tsx"];
