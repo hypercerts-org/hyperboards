@@ -28,7 +28,7 @@ import {
 import { useFetchDefaultSponsorMetadataByAddress } from "@/hooks/useFetchDefaultSponsorMetadataByAddress";
 import { formatAddress, formatWorkTimeframe } from "@/utils/formatting";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
@@ -58,6 +58,12 @@ export const Index = () => {
   const { data: displayData } = useFetchDefaultSponsorMetadataByAddress(
     hypercert?.owner,
   );
+
+  const buyButtonRef = useRef<HTMLButtonElement>(null);
+
+  const onClickViewListings = () => {
+    buyButtonRef.current?.click();
+  };
 
   const ownedByConnectedUser = !!fractionsData?.some(
     (fraction) => fraction.owner === address,
@@ -235,6 +241,7 @@ export const Index = () => {
                     <ListForSaleButton
                       width={"100%"}
                       hypercertId={hypercertId as string}
+                      onClickViewListings={onClickViewListings}
                     />
                     <Button
                       variant="blackAndWhiteOutline"
@@ -257,6 +264,7 @@ export const Index = () => {
                 <MarketplaceStats hypercertId={hypercertId as string} />
                 <HStack width={"100%"}>
                   <BuyHypercertButton
+                    ref={buyButtonRef}
                     width={"100%"}
                     hypercertId={hypercertId as string}
                   />

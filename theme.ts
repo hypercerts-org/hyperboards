@@ -49,6 +49,11 @@ const Button = defineStyleConfig({
       backgroundColor: "rgba(242,242,242,1)",
       color: "black",
       borderRadius: "8px",
+      _hover: {
+        backgroundColor: "rgba(242,242,242,1)",
+        color: "black",
+        borderRadius: "8px",
+      },
     },
   },
   defaultProps: {},
@@ -70,6 +75,8 @@ export const theme: ThemeOverride = extendTheme({
     },
   },
   fontSizes: {
+    xxl: "48px",
+    xl: "28px",
     lg: "24px",
   },
   colors: {
@@ -97,6 +104,11 @@ export const theme: ThemeOverride = extendTheme({
         addon: {
           borderRadius: "0",
         },
+      },
+    },
+    Modal: {
+      defaultProps: {
+        isCentered: true,
       },
     },
   },
