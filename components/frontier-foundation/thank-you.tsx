@@ -14,10 +14,12 @@ export const ThankYou = () => {
 
   const blockExporer =
     chainId === "10"
-      ? "https://optimistic.etherscan.io"
+      ? "optimistic.etherscan.io"
       : chainId === "42220"
-      ? "https://celoscan.io"
-      : "";
+      ? "celoscan.io"
+      : chainId === "5"
+      ? "goerli.etherscan.io"
+      : "etherscan.io";
 
   return (
     <>
@@ -26,7 +28,7 @@ export const ThankYou = () => {
       </Head>
       <VStack spacing={6} textAlign={"center"} mb="80px" px={isMobile ? 2 : 0}>
         <Heading textTransform={"uppercase"} fontSize={48}>
-          🚵🏼🚵🏼🚵🏼 Thank you 🚵🏼🚵🏼🚵🏼
+          🚵🏼 Thank you 🚵🏼
         </Heading>
         <Text>Thanks for joining the action and supporting the community.</Text>
         <Text>
@@ -55,7 +57,6 @@ export const ThankYou = () => {
           </Link>
         </Stack>
       </VStack>
-      <TransactionHistory />
     </>
   );
 };

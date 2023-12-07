@@ -14,7 +14,6 @@ import {
 } from "@/components/minting/minting-form";
 import { useEffect, useRef, useState } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
-import { useHypercertClient } from "@/components/providers";
 import {
   HypercertMetadata,
   TransferRestrictions,
@@ -27,12 +26,11 @@ import {
 import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
-import { decodeEventLog, TransactionReceipt, isAddress, Address } from "viem";
+import { decodeEventLog, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { debugLog } from "@/utils/debugLog";
-import { useChainId } from "wagmi";
-import { initial } from "lodash";
+import { useChainId, useWalletClient, usePublicClient } from "wagmi";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -170,14 +168,16 @@ export const AllowlistMinter = ({
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
   const provider = useEthersProvider();
-
+  const { data: walletClient, isError, isLoading } = useWalletClient();
   const [previewImageSrc, setPreviewImageSrc] = useState<string | undefined>(
     undefined,
   );
 
+  //TODO something nicer than non-null assertion
   const client = chainId
     ? new HypercertClient({
         chain: { id: 5 },
+        walletClient: walletClient!,
         nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN,
         web3StorageToken: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN,
       })
