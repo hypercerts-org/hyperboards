@@ -10,6 +10,7 @@ import { theme } from "@/theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ALCHEMY_KEY_GOERLI, WALLETCONNECT_ID } from "@/config";
 import { FrontierFoundation } from "@/components/frontier-foundation";
+import { HypercertClientProvider } from "@/components/providers";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
@@ -40,16 +41,22 @@ export const FrontierFoundationPage = () => {
   return (
     <WagmiConfig config={config}>
       <RainbowKitProvider chains={chains}>
-        <QueryClientProvider client={queryClient}>
-          <ChakraProvider theme={theme}>
-            <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"} py={"80px"}>
-              <Box maxW={"550px"}>
-                <FrontierFoundation />
-              </Box>
-            </Center>
-          </ChakraProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
+        <HypercertClientProvider>
+          <QueryClientProvider client={queryClient}>
+            <ChakraProvider theme={theme}>
+              <Center
+                minHeight={"100vh"}
+                backgroundColor={"#F1F1F1"}
+                py={"80px"}
+              >
+                <Box maxW={"960px"}>
+                  <FrontierFoundation />
+                </Box>
+              </Center>
+            </ChakraProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </HypercertClientProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

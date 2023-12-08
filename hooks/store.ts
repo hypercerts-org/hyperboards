@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
-import { Claim } from "@hypercerts-org/sdk";
 import { createPublicClient, getContract, http } from "viem";
 import { goerli } from "viem/chains";
 import { TRADER_CONTRACT } from "@/config";
@@ -36,7 +35,7 @@ export interface Offer {
     owner: string;
     tokenID: string;
     units: string;
-    claim: Claim;
+    claim: any;
   };
 }
 

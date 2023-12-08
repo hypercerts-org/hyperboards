@@ -1,18 +1,9 @@
-import { useBlueprintById } from "@/hooks/useBlueprintById";
-import {
-  Heading,
-  HStack,
-  Spinner,
-  useToast,
-  Image,
-  Button,
-  VStack,
-} from "@chakra-ui/react";
+import { useToast, VStack } from "@chakra-ui/react";
 import {
   MintingForm,
   MintingFormValues,
 } from "@/components/minting/minting-form";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { exportAsImage } from "@/lib/exportToImage";
 import {
   HypercertMetadata,
@@ -21,7 +12,6 @@ import {
   validateClaimData,
   AllowlistEntry,
   validateAllowlist,
-  HypercertClient,
 } from "@hypercerts-org/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
@@ -30,7 +20,7 @@ import { decodeEventLog, TransactionReceipt } from "viem";
 import { HypercertMinterAbi } from "@hypercerts-org/contracts";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { debugLog } from "@/utils/debugLog";
-import { useChainId, useWalletClient, usePublicClient } from "wagmi";
+import { useHypercertClient } from "@/components/providers";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -164,34 +154,10 @@ export const AllowlistMinter = ({
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const toast = useToast();
-  const chainId = useChainId();
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
   const provider = useEthersProvider();
-  const { data: walletClient, isError, isLoading } = useWalletClient();
-  const [previewImageSrc, setPreviewImageSrc] = useState<string | undefined>(
-    undefined,
-  );
-
-  //TODO something nicer than non-null assertion
-  const client = chainId
-    ? new HypercertClient({
-        chain: { id: 5 },
-        walletClient: walletClient!,
-        nftStorageToken: process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN,
-        web3StorageToken: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN,
-      })
-    : undefined;
-
-  const syncPreviewImage = async () => {
-    const imagePreviewSrc = await exportAsImage(ref);
-
-    setPreviewImageSrc(imagePreviewSrc);
-  };
-
-  useEffect(() => {
-    syncPreviewImage();
-  }, []);
+  const client = useHypercertClient();
 
   const onMint = async (values: MintingFormValues) => {
     if (!address) {
@@ -272,23 +238,6 @@ export const AllowlistMinter = ({
       return;
     }
 
-    let claimId: string | undefined;
-
-    try {
-      claimId = constructClaimIdFromContractReceipt(transactionReceipt!);
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: "Error",
-        description: "Could not construct claimId",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      onClose();
-      return;
-    }
-
     onClose();
     onComplete?.();
   };
@@ -316,14 +265,7 @@ export const AllowlistMinter = ({
           buttonLabel="Mint"
           imageRef={ref}
         />
-        <Image
-          src={previewImageSrc}
-          h={"400px"}
-          w={"320px"}
-          alt="Hypercert preview image"
-        />
       </VStack>
-      <Button onClick={syncPreviewImage}>Sync preview image</Button>
     </>
   );
 };

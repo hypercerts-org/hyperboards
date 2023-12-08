@@ -466,6 +466,7 @@ const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
 
       // The total number of units in this claim
       const totalUnitsInClaim = fractions.reduce(
+        // @ts-ignore
         (acc, curr) => acc + BigInt(curr.units),
         0n,
       );
@@ -474,6 +475,7 @@ const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
       const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
 
       // Calculate the relative number of units per fraction
+      // @ts-ignore
       const newFractions = fractions.map((fraction) => ({
         ...fraction,
         unitsAdjustedForDisplaySize:
@@ -510,6 +512,7 @@ const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
       .mapValues((value, key) => ({
         total: value
           .flatMap((x) =>
+            // @ts-ignore
             x.fractions.map((fraction) => fraction.unitsAdjustedForDisplaySize),
           )
           .reduce((acc, curr) => acc + curr, 0n),

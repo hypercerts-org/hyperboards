@@ -36,6 +36,16 @@ export const useMintHypercertWithAllowlist = () => {
         TransferRestrictions.AllowAll,
       );
 
+      if (!hash) {
+        toast({
+          title: "Error minting hypercert",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
       const publicClient = client.config.publicClient;
       const receipt = await publicClient?.waitForTransactionReceipt({
         confirmations: 3,

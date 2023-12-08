@@ -167,6 +167,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       nftStorageToken: NFT_STORAGE_TOKEN,
       web3StorageToken: WEB3_STORAGE_TOKEN,
       easContractAddress: EAS_CONTRACT_ADDRESS,
+      // @ts-ignore
       walletClient,
     });
 

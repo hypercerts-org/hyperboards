@@ -33,6 +33,7 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
 
       const totalUnitsForSale = _.sumBy(
         allFractionsForSale,
+        // @ts-ignore
         (fraction) => fraction.units,
       );
 
