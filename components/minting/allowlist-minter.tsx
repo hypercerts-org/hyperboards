@@ -212,6 +212,8 @@ export const AllowlistMinter = ({
     textColor: "#194446",
     contributorsGaveTheirPermission: false,
     agreeToTerms: false,
+    logoImgUrl: "https://i.imgur.com/sDQhp3Y.png",
+    bannerImgUrl: "https://i.imgur.com/wsM3fWd.jpeg",
   };
 
   return (

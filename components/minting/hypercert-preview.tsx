@@ -10,11 +10,15 @@ export const HypercertPreview = ({
   imageRef,
   backgroundColor = "#73C9CC",
   textColor = "#194446",
+  logoImgUrl = "https://i.imgur.com/sDQhp3Y.png",
+  bannerImgUrl = "https://i.imgur.com/wsM3fWd.jpeg",
 }: {
   imageRef?: MutableRefObject<HTMLDivElement | null>;
   values: Partial<MintingFormValues>;
   backgroundColor?: string;
   textColor?: string;
+  logoImgUrl?: string;
+  bannerImgUrl?: string;
 }) => {
   return (
     <Flex
@@ -47,7 +51,7 @@ export const HypercertPreview = ({
         <Image
           alt={"background art"}
           borderTopRadius={"22px"}
-          src={"https://i.imgur.com/wsM3fWd.jpeg"}
+          src={bannerImgUrl}
           position={"relative"}
           objectFit={"fill"}
           maxWidth={"none"}
@@ -122,7 +126,7 @@ export const HypercertPreview = ({
           borderRadius={"2000px"}
           border={`1px solid ${textColor}`}
         >
-          <Image src="https://i.imgur.com/sDQhp3Y.png" alt={"Logo image"} />
+          <Image src={logoImgUrl} alt={"Logo image"} />
         </Flex>
         <Flex
           position={"relative"}

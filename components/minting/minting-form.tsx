@@ -36,6 +36,8 @@ export interface MintingFormValues {
   allowlist?: { address: string; units: number }[];
   contributorsGaveTheirPermission: boolean;
   agreeToTerms: boolean;
+  logoImgUrl?: string;
+  bannerImgUrl?: string;
 }
 
 // Default values minting form for testing
@@ -142,6 +144,28 @@ export const MintingForm = ({
                 isDisabled={isDisabled}
               />
               <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.logoImgUrl?.message}>
+              <FormLabel>Logo Image URL</FormLabel>
+              <Input
+                {...register("logoImgUrl", {
+                  required: "Logo Image URL is required",
+                })}
+                isDisabled={isDisabled}
+              />
+              <FormErrorMessage>{errors.logoImgUrl?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.bannerImgUrl?.message}>
+              <FormLabel>Banner Image URL</FormLabel>
+              <Input
+                {...register("bannerImgUrl", {
+                  required: "Banner Image URL is required",
+                })}
+                isDisabled={isDisabled}
+              />
+              <FormErrorMessage>
+                {errors.bannerImgUrl?.message}
+              </FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.workStart?.message}>
               <FormLabel>Work Start</FormLabel>
@@ -336,6 +360,8 @@ export const MintingForm = ({
           values={values}
           backgroundColor={values.backgroundColor}
           textColor={values.textColor}
+          bannerImgUrl={values.bannerImgUrl}
+          logoImgUrl={values.logoImgUrl}
         />
       </Center>
     </Stack>
