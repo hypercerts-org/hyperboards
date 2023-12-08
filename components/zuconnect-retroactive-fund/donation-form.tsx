@@ -142,7 +142,7 @@ export const DonationForm = () => {
         <Box mb={"80px"}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
-              <Heading textTransform={"uppercase"} fontSize={48}>
+              <Heading textTransform={"uppercase"} fontSize={"xxl"}>
                 ZuConnect
                 <br /> Retroactive Fund
               </Heading>

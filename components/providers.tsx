@@ -19,7 +19,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HypercertClient } from "@hypercerts-org/sdk";
 import { InteractionDialogProvider } from "@/components/interaction-modal";
 import Fonts from "@/fonts";
-import { theme } from "@/theme";
+import { index } from "@/theme";
 import {
   ALCHEMY_KEY_GOERLI,
   EAS_CONTRACT_ADDRESS,
@@ -129,7 +129,7 @@ export const Providers = ({
       <RainbowKitProvider chains={chains}>
         <HypercertClientProvider>
           <QueryClientProvider client={queryClient}>
-            <ChakraProvider theme={theme}>
+            <ChakraProvider theme={index}>
               <Fonts />
               <InteractionDialogProvider>{children}</InteractionDialogProvider>
             </ChakraProvider>
@@ -167,6 +167,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       nftStorageToken: NFT_STORAGE_TOKEN,
       web3StorageToken: WEB3_STORAGE_TOKEN,
       easContractAddress: EAS_CONTRACT_ADDRESS,
+      // @ts-ignore
       walletClient,
     });
 
