@@ -200,7 +200,7 @@ export const AllowlistMinter = ({
   };
 
   const initialValues: MintingFormValues = {
-    name: "",
+    name: "Funding the Commons Taipei 2023: Bike challenge",
     description: "",
     externalUrl: "",
     workScope: "",
