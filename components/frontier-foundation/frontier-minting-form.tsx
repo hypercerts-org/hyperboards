@@ -1,7 +1,6 @@
-import { Box, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import { Box, Text, VStack } from "@chakra-ui/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useChainId } from "wagmi";
-import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/more-information-modal";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -10,11 +9,6 @@ import { FrontierFoundationConnectButton } from "./connect-button";
 
 export const FrontierMintingForm = () => {
   const isMobile = useIsMobile();
-  const {
-    isOpen: moreInfoModalOpen,
-    onClose: moreInfoOnClose,
-    onOpen: moreInfoOnOpen,
-  } = useDisclosure();
 
   const chainId = useChainId();
 
@@ -36,22 +30,11 @@ export const FrontierMintingForm = () => {
               Mint your hypercert
             </Text>
             <FrontierFoundationConnectButton />
-            <Text
-              textDecoration={"underline"}
-              cursor={"pointer"}
-              onClick={moreInfoOnOpen}
-            >
-              More information
-            </Text>
+
             <AllowlistMinter onComplete={onComplete} />
           </VStack>
         </Box>
       </Box>
-
-      <MoreInformationModal
-        isOpen={moreInfoModalOpen}
-        onClose={moreInfoOnClose}
-      />
     </>
   );
 };

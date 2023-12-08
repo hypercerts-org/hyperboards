@@ -2,6 +2,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
   Center,
+  Checkbox,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -10,6 +11,7 @@ import {
   IconButton,
   Input,
   InputGroup,
+  Link,
   Stack,
   Textarea,
   Tooltip,
@@ -19,6 +21,7 @@ import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { HypercertPreview } from "@/components/minting/hypercert-preview";
 import { MutableRefObject } from "react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { FormGroup } from "@plasmicpkgs/antd5/skinny/registerForm";
 
 export interface MintingFormValues {
   name: string;
@@ -31,6 +34,8 @@ export interface MintingFormValues {
   backgroundColor: string;
   textColor: string;
   allowlist?: { address: string; units: number }[];
+  contributorsGaveTheirPermission: boolean;
+  agreeToTerms: boolean;
 }
 
 // Default values minting form for testing
@@ -44,11 +49,15 @@ export const defaultMintingFormValues: MintingFormValues = {
   contributors: "Test",
   backgroundColor: "#73C9CC",
   textColor: "#194446",
+  allowlist: [{ address: "0x123", units: 10000 }],
+  contributorsGaveTheirPermission: true,
+  agreeToTerms: true,
 };
 
 const useMintingForm = (initialValues?: MintingFormValues) =>
   useForm<MintingFormValues>({
     defaultValues: initialValues || defaultMintingFormValues,
+    reValidateMode: "onSubmit",
   });
 
 export const MintingForm = ({
@@ -69,7 +78,7 @@ export const MintingForm = ({
     register,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     handleSubmit,
   } = useMintingForm(initialValues);
 
@@ -81,7 +90,6 @@ export const MintingForm = ({
   const isDisabled = isSubmitting || disabled;
   const values = watch();
 
-  // const isDevelopment = process.env.NODE_ENV === "development";
   const isDevelopment = false;
 
   return (
@@ -89,28 +97,50 @@ export const MintingForm = ({
       direction={["column-reverse", "column-reverse", "column-reverse", "row"]}
       w={"100%"}
       minW={0}
+      alignItems={[null, null, null, "flex-start"]}
     >
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
         <Flex width={"100%"} minWidth={0}>
           <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
             <FormControl isInvalid={!!errors.name?.message}>
               <FormLabel>Name</FormLabel>
-              <Input {...register("name")} isDisabled={isDisabled} />
+              <Input
+                {...register("name", {
+                  required: "Name is required",
+                })}
+                isDisabled={isDisabled}
+              />
               <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.workScope?.message}>
               <FormLabel>Work Scope</FormLabel>
-              <Input {...register("workScope")} isDisabled={isDisabled} />
+              <Input
+                {...register("workScope", {
+                  required: "Work Scope is required",
+                })}
+                isDisabled={isDisabled}
+              />
               <FormErrorMessage>{errors.workScope?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.description?.message}>
               <FormLabel>Description</FormLabel>
-              <Textarea {...register("description")} isDisabled={isDisabled} />
+              <Textarea
+                {...register("description", {
+                  required: "Description is required",
+                  minLength: 50,
+                })}
+                isDisabled={isDisabled}
+              />
               <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.externalUrl?.message}>
               <FormLabel>External URL</FormLabel>
-              <Input {...register("externalUrl")} isDisabled={isDisabled} />
+              <Input
+                {...register("externalUrl", {
+                  required: "External URL is required",
+                })}
+                isDisabled={isDisabled}
+              />
               <FormErrorMessage>{errors.externalUrl?.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.workStart?.message}>
@@ -135,16 +165,21 @@ export const MintingForm = ({
             </FormControl>
             <FormControl isInvalid={!!errors.contributors?.message}>
               <FormLabel>Contributors</FormLabel>
-              <Input isDisabled={isDisabled} {...register("contributors")} />
+              <Input
+                isDisabled={isDisabled}
+                {...register("contributors", {
+                  required: "Contributors are required",
+                })}
+              />
               <FormErrorMessage>
                 {errors.contributors?.message}
               </FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={!!errors.allowlist?.message}>
               <FormLabel>Allowlist</FormLabel>
-              <VStack>
+              <VStack width={"100%"}>
                 {fields.map((field, index) => (
-                  <HStack key={field.id}>
+                  <HStack key={field.id} width={"100%"}>
                     <Controller
                       render={({ field }) => (
                         <InputGroup flexDirection={"column"}>
@@ -244,11 +279,49 @@ export const MintingForm = ({
                 <FormErrorMessage>{errors.textColor?.message}</FormErrorMessage>
               </FormControl>
             )}
+            <FormGroup name="contributorsGaveTheirPermission">
+              <HStack alignItems={"center"}>
+                <Checkbox
+                  borderColor={"black"}
+                  {...register("contributorsGaveTheirPermission", {
+                    required:
+                      "You must confirm that all listed contributors gave their permission",
+                  })}
+                />
+                <FormLabel mb={0} ml={2}>
+                  I confirm that all listed contributors gave their permission
+                  to include their work in this hypercert
+                </FormLabel>
+              </HStack>
+            </FormGroup>
+
+            <FormGroup name="agreeToTerms">
+              <HStack alignItems={"center"}>
+                <Checkbox
+                  borderColor={"black"}
+                  {...register("agreeToTerms", {
+                    required: "You must agree to the terms and conditions",
+                  })}
+                />
+                <FormLabel mb={0} ml={2}>
+                  I agree to the{" "}
+                  <Link
+                    isExternal
+                    textDecoration={"underline"}
+                    href={"https://hypercerts.org/terms/"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    terms and conditions
+                  </Link>
+                </FormLabel>
+              </HStack>
+            </FormGroup>
 
             <Button
               width={"100%"}
               type={"submit"}
-              isDisabled={isDisabled}
+              isDisabled={isDisabled || !isValid}
               variant={"blackAndWhite"}
               borderRadius={0}
             >
@@ -257,7 +330,7 @@ export const MintingForm = ({
           </VStack>
         </Flex>
       </form>
-      <Center>
+      <Center mb={[4, 4, 4, 0]}>
         <HypercertPreview
           imageRef={imageRef}
           values={values}
