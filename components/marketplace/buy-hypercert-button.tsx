@@ -19,8 +19,10 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
     const { isOpen, onClose, onOpen } = useDisclosure({
       defaultIsOpen: true,
     });
+
     const { data: orderData } =
       useFetchMarketplaceOrdersForHypercert(hypercertId);
+
     return (
       <>
         <Button variant="blackAndWhite" onClick={onOpen} ref={ref} {...props}>
@@ -35,8 +37,8 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
                 <AvailableOrders
                   orders={Object.values(orderData.orders).map((x) => ({
                     ...x.order,
-                    percentagePrice: 1n,
-                    fractionSize: 0.2,
+                    percentagePrice: x.pricePerPercent,
+                    fractionSize: x.fraction?.percentage ?? 0,
                   }))}
                 />
               )}

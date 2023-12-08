@@ -47,7 +47,11 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
           const priceInEther = formatEther(BigInt(order.price));
           const units = fraction?.units || 1;
           const averagePrice = Number(priceInEther) / units;
-          return { order, averagePrice, fraction };
+          const pricePerPercent =
+            (BigInt(order.price) * 10n ** 4n) /
+            BigInt(fraction?.percentage || 1) /
+            10n ** 4n;
+          return { order, averagePrice, fraction, pricePerPercent };
         },
       );
       const cheapestFraction = _.minBy(

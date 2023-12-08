@@ -18,7 +18,7 @@ import { useBuyMakerBid } from "@/hooks/marketplace/useBuyMakerBid";
 import { createColumnHelper } from "@tanstack/table-core";
 
 import { DataTable } from "@/components/datatable";
-import { formatAddress } from "@/utils/formatting";
+import { ProfileInfo } from "@/components/profile-info";
 
 type OrderTableEntity = MarketplaceOrderEntity & {
   fractionSize: number;
@@ -31,19 +31,19 @@ export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
   const columnHelper = createColumnHelper<OrderTableEntity>();
   const defaultColumns = [
     columnHelper.accessor("signer", {
-      cell: (value) => formatAddress(value.getValue()),
+      cell: (value) => <ProfileInfo address={value.getValue()} />,
       header: "Seller",
     }),
     columnHelper.accessor("fractionSize", {
-      cell: (value) => `${value.getValue() * 100}%`,
+      cell: (value) => `${value.getValue()}%`,
       header: "Fraction size",
     }),
     columnHelper.accessor("percentagePrice", {
-      cell: (value) => `${value.getValue() / 100n}%`,
+      cell: (value) => `${formatEther(BigInt(value.getValue()))} ETH`,
       header: "Price per 1%",
     }),
     columnHelper.accessor("price", {
-      cell: (value) => formatEther(BigInt(value.getValue())),
+      cell: (value) => `${formatEther(BigInt(value.getValue()))} ETH`,
       header: "Fraction price",
     }),
   ];
