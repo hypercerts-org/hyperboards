@@ -1,6 +1,6 @@
 import { Box, Center, ChakraProvider } from "@chakra-ui/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { goerli, mainnet } from "viem/chains";
+import { celo, goerli, optimism, sepolia } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -13,7 +13,7 @@ import { FrontierFoundation } from "@/components/frontier-foundation";
 import { HypercertClientProvider } from "@/components/providers";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, goerli],
+  [goerli, sepolia, celo, optimism],
   [
     alchemyProvider({
       apiKey: ALCHEMY_KEY_GOERLI,
