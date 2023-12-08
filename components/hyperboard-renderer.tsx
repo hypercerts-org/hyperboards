@@ -4,12 +4,13 @@ import {
   registryContentItemToHyperboardEntry,
   useFetchHyperboardContents,
 } from "@/hooks/useFetchHyperboardContents";
-import { Center, Flex, Spinner, VStack } from "@chakra-ui/react";
+import { Center, Flex, IconButton, Spinner, VStack } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 import Head from "next/head";
 import { BreadcrumbEntry, Breadcrumbs } from "@/components/breadcrumbs";
 import { OwnershipTable } from "@/components/hyperboard/ownership-table";
+import { MdOutlineFullscreen, MdOutlineFullscreenExit } from "react-icons/md";
 
 export const HyperboardRenderer = ({
   hyperboardId,
@@ -20,6 +21,7 @@ export const HyperboardRenderer = ({
   const dimensions = useSize(containerRef);
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
+  const [fullScreen, setFullScreen] = useState(false);
 
   const { data, isLoading } = useFetchHyperboardContents(hyperboardId);
   const results = data?.results;
@@ -80,11 +82,23 @@ export const HyperboardRenderer = ({
             <Breadcrumbs crumbs={crumbs} />
           </Flex>
           <Flex
-            width={"100%"}
             ref={containerRef}
             overflow={"hidden"}
             backgroundColor={"black"}
             aspectRatio={"16 / 9"}
+            {...(fullScreen
+              ? {
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  zIndex: 100,
+                  width: "100vw",
+                  height: "100vh",
+                }
+              : {
+                  width: "100%",
+                  position: "relative",
+                })}
           >
             {isLoading ? (
               <Center paddingY={"80px"} width={"100%"}>
@@ -120,6 +134,22 @@ export const HyperboardRenderer = ({
                 ))}
               </>
             )}
+            <IconButton
+              aria-label="Expand"
+              onClick={() => setFullScreen((val) => !val)}
+              icon={
+                fullScreen ? (
+                  <MdOutlineFullscreenExit />
+                ) : (
+                  <MdOutlineFullscreen />
+                )
+              }
+              position={"absolute"}
+              borderRadius={"full"}
+              bottom={"10px"}
+              border={"1px solid black"}
+              right={"10px"}
+            />
           </Flex>
         </VStack>
         {hyperboard && (
