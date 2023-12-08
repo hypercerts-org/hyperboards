@@ -191,6 +191,7 @@ export const MintingForm = ({
               <FormLabel>Contributors</FormLabel>
               <Input
                 isDisabled={isDisabled}
+                placeholder={"Enter your wallet address"}
                 {...register("contributors", {
                   required: "Contributors are required",
                 })}

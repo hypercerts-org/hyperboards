@@ -204,7 +204,7 @@ export const AllowlistMinter = ({
     description: "",
     externalUrl: "",
     workScope: "Funding the Commons, Taipei, Bike challenge",
-    contributors: "[enter your wallet address]",
+    contributors: "",
     workStart: new Date(),
     workEnd: new Date(),
     allowlist: [{ address: address!, units: 10000 }],
