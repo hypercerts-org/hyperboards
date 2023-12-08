@@ -6,7 +6,6 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
-  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -73,15 +72,13 @@ export const MintingForm = ({
     handleSubmit,
   } = useMintingForm(initialValues);
 
-  const { fields, append, update, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "allowlist",
   });
 
   const isDisabled = isSubmitting || disabled;
   const values = watch();
-
-  console.log(values);
 
   return (
     <HStack w={"100%"} minW={0}>

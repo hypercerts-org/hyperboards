@@ -178,7 +178,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       console.error(e);
       toast({
         title: "Error",
-        description: e.message || "Could not initialize client",
+        description: "Could not initialize client",
         status: "error",
         duration: 9000,
         isClosable: true,
