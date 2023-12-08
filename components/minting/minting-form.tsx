@@ -1,6 +1,7 @@
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
+  Center,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -9,6 +10,7 @@ import {
   IconButton,
   Input,
   InputGroup,
+  Stack,
   Textarea,
   Tooltip,
   VStack,
@@ -79,10 +81,15 @@ export const MintingForm = ({
   const isDisabled = isSubmitting || disabled;
   const values = watch();
 
-  const isDevelopment = process.env.NODE_ENV === "development";
+  // const isDevelopment = process.env.NODE_ENV === "development";
+  const isDevelopment = false;
 
   return (
-    <HStack w={"100%"} minW={0}>
+    <Stack
+      direction={["column-reverse", "column-reverse", "column-reverse", "row"]}
+      w={"100%"}
+      minW={0}
+    >
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
         <Flex width={"100%"} minWidth={0}>
           <VStack minHeight={"100%"} spacing={4} alignItems={"flex-start"}>
@@ -238,18 +245,26 @@ export const MintingForm = ({
               </FormControl>
             )}
 
-            <Button type={"submit"} isDisabled={isDisabled}>
+            <Button
+              width={"100%"}
+              type={"submit"}
+              isDisabled={isDisabled}
+              variant={"blackAndWhite"}
+              borderRadius={0}
+            >
               {buttonLabel}
             </Button>
           </VStack>
         </Flex>
       </form>
-      <HypercertPreview
-        imageRef={imageRef}
-        values={values}
-        backgroundColor={values.backgroundColor}
-        textColor={values.textColor}
-      />
-    </HStack>
+      <Center>
+        <HypercertPreview
+          imageRef={imageRef}
+          values={values}
+          backgroundColor={values.backgroundColor}
+          textColor={values.textColor}
+        />
+      </Center>
+    </Stack>
   );
 };
