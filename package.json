@@ -39,6 +39,7 @@
     "@supabase/supabase-js": "^2.33.1",
     "@tanstack/react-query": "^4.33.0",
     "@tanstack/react-query-devtools": "^4.33.0",
+    "@tanstack/react-table": "^8.10.7",
     "@uidotdev/usehooks": "^2.4.1",
     "chakra-dayzed-datepicker": "^0.2.10",
     "d3": "^7.8.5",
@@ -62,7 +63,7 @@
     "slick-carousel": "^1.8.1",
     "supabase": "^1.106.1",
     "typescript": "5.2.2",
-    "viem":  "1.19.9",
+    "viem": "1.19.9",
     "wagmi": "1.4.5",
     "zod": "^3.22.4"
   },

@@ -16,7 +16,9 @@ type Props = {
 
 export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
   ({ hypercertId, text = "Buy", ...props }, ref) => {
-    const { isOpen, onClose, onOpen } = useDisclosure();
+    const { isOpen, onClose, onOpen } = useDisclosure({
+      defaultIsOpen: true,
+    });
     const { data: orderData } =
       useFetchMarketplaceOrdersForHypercert(hypercertId);
     return (
@@ -26,12 +28,16 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
         </Button>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent minW={"960px"}>
             <ModalHeader>Buy Hypercert</ModalHeader>
-            <ModalBody>
+            <ModalBody minW={"960px"}>
               {orderData && (
                 <AvailableOrders
-                  orders={Object.values(orderData.orders).map((x) => x.order)}
+                  orders={Object.values(orderData.orders).map((x) => ({
+                    ...x.order,
+                    percentagePrice: 1n,
+                    fractionSize: 0.2,
+                  }))}
                 />
               )}
             </ModalBody>
