@@ -80,6 +80,8 @@ export const MintingForm = ({
   const isDisabled = isSubmitting || disabled;
   const values = watch();
 
+  const isDevelopment = process.env.NODE_ENV === "development";
+
   return (
     <HStack w={"100%"} minW={0}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
@@ -184,28 +186,32 @@ export const MintingForm = ({
               ))}
               <FormErrorMessage>{errors.allowlist?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={!!errors.backgroundColor?.message}>
-              <FormLabel>Background</FormLabel>
-              <Input
-                type={"color"}
-                isDisabled={isDisabled}
-                defaultValue={values.backgroundColor}
-                {...register("backgroundColor")}
-              />
-              <FormErrorMessage>
-                {errors.backgroundColor?.message}
-              </FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={!!errors.textColor?.message}>
-              <FormLabel>Text</FormLabel>
-              <Input
-                type={"color"}
-                isDisabled={isDisabled}
-                defaultValue={values.textColor}
-                {...register("textColor")}
-              />
-              <FormErrorMessage>{errors.textColor?.message}</FormErrorMessage>
-            </FormControl>
+            {isDevelopment && (
+              <FormControl isInvalid={!!errors.backgroundColor?.message}>
+                <FormLabel>Background</FormLabel>
+                <Input
+                  type={"color"}
+                  isDisabled={isDisabled}
+                  defaultValue={values.backgroundColor}
+                  {...register("backgroundColor")}
+                />
+                <FormErrorMessage>
+                  {errors.backgroundColor?.message}
+                </FormErrorMessage>
+              </FormControl>
+            )}
+            {isDevelopment && (
+              <FormControl isInvalid={!!errors.textColor?.message}>
+                <FormLabel>Text</FormLabel>
+                <Input
+                  type={"color"}
+                  isDisabled={isDisabled}
+                  defaultValue={values.textColor}
+                  {...register("textColor")}
+                />
+                <FormErrorMessage>{errors.textColor?.message}</FormErrorMessage>
+              </FormControl>
+            )}
 
             <Button type={"submit"} isDisabled={isDisabled}>
               {buttonLabel}
