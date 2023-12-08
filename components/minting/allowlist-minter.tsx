@@ -13,13 +13,10 @@ import {
   AllowlistEntry,
   validateAllowlist,
 } from "@hypercerts-org/sdk";
-import { BigNumber } from "@ethersproject/bignumber";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
-import { decodeEventLog, TransactionReceipt } from "viem";
-import { HypercertMinterAbi } from "@hypercerts-org/contracts";
+import { TransactionReceipt } from "viem";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
-import { debugLog } from "@/utils/debugLog";
 import { useHypercertClient } from "@/components/providers";
 
 const formValuesToHypercertMetadata = (
@@ -105,46 +102,6 @@ const formValuesToAllowlistAndTotalUnits = (
   }
 
   return { allowList: allowlistBigintUnits, totalUnits };
-};
-
-const constructClaimIdFromContractReceipt = (receipt: TransactionReceipt) => {
-  debugLog(receipt);
-  const events = receipt.logs.map((log) =>
-    decodeEventLog({
-      abi: HypercertMinterAbi,
-      data: log.data,
-      topics: log.topics,
-    }),
-  );
-
-  debugLog("events", events);
-  if (!events) {
-    throw new Error("No events in receipt");
-  }
-
-  const claimEvent = events.find((e) => e.eventName === "ClaimStored");
-
-  if (!claimEvent) {
-    throw new Error("TransferSingle event not found");
-  }
-
-  const { args } = claimEvent;
-
-  if (!args) {
-    throw new Error("No args in event");
-  }
-
-  // @ts-ignore
-  const tokenIdBigNumber = args["claimID"] as BigNumber;
-
-  if (!tokenIdBigNumber) {
-    throw new Error("No tokenId arg in event");
-  }
-
-  const contractId = receipt.to?.toLowerCase();
-  const tokenId = tokenIdBigNumber.toString();
-
-  return `${contractId}-${tokenId}`;
 };
 
 export const AllowlistMinter = ({
@@ -253,6 +210,8 @@ export const AllowlistMinter = ({
     allowlist: [{ address: address!, units: 10000 }],
     backgroundColor: "#73C9CC",
     textColor: "#194446",
+    contributorsGaveTheirPermission: false,
+    agreeToTerms: false,
   };
 
   return (
