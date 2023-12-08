@@ -14,7 +14,7 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, useToast } from "@chakra-ui/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HypercertClient } from "@hypercerts-org/sdk";
 import { InteractionDialogProvider } from "@/components/interaction-modal";
@@ -150,6 +150,7 @@ const HypercertClientContext = React.createContext<HypercertClient | undefined>(
 export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient();
+  const toast = useToast();
 
   const [client, setClient] = useState<HypercertClient>();
 
@@ -162,16 +163,27 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       return;
     }
 
-    const hypercertClient = new HypercertClient({
-      chain: { id: chainId },
-      nftStorageToken: NFT_STORAGE_TOKEN,
-      web3StorageToken: WEB3_STORAGE_TOKEN,
-      easContractAddress: EAS_CONTRACT_ADDRESS,
-      // @ts-ignore
-      walletClient,
-    });
+    try {
+      const hypercertClient = new HypercertClient({
+        chain: { id: chainId },
+        nftStorageToken: NFT_STORAGE_TOKEN,
+        web3StorageToken: WEB3_STORAGE_TOKEN,
+        easContractAddress: EAS_CONTRACT_ADDRESS,
+        // @ts-ignore
+        walletClient,
+      });
 
-    setClient(hypercertClient);
+      setClient(hypercertClient);
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: "Error",
+        description: e.message || "Could not initialize client",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   }, [chainId, walletClient]);
 
   return (
