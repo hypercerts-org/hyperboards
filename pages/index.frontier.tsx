@@ -11,6 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ALCHEMY_KEY_GOERLI, WALLETCONNECT_ID } from "@/config";
 import { FrontierFoundation } from "@/components/frontier-foundation";
 import { HypercertClientProvider } from "@/components/providers";
+import { InteractionDialogProvider } from "@/components/interaction-modal";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [goerli, sepolia, celo, optimism],
@@ -44,15 +45,17 @@ export const FrontierFoundationPage = () => {
         <HypercertClientProvider>
           <QueryClientProvider client={queryClient}>
             <ChakraProvider theme={theme}>
-              <Center
-                minHeight={"100vh"}
-                backgroundColor={"#F1F1F1"}
-                py={"80px"}
-              >
-                <Box maxW={"960px"}>
-                  <FrontierFoundation />
-                </Box>
-              </Center>
+              <InteractionDialogProvider>
+                <Center
+                  minHeight={"100vh"}
+                  backgroundColor={"#F1F1F1"}
+                  py={"80px"}
+                >
+                  <Box maxW={"960px"}>
+                    <FrontierFoundation />
+                  </Box>
+                </Center>
+              </InteractionDialogProvider>
             </ChakraProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>

@@ -9,7 +9,6 @@ import {
   IconButton,
   Input,
   InputGroup,
-  InputRightElement,
   Textarea,
   Tooltip,
   VStack,
@@ -136,54 +135,80 @@ export const MintingForm = ({
             </FormControl>
             <FormControl isInvalid={!!errors.allowlist?.message}>
               <FormLabel>Allowlist</FormLabel>
-              {fields.map((field, index) => (
-                <InputGroup key={field.id} marginTop={"1em"}>
-                  <Controller
-                    render={({ field }) => (
-                      <Input isDisabled={isDisabled} {...field} />
-                    )}
-                    name={`allowlist.${index}.address`}
-                    control={control}
-                  />
-                  <Controller
-                    render={({ field }) => (
-                      <Input isDisabled={isDisabled} type="number" {...field} />
-                    )}
-                    name={`allowlist.${index}.units`}
-                    control={control}
-                  />
-                  {index == fields.length - 1 ? (
-                    <InputRightElement>
-                      <Tooltip
-                        hasArrow
-                        label="Add another allowlist entry"
-                        aria-label="Add another allowlist entry"
-                      >
-                        <IconButton
+              <VStack>
+                {fields.map((field, index) => (
+                  <HStack key={field.id}>
+                    <Controller
+                      render={({ field }) => (
+                        <InputGroup flexDirection={"column"}>
+                          {index === 0 && <FormLabel>Address</FormLabel>}
+                          <Input
+                            placeholder={"Address"}
+                            isDisabled={isDisabled}
+                            required
+                            {...field}
+                          />
+                        </InputGroup>
+                      )}
+                      name={`allowlist.${index}.address`}
+                      control={control}
+                    />
+                    <InputGroup key={field.id}>
+                      <Controller
+                        render={({ field }) => (
+                          <InputGroup flexDirection={"column"}>
+                            {index === 0 && <FormLabel>Units</FormLabel>}
+                            <Input
+                              isDisabled={isDisabled}
+                              placeholder={"Units"}
+                              type="number"
+                              required
+                              {...field}
+                            />
+                          </InputGroup>
+                        )}
+                        name={`allowlist.${index}.units`}
+                        control={control}
+                      />
+                    </InputGroup>{" "}
+                    <Flex
+                      height={"100%"}
+                      alignItems={"flex-end"}
+                      marginTop={"auto"}
+                    >
+                      {index == fields.length - 1 ? (
+                        <Tooltip
+                          hasArrow
+                          label="Add another allowlist entry"
                           aria-label="Add another allowlist entry"
-                          onClick={() => append({ address: "", units: 10000 })}
-                          icon={<AddIcon />}
-                        />
-                      </Tooltip>
-                    </InputRightElement>
-                  ) : (
-                    <InputRightElement>
-                      <Tooltip
-                        hasArrow
-                        label="Remove allowlist entry"
-                        aria-label="Remove allowlist entry"
-                      >
-                        <IconButton
-                          aria-label="remove allowlist entry"
-                          background={"red.500"}
-                          onClick={() => remove(index)}
-                          icon={<DeleteIcon />}
-                        />
-                      </Tooltip>
-                    </InputRightElement>
-                  )}
-                </InputGroup>
-              ))}
+                        >
+                          <IconButton
+                            aria-label="Add another allowlist entry"
+                            onClick={() =>
+                              append({ address: "", units: 10000 })
+                            }
+                            icon={<AddIcon />}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip
+                          hasArrow
+                          label="Remove allowlist entry"
+                          aria-label="Remove allowlist entry"
+                        >
+                          <IconButton
+                            aria-label="remove allowlist entry"
+                            background={"red.500"}
+                            onClick={() => remove(index)}
+                            icon={<DeleteIcon />}
+                          />
+                        </Tooltip>
+                      )}
+                    </Flex>
+                  </HStack>
+                ))}
+              </VStack>
+
               <FormErrorMessage>{errors.allowlist?.message}</FormErrorMessage>
             </FormControl>
             {isDevelopment && (

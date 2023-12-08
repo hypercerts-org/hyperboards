@@ -93,7 +93,12 @@ export const InteractionDialogProvider = ({ children }: PropsWithChildren) => {
       }}
     >
       {children}
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        closeOnOverlayClick={false}
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalBody py={4}>
