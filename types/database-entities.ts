@@ -27,3 +27,6 @@ export type MarketplaceOrderEntity =
   HypercertsDatabase["public"]["Tables"]["marketplace-orders"]["Row"];
 
 export type BlueprintEntity = Database["public"]["Tables"]["blueprints"]["Row"];
+
+export type AllowlistCacheEntity =
+  HypercertsDatabase["public"]["Tables"]["allowlistCache-chainId"]["Row"];
