@@ -200,10 +200,10 @@ export const AllowlistMinter = ({
   };
 
   const initialValues: MintingFormValues = {
-    name: "Funding the Commons Taipei 2023: Bike challenge",
-    description: "",
-    externalUrl: "",
-    workScope: "Funding the Commons, Taipei, Bike challenge",
+    name: "'s Hypercert in FtC Taipei 2023",
+    description: "Pedaling to Generate Power for One Minute at Funding the Commons Taipei 2023",
+    externalUrl: "https://da0.hypercerts.org/",
+    workScope: "FtC, Taipei, Bike challenge",
     contributors: "",
     workStart: new Date(),
     workEnd: new Date(),
@@ -212,8 +212,8 @@ export const AllowlistMinter = ({
     textColor: "#194446",
     contributorsGaveTheirPermission: false,
     agreeToTerms: false,
-    logoImgUrl: "https://i.imgur.com/sDQhp3Y.png",
-    bannerImgUrl: "https://i.imgur.com/wsM3fWd.jpeg",
+    logoImgUrl: "https://i.imgur.com/WUhN3Hx.jpeg",
+    bannerImgUrl: "https://i.imgur.com/kCdl5DV.jpg",
   };
 
   return (
