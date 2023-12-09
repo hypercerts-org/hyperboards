@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseHypercerts } from "@/lib/supabase";
 
-import { HypercertClient } from "@hypercerts-org/sdk";
+import { Claim, HypercertClient } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
 import { useToast } from "@chakra-ui/react";
 import {
+  AllowlistCacheEntity,
   BlueprintEntity,
   ClaimEntity,
   DefaultSponsorMetadataEntity,
@@ -14,6 +15,7 @@ import {
 } from "@/types/database-entities";
 import { sift } from "@/utils/sift";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
+import { useChainId } from "wagmi";
 
 export const useListRegistries = () => {
   return useQuery(["list-registries"], async () =>
@@ -29,10 +31,15 @@ const processRegistryForDisplay = async (
     claims: ClaimEntity[];
     blueprints: BlueprintEntity[];
   },
+  allowlistEntries: (AllowlistCacheEntity & {
+    claim: Claim;
+  })[],
   label: string | null,
   totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
+  console.log(allowlistEntries);
+
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
@@ -48,6 +55,10 @@ const processRegistryForDisplay = async (
   );
 
   // Calculate the total number of units in all claims
+  const totalUnitsInAllowlistEntries = allowlistEntries.reduce(
+    (acc, entry) => acc + BigInt(entry.claim?.totalUnits || 0),
+    0n,
+  );
   const totalUnitsInBlueprints =
     BigInt(blueprints.length) * NUMBER_OF_UNITS_IN_HYPERCERT;
   const totalUnitsInAllClaims =
@@ -55,7 +66,8 @@ const processRegistryForDisplay = async (
       .map((claim) => claim.fractions)
       .flat()
       .reduce((acc, fraction) => acc + BigInt(fraction.units || 0), 0n) +
-    totalUnitsInBlueprints;
+    totalUnitsInBlueprints +
+    totalUnitsInAllowlistEntries;
 
   // Calculate the amount of surface per display size unit
   const displayPerUnit =
@@ -72,6 +84,10 @@ const processRegistryForDisplay = async (
       0n,
     );
 
+    if (totalUnitsInClaim === 0n) {
+      return [];
+    }
+
     // Calculate the number of units per display unit
     const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
 
@@ -82,6 +98,20 @@ const processRegistryForDisplay = async (
         (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: false,
     }));
+  });
+
+  const allowlistResults = allowlistEntries.map((entry) => {
+    const totalDisplayUnitsForClaim = displayPerUnit;
+
+    // Calculate the number of units per display unit
+    const displayUnitsPerUnit =
+      totalDisplayUnitsForClaim / BigInt(entry.claim.totalUnits);
+    return {
+      owner: entry.address?.toLowerCase(),
+      unitsAdjustedForDisplaySize:
+        (BigInt(entry.claim.totalUnits) * displayUnitsPerUnit) / 10n ** 14n,
+      isBlueprint: true,
+    };
   });
 
   const blueprintResults = blueprints.map((blueprint) => {
@@ -105,6 +135,7 @@ const processRegistryForDisplay = async (
   const fractions = fractionsResults.flat();
   const ownerAddresses = _.uniq([
     ...fractions.map((x) => x.owner),
+    ...allowlistResults.map((x) => x.owner),
     blueprints.map((b) => b.minter_address.toLowerCase()),
   ]) as string[];
 
@@ -115,7 +146,11 @@ const processRegistryForDisplay = async (
   );
 
   // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const content = _.chain({ ...fractions, ...blueprintResults })
+  const content = _.chain({
+    ...fractions,
+    ...blueprintResults,
+    ...allowlistResults,
+  })
     .groupBy((fraction) => fraction.owner)
     .mapValues((fractionsPerOwner, owner) => {
       return {
@@ -139,6 +174,7 @@ const processRegistryForDisplay = async (
 
 export const useFetchHyperboardContents = (hyperboardId: string) => {
   const toast = useToast();
+  const chainId = useChainId();
   const client = useHypercertClient();
 
   return useQuery(
@@ -178,19 +214,57 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
         return null;
       }
 
-      const totalOfAllDisplaySizes = _.sumBy(
-        sift(
-          hyperboardData.hyperboard_registries
-            .map((registry) => registry.registries?.claims)
-            .flat(),
-        ),
-        (x) => x.display_size,
+      const allClaimIds = sift(
+        hyperboardData.hyperboard_registries
+          .map((registry) => registry.registries?.claims)
+          .flat()
+          .map((claim) => claim?.hypercert_id),
       );
+      const { data: allowlistData, error: allowlistError } =
+        await supabaseHypercerts
+          .from("allowlistCache-chainId")
+          .select("*")
+          .eq("chainId", chainId)
+          .in("claimId", allClaimIds);
+
+      if (allowlistError) {
+        toast({
+          title: "Error",
+          description: allowlistError.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+
+      const allowlistEntriesWithClaims = sift(
+        await Promise.all(
+          allowlistData?.map(async (entry) => {
+            const claim = await client.indexer.claimById(entry.claimId!);
+            if (!claim.claim) {
+              return null;
+            }
+            return { ...entry, claim: claim.claim };
+          }) || [],
+        ),
+      );
+
+      const totalOfAllDisplaySizes =
+        _.sumBy(
+          sift(
+            hyperboardData.hyperboard_registries
+              .map((registry) => registry.registries?.claims)
+              .flat(),
+          ),
+          (x) => x.display_size,
+        ) + allowlistEntriesWithClaims.length;
 
       const results = await Promise.all(
         hyperboardData.hyperboard_registries.map(async (registry) => {
           return await processRegistryForDisplay(
             registry.registries!,
+            // @ts-ignore
+            allowlistEntriesWithClaims || [],
             registry.label,
             BigInt(totalOfAllDisplaySizes),
             client,
