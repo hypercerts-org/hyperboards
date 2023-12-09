@@ -213,7 +213,7 @@ export const AllowlistMinter = ({
     contributorsGaveTheirPermission: false,
     agreeToTerms: false,
     logoImgUrl: "https://i.imgur.com/WUhN3Hx.jpeg",
-    bannerImgUrl: "https://i.imgur.com/kCdl5DV.jpg",
+    bannerImgUrl: "https://i.imgur.com/kCdI5DV.jpg",
   };
 
   return (
