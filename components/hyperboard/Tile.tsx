@@ -30,14 +30,8 @@ export const Tile = ({
           display="flex"
           alignItems="center"
           justifyContent="center"
-          filter={
-            "invert(0%) sepia(0%) saturate(1081%) hue-rotate(270deg) brightness(101%) contrast(106%)"
-          }
         >
           <Image
-            filter={
-              "invert(0%) sepia(0%) saturate(1081%) hue-rotate(270deg) brightness(101%) contrast(106%) !important"
-            }
             opacity={opacity}
             className={"company-logo"}
             maxWidth={"60%"}
