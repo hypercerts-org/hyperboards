@@ -200,7 +200,7 @@ export const AllowlistMinter = ({
   };
 
   const initialValues: MintingFormValues = {
-    name: "'s Hypercert in FtC Taipei 2023",
+    name: "'s Hypercert at FtC Taipei 2023",
     description: "Pedaling to Generate Power for One Minute at Funding the Commons Taipei 2023",
     externalUrl: "https://da0.hypercerts.org/",
     workScope: "FtC, Taipei, Bike challenge",
