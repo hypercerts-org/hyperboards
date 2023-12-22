@@ -118,34 +118,33 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
       if (!selectedFraction) {
         throw new Error("Fraction not found");
       }
-      const fractionAmounts = values.listings.map((listing) => {
+
+      // Total units in claim
+      const totalUnits = currentFractions.reduce(
+        (acc, cur) => acc + BigInt(cur.units),
+        0n,
+      );
+      const listingsWithUnits = values.listings.map((listing) => {
         if (!listing.percentage) {
           throw new Error("Invalid percentage");
         }
 
-        return (
-          (BigInt(selectedFraction.units) *
-            BigInt(listing.percentage * 10000)) /
-          1000000n
-        );
+        return {
+          ...listing,
+          units: (totalUnits * BigInt(listing.percentage * 10000)) / 1000000n,
+        };
       });
 
+      // Calculate rest amount of units in fraction (value of leftover token)
       const restAmount =
         BigInt(selectedFraction?.units) -
-        fractionAmounts.reduce((acc, cur) => acc + cur, 0n);
+        listingsWithUnits.reduce((acc, cur) => acc + cur.units, 0n);
 
-      console.log(
-        selectedFraction.tokenID,
-        fractionAmounts,
-        client.config,
-        client.contract,
-      );
+      // Perform the split and await confirmation
       const hash = await client.splitFractionUnits(
         BigInt(selectedFraction.tokenID),
-        [...fractionAmounts, restAmount],
+        [restAmount, ...listingsWithUnits.map((x) => x.units)],
       );
-
-      // Await split confirmation
       setStep("Waiting");
       const publicClient = client.config.publicClient;
       const receipt = await publicClient?.waitForTransactionReceipt({
@@ -156,10 +155,10 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
       if (!receipt || receipt?.status === "reverted") {
         throw new Error("Splitting failed");
       }
-      console.log(receipt);
+
+      // Get new token ids and their corresponding values
       const newTokenIds =
         constructTokenIdsFromSplitFractionContractReceipt(receipt);
-      console.log(newTokenIds);
 
       const lr = new LooksRare(
         chainId,
@@ -172,9 +171,17 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
 
       let signature: string | undefined;
 
-      for (let index = 0; index < values.listings.length; index++) {
-        const listing = values.listings[index];
-        const tokenId = newTokenIds[index];
+      for (let index = 0; index < listingsWithUnits.length; index++) {
+        const listing = listingsWithUnits[index];
+
+        // Find the entry for the newly split token with the right amount of units
+        const newTokenEntryIndex = newTokenIds.findIndex(
+          (newTokenId) => newTokenId.value === listing.units,
+        );
+        const { tokenId } = newTokenIds[newTokenEntryIndex];
+
+        // Remove the entry for the newly split token from the list of new token ids so there is only one order created per token
+        newTokenIds.splice(newTokenEntryIndex, 1);
 
         if (!listing.price) {
           throw new Error("Invalid price");
