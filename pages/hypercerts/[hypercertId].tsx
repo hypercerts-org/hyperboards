@@ -214,7 +214,10 @@ export const Index = () => {
           >
             {hypercert?.metadata?.hypercert?.contributors?.value?.join(", ")}
           </AccordionLine>
-          <AccordionLine title="owners" count={fractionsData?.length}>
+          <AccordionLine
+            title="owners"
+            count={uniqBy(fractionsData || [], (x) => x.owner).length}
+          >
             <HStack flexWrap={"wrap"}>
               {uniqBy(fractionsData || [], (x) => x.owner).map((x) => (
                 <ProfileInfo key={x.owner} address={x.owner} />
