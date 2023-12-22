@@ -22,7 +22,7 @@ import {
 } from "@tanstack/table-core";
 
 import { ProfileInfo } from "@/components/profile-info";
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { flexRender, useReactTable } from "@tanstack/react-table";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 
@@ -31,25 +31,53 @@ type OrderTableEntity = MarketplaceOrderEntity & {
   percentagePrice: bigint;
 };
 
+const HeaderText = ({ children }: PropsWithChildren) => (
+  <Text
+    mb={0}
+    textStyle={"primary"}
+    as={"span"}
+    fontWeight={500}
+    textTransform={"none"}
+    opacity={0.6}
+    fontSize={"sm"}
+  >
+    {children}
+  </Text>
+);
+
 export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
   const { mutateAsync: buyFraction } = useBuyMakerBid();
   const columnHelper = createColumnHelper<OrderTableEntity>();
   const defaultColumns = [
     columnHelper.accessor("signer", {
+      header: () => <HeaderText>Seller</HeaderText>,
       cell: (value) => <ProfileInfo address={value.getValue()} />,
-      header: "Seller",
     }),
     columnHelper.accessor("fractionSize", {
+      header: () => <HeaderText>Fraction size</HeaderText>,
       cell: (value) => `${value.getValue()}%`,
-      header: "Fraction size",
     }),
     columnHelper.accessor("percentagePrice", {
-      cell: (value) => `${formatEther(BigInt(value.getValue()))} ETH`,
-      header: "Price per 1%",
+      header: () => <HeaderText>Price per 1%</HeaderText>,
+      cell: (value) => (
+        <Text>
+          {formatEther(BigInt(value.getValue()))}{" "}
+          <Text opacity={0.5} as={"span"}>
+            ETH
+          </Text>
+        </Text>
+      ),
     }),
     columnHelper.accessor("price", {
-      cell: (value) => `${formatEther(BigInt(value.getValue()))} ETH`,
-      header: "Fraction price",
+      header: () => <HeaderText>Fraction price</HeaderText>,
+      cell: (value) => (
+        <Text>
+          {formatEther(BigInt(value.getValue()))}{" "}
+          <Text opacity={0.5} as={"span"}>
+            ETH
+          </Text>
+        </Text>
+      ),
     }),
   ];
 
@@ -60,10 +88,7 @@ export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
     data: orders,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
-    onRowSelectionChange: (x) => {
-      console.log(x);
-      setRowSelection(x);
-    },
+    onRowSelectionChange: setRowSelection,
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
@@ -94,18 +119,25 @@ export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
                     isNumeric={meta?.isNumeric}
+                    textStyle={"primary"}
                   >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
                     )}
 
-                    <Text as="span" pl="4">
+                    <Text as="span" pl="2">
                       {header.column.getIsSorted() ? (
                         header.column.getIsSorted() === "desc" ? (
-                          <ArrowDownOutlined aria-label="sorted descending" />
+                          <ArrowDownOutlined
+                            style={{ opacity: 0.5 }}
+                            aria-label="sorted descending"
+                          />
                         ) : (
-                          <ArrowUpOutlined aria-label="sorted ascending" />
+                          <ArrowUpOutlined
+                            style={{ opacity: 0.5 }}
+                            aria-label="sorted ascending"
+                          />
                         )
                       ) : null}
                     </Text>
@@ -118,7 +150,6 @@ export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
         <Tbody>
           {table.getRowModel().rows.map((row) => {
             const isSelected = row.getIsSelected();
-            console.log(isSelected);
             return (
               <Tr
                 key={row.id}

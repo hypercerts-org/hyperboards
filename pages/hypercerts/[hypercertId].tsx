@@ -33,11 +33,12 @@ import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHyperce
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
 import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
-import _ from "lodash";
+import _, { uniqBy } from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 import { useAddress } from "@/hooks/useAddress";
 import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button";
 import Link from "next/link";
+import { ProfileInfo } from "@/components/profile-info";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -214,7 +215,11 @@ export const Index = () => {
             {hypercert?.metadata?.hypercert?.contributors?.value?.join(", ")}
           </AccordionLine>
           <AccordionLine title="owners" count={fractionsData?.length}>
-            {fractionsData?.map((x) => x.owner).join(",")}
+            <HStack flexWrap={"wrap"}>
+              {uniqBy(fractionsData || [], (x) => x.owner).map((x) => (
+                <ProfileInfo key={x.owner} address={x.owner} />
+              ))}
+            </HStack>
           </AccordionLine>
         </VStack>
         <Flex maxW={"440px"} minW={"440px"}>

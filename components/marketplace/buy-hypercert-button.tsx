@@ -1,4 +1,11 @@
-import { Button, ButtonProps, Modal, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonProps,
+  Flex,
+  Modal,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
 import {
   ModalBody,
@@ -8,6 +15,7 @@ import {
 } from "@chakra-ui/modal";
 import { AvailableOrders } from "@/components/marketplace/available-orders";
 import React from "react";
+import { BalanceOverview } from "@/components/balance-overview";
 
 type Props = {
   hypercertId: string;
@@ -30,8 +38,18 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
         </Button>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
-          <ModalContent minW={"960px"}>
-            <ModalHeader>Buy Hypercert</ModalHeader>
+          <ModalContent minW={"960px"} pb={4}>
+            <ModalHeader>
+              <Flex alignItems={"center"} mb={4}>
+                Select a fraction to buy
+                <Flex ml={"auto"} flexDirection={"column"}>
+                  <Text mb={2} fontSize={"md"} fontWeight={500} opacity={0.5}>
+                    Available balance:
+                  </Text>
+                  <BalanceOverview />
+                </Flex>{" "}
+              </Flex>
+            </ModalHeader>
             <ModalBody minW={"960px"}>
               {orderData && (
                 <AvailableOrders

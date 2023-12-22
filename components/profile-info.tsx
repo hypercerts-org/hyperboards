@@ -1,11 +1,14 @@
 import { useEnsAvatar, useEnsName } from "wagmi";
-import { Flex, Image, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Flex, Text, VStack } from "@chakra-ui/react";
 import { formatAddress } from "@/utils/formatting";
 import React from "react";
 
 export const ProfileInfo = ({ address }: { address: string }) => {
   const { data: avatarData } = useEnsAvatar();
   const { data: ensName } = useEnsName();
+
+  const formattedAddress = formatAddress(address);
+  const name = ensName ?? formattedAddress;
 
   return (
     <Flex
@@ -14,19 +17,24 @@ export const ProfileInfo = ({ address }: { address: string }) => {
       alignItems={"center"}
       justifyContent={"flex-start"}
     >
-      {avatarData && (
-        <Image
-          alt={ensName ?? "Avatar"}
-          src={avatarData}
-          width={8}
-          height={8}
-          borderRadius={999}
-          mr={2}
-        />
-      )}
+      <Avatar
+        src={avatarData || undefined}
+        width={8}
+        height={8}
+        borderRadius={"8px"}
+        mr={2}
+      />
       <VStack alignItems={"flex-start"} spacing={0}>
-        {ensName && <Text fontWeight={500}>{ensName}</Text>}
-        {address && <Text fontSize={"xs"}>{formatAddress(address)}</Text>}
+        {name && (
+          <Text fontWeight={500} fontSize={"xs"}>
+            {name}
+          </Text>
+        )}
+        {address && (
+          <Text fontSize={"xs"} opacity={0.5}>
+            {formattedAddress}
+          </Text>
+        )}
       </VStack>
     </Flex>
   );
