@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { Claim } from "@hypercerts-org/sdk";
 import { createPublicClient, getContract, http } from "viem";
-import { goerli } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { TRADER_CONTRACT } from "@/config";
 import IHypercertTrader from "@/abi/IHypercertTrader.json";
 import { useHypercertClient } from "@/components/providers";
@@ -152,7 +152,7 @@ export const useStoreHypercerts = () => {
 
 const getOfferPrices = async (offerIds: number[]) => {
   const publicClient = createPublicClient({
-    chain: goerli,
+    chain: sepolia,
     transport: http(),
     batch: {
       multicall: true,
