@@ -6,7 +6,7 @@ import {
   useWalletClient,
   WagmiConfig,
 } from "wagmi";
-import { goerli, optimism } from "viem/chains";
+import { sepolia, optimism } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import {
@@ -21,7 +21,7 @@ import { InteractionDialogProvider } from "@/components/interaction-modal";
 import Fonts from "@/fonts";
 import { index } from "@/theme";
 import {
-  ALCHEMY_KEY_GOERLI,
+  ALCHEMY_KEY,
   EAS_CONTRACT_ADDRESS,
   NFT_STORAGE_TOKEN,
   WALLETCONNECT_ID,
@@ -58,10 +58,10 @@ import {
 } from "@celo/rainbowkit-celo/wallets";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [goerli, optimism],
+  [sepolia, optimism],
   [
     alchemyProvider({
-      apiKey: ALCHEMY_KEY_GOERLI,
+      apiKey: ALCHEMY_KEY,
     }),
     publicProvider(),
   ],
