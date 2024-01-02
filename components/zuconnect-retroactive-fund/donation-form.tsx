@@ -162,6 +162,7 @@ export const DonationForm = () => {
               >
                 More information
               </Text>
+              /* Code for inactive donation form
               <VStack spacing={6}>
                 <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
                   <InputGroup>
@@ -243,6 +244,7 @@ export const DonationForm = () => {
                   Confirm
                 </Button>
               </HStack>
+              end of inactive donation form */
             </VStack>
           </form>
         </Box>
