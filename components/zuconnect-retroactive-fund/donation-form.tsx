@@ -1,15 +1,6 @@
 import {
   Box,
-  Button,
-  Checkbox,
-  Flex,
-  FormControl,
-  FormErrorMessage,
   Heading,
-  HStack,
-  Input,
-  InputGroup,
-  InputRightAddon,
   Text,
   useDisclosure,
   useToast,
@@ -25,11 +16,7 @@ import { useAddress } from "@/hooks/useAddress";
 import { MoreInformationModal } from "@/components/zuconnect-retroactive-fund/more-information-modal";
 import { TransactionHistory } from "@/components/zuconnect-retroactive-fund/transaction-history";
 import { useRouter } from "next/router";
-import { ZuzaluConnectButton } from "@/components/zuconnect-retroactive-fund/connect-button";
-import { useQuery } from "@tanstack/react-query";
 import { AwaitTransactionModal } from "@/components/zuconnect-retroactive-fund/await-transaction-modal";
-import { toPrecision } from "@chakra-ui/utils";
-import { isValidEmail } from "@/utils/validation";
 import Head from "next/head";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
@@ -60,14 +47,14 @@ export const DonationForm = () => {
     onClose: transactionOnClose,
   } = useDisclosure();
 
-  const { data: ethPrice } = useCurrentEthPrice();
+  // const { data: ethPrice } = useCurrentEthPrice();
 
   const { push } = useRouter();
 
   const {
     handleSubmit,
-    register,
-    formState: { isValid, errors, isSubmitting },
+    // register,
+    // formState: { isValid, errors, isSubmitting },
     getValues,
     watch,
   } = useForm<FormValues>({
@@ -75,9 +62,9 @@ export const DonationForm = () => {
     reValidateMode: "onChange",
   });
 
-  const handleEmailValidation = (email: string) => {
-    return isValidEmail(email);
-  };
+  // const handleEmailValidation = (email: string) => {
+  //   return isValidEmail(email);
+  // };
 
   const amount = watch("amount");
 
@@ -162,87 +149,87 @@ export const DonationForm = () => {
               >
                 More information
               </Text>
-              <VStack spacing={6}>
-                <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>
-                  <InputGroup>
-                    <Input
-                      bg={"white"}
-                      border={"none"}
-                      type={"number"}
-                      isDisabled={isSubmitting}
-                      placeholder={"Amount (min. 0.01 ETH)"}
-                      step={"any"}
-                      {...register("amount", {
-                        required: "This is required",
-                        valueAsNumber: true,
-                        min: {
-                          value: 0.01,
-                          message: "Minimum amount is 0.01",
-                        },
-                      })}
-                    />
-                    <InputRightAddon>ETH</InputRightAddon>
-                  </InputGroup>
-                  <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
-                  {ethPrice && (
-                    <Text fontSize={"md"} mt={2}>
-                      ≈ $
-                      {!isNaN(amount) ? toPrecision(ethPrice * amount, 2) : 0}
-                    </Text>
-                  )}
-                </FormControl>
-                <VStack w={"100%"}>
-                  <Text fontSize={"md"}>
-                    To notify you about the next steps
-                  </Text>
-                  <FormControl isInvalid={!!errors.email}>
-                    <Input
-                      type="email"
-                      bg={"white"}
-                      border={"none"}
-                      isDisabled={isSubmitting}
-                      placeholder={"Email"}
-                      {...register("email", {
-                        required: "An email address is required",
-                        validate: handleEmailValidation,
-                      })}
-                    />
-                    <FormErrorMessage>
-                      {errors.email?.message || "Invalid email"}
-                    </FormErrorMessage>
-                  </FormControl>
-                </VStack>
-                <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>
-                  <Flex alignItems={"center"}>
-                    <Checkbox
-                      bg={"white"}
-                      mr={2}
-                      {...register("agreement", { required: true })}
-                    />
-                    <Text fontSize={"md"}>
-                      I agree to the{" "}
-                      <a
-                        style={{ textDecoration: "underline" }}
-                        href="https://hypercerts.org/terms"
-                        target="_blank"
-                      >
-                        Terms & Conditions
-                      </a>
-                    </Text>
-                  </Flex>
-                </FormControl>
-              </VStack>
-              <HStack>
-                <ZuzaluConnectButton />
-                <Button
-                  bg={"#41645F"}
-                  color={"white"}
-                  type={"submit"}
-                  isDisabled={!isValid}
-                >
-                  Confirm
-                </Button>
-              </HStack>
+              {/*<VStack spacing={6}>*/}
+              {/*  <FormControl isInvalid={!!errors.amount} w={"100%"} py={"16px"}>*/}
+              {/*    <InputGroup>*/}
+              {/*      <Input*/}
+              {/*        bg={"white"}*/}
+              {/*        border={"none"}*/}
+              {/*        type={"number"}*/}
+              {/*        isDisabled={isSubmitting}*/}
+              {/*        placeholder={"Amount (min. 0.01 ETH)"}*/}
+              {/*        step={"any"}*/}
+              {/*        {...register("amount", {*/}
+              {/*          required: "This is required",*/}
+              {/*          valueAsNumber: true,*/}
+              {/*          min: {*/}
+              {/*            value: 0.01,*/}
+              {/*            message: "Minimum amount is 0.01",*/}
+              {/*          },*/}
+              {/*        })}*/}
+              {/*      />*/}
+              {/*      <InputRightAddon>ETH</InputRightAddon>*/}
+              {/*    </InputGroup>*/}
+              {/*    <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>*/}
+              {/*    {ethPrice && (*/}
+              {/*      <Text fontSize={"md"} mt={2}>*/}
+              {/*        ≈ $*/}
+              {/*        {!isNaN(amount) ? toPrecision(ethPrice * amount, 2) : 0}*/}
+              {/*      </Text>*/}
+              {/*    )}*/}
+              {/*  </FormControl>*/}
+              {/*  <VStack w={"100%"}>*/}
+              {/*    <Text fontSize={"md"}>*/}
+              {/*      To notify you about the next steps*/}
+              {/*    </Text>*/}
+              {/*    <FormControl isInvalid={!!errors.email}>*/}
+              {/*      <Input*/}
+              {/*        type="email"*/}
+              {/*        bg={"white"}*/}
+              {/*        border={"none"}*/}
+              {/*        isDisabled={isSubmitting}*/}
+              {/*        placeholder={"Email"}*/}
+              {/*        {...register("email", {*/}
+              {/*          required: "An email address is required",*/}
+              {/*          validate: handleEmailValidation,*/}
+              {/*        })}*/}
+              {/*      />*/}
+              {/*      <FormErrorMessage>*/}
+              {/*        {errors.email?.message || "Invalid email"}*/}
+              {/*      </FormErrorMessage>*/}
+              {/*    </FormControl>*/}
+              {/*  </VStack>*/}
+              {/*  <FormControl isInvalid={!!errors.agreement} w={"fit-content"}>*/}
+              {/*    <Flex alignItems={"center"}>*/}
+              {/*      <Checkbox*/}
+              {/*        bg={"white"}*/}
+              {/*        mr={2}*/}
+              {/*        {...register("agreement", { required: true })}*/}
+              {/*      />*/}
+              {/*      <Text fontSize={"md"}>*/}
+              {/*        I agree to the{" "}*/}
+              {/*        <a*/}
+              {/*          style={{ textDecoration: "underline" }}*/}
+              {/*          href="https://hypercerts.org/terms"*/}
+              {/*          target="_blank"*/}
+              {/*        >*/}
+              {/*          Terms & Conditions*/}
+              {/*        </a>*/}
+              {/*      </Text>*/}
+              {/*    </Flex>*/}
+              {/*  </FormControl>*/}
+              {/*</VStack>*/}
+              {/*  <HStack>*/}
+              {/*    <ZuzaluConnectButton />*/}
+              {/*    <Button*/}
+              {/*      bg={"#41645F"}*/}
+              {/*      color={"white"}*/}
+              {/*      type={"submit"}*/}
+              {/*      isDisabled={!isValid}*/}
+              {/*    >*/}
+              {/*      Confirm*/}
+              {/*    </Button>*/}
+              {/*  </HStack>*/}
             </VStack>
           </form>
         </Box>
@@ -305,13 +292,13 @@ const addEmailToDonationList = (
     amount: amount.toString(),
   });
 
-const useCurrentEthPrice = () => {
-  return useQuery(["current-eth-price"], async () =>
-    fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
-      { method: "GET" },
-    )
-      .then((res) => res.json() as Promise<{ ethereum: { usd: number } }>)
-      .then((res) => res.ethereum.usd),
-  );
-};
+// const useCurrentEthPrice = () => {
+//   return useQuery(["current-eth-price"], async () =>
+//     fetch(
+//       "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+//       { method: "GET" },
+//     )
+//       .then((res) => res.json() as Promise<{ ethereum: { usd: number } }>)
+//       .then((res) => res.ethereum.usd),
+//   );
+// };
