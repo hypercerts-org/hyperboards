@@ -1,7 +1,7 @@
 import { ZuconnectRetroactiveFund } from "@/components/zuconnect-retroactive-fund";
 import { Box, Center, ChakraProvider } from "@chakra-ui/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { goerli, mainnet } from "viem/chains";
+import { sepolia, mainnet } from "viem/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -9,13 +9,13 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { index } from "@/theme";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ALCHEMY_KEY_GOERLI, WALLETCONNECT_ID } from "@/config";
+import { ALCHEMY_KEY, WALLETCONNECT_ID } from "@/config";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, goerli],
+  [mainnet, sepolia],
   [
     alchemyProvider({
-      apiKey: ALCHEMY_KEY_GOERLI,
+      apiKey: ALCHEMY_KEY,
     }),
     publicProvider(),
   ],

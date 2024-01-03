@@ -60,9 +60,9 @@ export const WALLETCONNECT_ID = requireEnv(
   "NEXT_PUBLIC_WALLETCONNECT_ID",
 );
 
-export const ALCHEMY_KEY_GOERLI = requireEnv(
-  process.env.NEXT_PUBLIC_ALCHEMY_KEY_GOERLI,
-  "NEXT_PUBLIC_ALCHEMY_KEY_GOERLI",
+export const ALCHEMY_KEY = requireEnv(
+  process.env.NEXT_PUBLIC_ALCHEMY_KEY,
+  "NEXT_PUBLIC_ALCHEMY_KEY",
 );
 
 export const JWT_SECRET = requireEnv(
