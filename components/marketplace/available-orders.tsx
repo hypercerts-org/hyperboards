@@ -45,7 +45,13 @@ const HeaderText = ({ children }: PropsWithChildren) => (
   </Text>
 );
 
-export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
+export const AvailableOrders = ({
+  orders,
+  onBuyConfirmed,
+}: {
+  orders: OrderTableEntity[];
+  onBuyConfirmed: (fractionId: string) => void;
+}) => {
   const { mutateAsync: buyFraction } = useBuyMakerBid();
   const columnHelper = createColumnHelper<OrderTableEntity>();
   const defaultColumns = [
@@ -103,6 +109,7 @@ export const AvailableOrders = ({ orders }: { orders: OrderTableEntity[] }) => {
   const onClickBuy = async () => {
     if (!selectedOrder) return;
     await buyFraction({ order: selectedOrder });
+    onBuyConfirmed(selectedOrder.itemIds[0]);
   };
 
   return (
