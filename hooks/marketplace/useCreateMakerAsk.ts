@@ -160,15 +160,6 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
       const newTokenIds =
         constructTokenIdsFromSplitFractionContractReceipt(receipt);
 
-      const lr = new LooksRare(
-        chainId,
-        // TODO: Fix typing issue with provider
-        // @ts-ignore
-        provider as unknown as Provider,
-        // @ts-ignore
-        signer,
-      );
-
       let signature: string | undefined;
 
       for (let index = 0; index < listingsWithUnits.length; index++) {
@@ -193,6 +184,14 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
             address,
             chainId,
           });
+          const lr = new LooksRare(
+            chainId,
+            // TODO: Fix typing issue with provider
+            // @ts-ignore
+            provider as unknown as Provider,
+            // @ts-ignore
+            signer,
+          );
           const { maker, isCollectionApproved, isTransferManagerApproved } =
             await lr.createMakerAsk({
               collection: contractAddress,
@@ -205,7 +204,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
               price: parseEther(listing.price), // Be careful to use a price in wei, this example is for 1 ETH
               itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
               amounts: [1],
-              currency: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+              currency: lr.addresses.WETH, // Currency used to pay the order, use WETH for ETH payment
             });
 
           console.log(maker);

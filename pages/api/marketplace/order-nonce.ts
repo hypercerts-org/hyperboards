@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/hypercerts-database";
 import {
+  // TODO: Is this a security risk?
   SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
   SUPABASE_HYPERCERTS_URL,
 } from "@/config";

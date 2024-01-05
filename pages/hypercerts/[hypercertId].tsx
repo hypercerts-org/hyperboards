@@ -32,7 +32,10 @@ import { PropsWithChildren, useRef } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
-import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
+import {
+  MarketplaceStats,
+  OwnageStats,
+} from "@/components/marketplace/marketplace-stats";
 import _, { uniqBy } from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 import { useAddress } from "@/hooks/useAddress";
@@ -244,7 +247,7 @@ export const Index = () => {
                   spacing={8}
                   borderBottom={"1px solid black"}
                 >
-                  <Text>You own this hypercert</Text>
+                  <OwnageStats hypercertId={hypercertId as string} />
                   <HStack width={"100%"}>
                     <ListForSaleButton
                       width={"100%"}
@@ -267,7 +270,7 @@ export const Index = () => {
                 width={"100%"}
                 px={5}
                 py={6}
-                spacing={8}
+                spacing={4}
               >
                 <MarketplaceStats hypercertId={hypercertId as string} />
                 <HStack width={"100%"}>
