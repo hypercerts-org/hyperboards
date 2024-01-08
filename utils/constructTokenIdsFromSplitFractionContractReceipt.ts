@@ -36,10 +36,15 @@ export const constructTokenIdsFromSplitFractionContractReceipt = (
 
   // @ts-ignore
   const tokenIds = args["toTokenIDs"] as BigNumber[];
+  // @ts-ignore
+  const values = args["values"] as BigNumber[];
 
   if (!tokenIds || tokenIds.length === 0) {
     throw new Error("No tokenId arg in event");
   }
 
-  return tokenIds;
+  return tokenIds.map((tokenId, index) => ({
+    tokenId: tokenId.toString(),
+    value: BigInt(values[index].toString()),
+  }));
 };

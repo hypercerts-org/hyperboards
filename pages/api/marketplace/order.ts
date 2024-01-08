@@ -68,10 +68,11 @@ const getTypedData = (chainId: number) => ({
   name: "LooksRareProtocol",
   version: "2",
   chainId,
-  // TODO: Get correct contract address
   // @ts-ignore
   // verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
-  verifyingContract: deployments[chainId].HypercertExchange,
+  // verifyingContract: deployments[chainId].HypercertExchange,
+  // TODO: Get correct contract address
+  verifyingContract: "0x7d7b6011c7BaB5A850Bd44f7A5B29C3502fd6491",
 });
 
 export const makerTypes = {

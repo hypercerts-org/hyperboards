@@ -12,6 +12,7 @@ import { useState } from "react";
 import _ from "lodash";
 import { HypercertTile } from "@/components/marketplace/hypercert-tile";
 import Link from "next/link";
+import { headerHeight } from "@/components/layout/header";
 
 export const Index = () => {
   const { data, isLoading } = useFetchAllCollections();
@@ -19,7 +20,7 @@ export const Index = () => {
 
   if (isLoading) {
     return (
-      <Center>
+      <Center width={"100%"} minHeight={`calc(100vh - ${headerHeight})`}>
         <Spinner />
       </Center>
     );

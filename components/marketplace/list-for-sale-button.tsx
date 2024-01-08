@@ -18,9 +18,7 @@ export const ListForSaleButton = ({
   text?: string;
   onClickViewListings?: () => void;
 } & ButtonProps) => {
-  const { isOpen, onClose, onOpen } = useDisclosure({
-    defaultIsOpen: true,
-  });
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const { data: orderData } =
     useFetchMarketplaceOrdersForHypercert(hypercertId);
 

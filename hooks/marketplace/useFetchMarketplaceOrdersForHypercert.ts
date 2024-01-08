@@ -1,12 +1,15 @@
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useQuery } from "@tanstack/react-query";
-import { supabaseHypercerts } from "@/lib/supabase";
+import { utils } from "@hypercerts-org/marketplace-sdk";
 import _ from "lodash";
 import { formatEther } from "viem";
+import { useChainId } from "wagmi";
 
 export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
   const { data: fractions } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
+
+  const chainId = useChainId();
 
   return useQuery(
     ["available-orders", hypercertId],
@@ -15,12 +18,14 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
         throw new Error("No fractions");
       }
 
-      const tokenIds = fractions.map((fraction) => fraction.tokenID);
-      const { data: orders } = await supabaseHypercerts
-        .from("marketplace-orders")
-        .select("*")
-        .containedBy("itemIds", tokenIds)
-        .throwOnError();
+      if (!chainId) {
+        throw new Error("No chainId");
+      }
+
+      const { data: orders } = await utils.api.fetchOrdersByHypercertId({
+        hypercertId,
+        chainId,
+      });
 
       if (!orders) {
         throw new Error("No orders");
@@ -31,9 +36,14 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
         allFractionIdsForSale.includes(fraction.tokenID),
       );
 
-      const totalUnitsForSale = _.sumBy(
-        allFractionsForSale,
-        (fraction) => fraction.units,
+      const totalUnitsForSale = allFractionsForSale.reduce(
+        (acc, fraction) => acc + BigInt(fraction.units),
+        0n,
+      );
+
+      const totalPercentageForSale = allFractionsForSale.reduce(
+        (acc, fraction) => acc + fraction.percentage,
+        0,
       );
 
       const ordersByFractionId = _.keyBy(orders, (order) => order.itemIds?.[0]);
@@ -47,7 +57,11 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
           const priceInEther = formatEther(BigInt(order.price));
           const units = fraction?.units || 1;
           const averagePrice = Number(priceInEther) / units;
-          return { order, averagePrice, fraction };
+          const pricePerPercent =
+            (BigInt(order.price) * 10n ** 4n) /
+            BigInt(fraction?.percentage || 1) /
+            10n ** 4n;
+          return { order, averagePrice, fraction, pricePerPercent };
         },
       );
       const cheapestFraction = _.minBy(
@@ -57,7 +71,8 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
 
       return {
         orders: ordersWithAveragePrice,
-        totalUnitsForSale,
+        totalUnitsForSale: totalUnitsForSale,
+        totalPercentageForSale,
         priceOfCheapestFraction: cheapestFraction?.averagePrice,
       };
     },

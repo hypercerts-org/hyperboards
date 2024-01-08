@@ -1,25 +1,38 @@
 import { Center, Flex, Spinner, Text } from "@chakra-ui/react";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
+import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { useAddress } from "@/hooks/useAddress";
 
 const SellStat = ({
   amount,
-  subText,
+  prefix,
+  postfix,
   unit,
 }: {
   amount: number | string;
   unit?: string;
-  subText?: string;
+  prefix?: string;
+  postfix?: string;
 }) => {
   return (
     <Flex alignItems={"flex-end"}>
-      <Text fontSize={"lg"} lineHeight={"1.7rem"}>
+      {prefix && (
+        <Text fontSize={"18px"} mr={1} opacity={0.4}>
+          {prefix}
+        </Text>
+      )}
+      <Text fontSize={"xl"} lineHeight={"2.1rem"}>
         {amount}
       </Text>
-      {unit && <Text fontSize={"sm"}>&nbsp;{unit}</Text>}
+      {unit && (
+        <Text ml={0.5} fontSize={"18px"}>
+          {unit}
+        </Text>
+      )}
 
-      {subText && (
-        <Text fontSize={"sm"} ml={1} opacity={0.4}>
-          {subText}
+      {postfix && (
+        <Text fontSize={"18px"} ml={1} opacity={0.4}>
+          {postfix}
         </Text>
       )}
     </Flex>
@@ -38,7 +51,7 @@ export const MarketplaceStats = ({ hypercertId }: { hypercertId: string }) => {
     );
   }
 
-  if (!orders || orders.totalUnitsForSale === 0) {
+  if (!orders || orders.totalUnitsForSale === 0n) {
     return (
       <Center>
         <Text>Not for sale</Text>
@@ -48,14 +61,58 @@ export const MarketplaceStats = ({ hypercertId }: { hypercertId: string }) => {
 
   return (
     <Flex justifyContent={"space-between"} width={"100%"}>
-      <SellStat amount={orders.totalUnitsForSale} subText="units listed" />
+      <SellStat
+        amount={orders.totalPercentageForSale}
+        unit="%"
+        postfix="on sale"
+      />
       {orders.priceOfCheapestFraction !== undefined && (
         <SellStat
-          amount={orders.priceOfCheapestFraction.toString()}
+          prefix="from"
+          amount={orders.priceOfCheapestFraction.toPrecision(3).toString()}
           unit="ETH"
-          subText="/ unit"
+          postfix="/ %"
         />
       )}
+    </Flex>
+  );
+};
+
+export const OwnageStats = ({ hypercertId }: { hypercertId: string }) => {
+  const { data: fractions, isLoading } =
+    useFetchHypercertFractionsByHypercertId(hypercertId);
+
+  const address = useAddress();
+
+  if (isLoading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!fractions) {
+    return (
+      <Center>
+        <Text>Not for sale</Text>
+      </Center>
+    );
+  }
+
+  const totalPercentageOwned = fractions
+    .filter((x) => x.owner === address)
+    .reduce((acc, x) => acc + x.percentage, 0);
+
+  return (
+    <Flex justifyContent={"space-between"} width={"100%"}>
+      <SellStat amount={totalPercentageOwned} unit="%" postfix="on sale" />
+      <SellStat
+        prefix="from"
+        amount={"Public display"}
+        unit="ETH"
+        postfix="/ %"
+      />
     </Flex>
   );
 };

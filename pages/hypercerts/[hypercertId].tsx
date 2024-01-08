@@ -32,12 +32,16 @@ import { PropsWithChildren, useRef } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
-import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
-import _ from "lodash";
+import {
+  MarketplaceStats,
+  OwnageStats,
+} from "@/components/marketplace/marketplace-stats";
+import _, { uniqBy } from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 import { useAddress } from "@/hooks/useAddress";
 import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button";
 import Link from "next/link";
+import { ProfileInfo } from "@/components/profile-info";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -213,8 +217,15 @@ export const Index = () => {
           >
             {hypercert?.metadata?.hypercert?.contributors?.value?.join(", ")}
           </AccordionLine>
-          <AccordionLine title="owners" count={fractionsData?.length}>
-            {fractionsData?.map((x) => x.owner).join(",")}
+          <AccordionLine
+            title="owners"
+            count={uniqBy(fractionsData || [], (x) => x.owner).length}
+          >
+            <HStack flexWrap={"wrap"}>
+              {uniqBy(fractionsData || [], (x) => x.owner).map((x) => (
+                <ProfileInfo key={x.owner} address={x.owner} />
+              ))}
+            </HStack>
           </AccordionLine>
         </VStack>
         <Flex maxW={"440px"} minW={"440px"}>
@@ -236,7 +247,7 @@ export const Index = () => {
                   spacing={8}
                   borderBottom={"1px solid black"}
                 >
-                  <Text>You own this hypercert</Text>
+                  <OwnageStats hypercertId={hypercertId as string} />
                   <HStack width={"100%"}>
                     <ListForSaleButton
                       width={"100%"}
@@ -259,7 +270,7 @@ export const Index = () => {
                 width={"100%"}
                 px={5}
                 py={6}
-                spacing={8}
+                spacing={4}
               >
                 <MarketplaceStats hypercertId={hypercertId as string} />
                 <HStack width={"100%"}>
