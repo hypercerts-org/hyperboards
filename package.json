@@ -23,7 +23,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.0.0-alpha.6",
-    "@hypercerts-org/marketplace-sdk": "^0.0.10",
+    "@hypercerts-org/marketplace-sdk": "^0.0.11",
     "@hypercerts-org/sdk": "^1.0.0-alpha.9",
     "@plasmicapp/cli": "^0.1.307",
     "@plasmicapp/loader-nextjs": "^1.0.309",
