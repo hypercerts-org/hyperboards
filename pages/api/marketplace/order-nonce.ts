@@ -8,6 +8,7 @@ import {
   SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
   SUPABASE_HYPERCERTS_URL,
 } from "@/config";
+import NextCors from "nextjs-cors";
 
 const inputSchemaGet = z
   .object({
@@ -29,6 +30,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  await NextCors(req, res, {
+    // Options
+    methods: ["POST"],
+    origin: "*",
+    optionsSuccessStatus: 200,
+  });
+
   if (req.method !== "POST") {
     res.status(404).json({ success: false, message: "Not found" });
     return;
