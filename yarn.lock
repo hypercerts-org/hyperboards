@@ -2527,10 +2527,10 @@
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/marketplace-sdk@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.9.tgz#0cc2aa342545039cac7d2589fbc3175f954ec9a6"
-  integrity sha512-inB/S5/TboyWEUepzffFJsyXZ3WxmEjsW1STAxXeeMJhkG2tmIMGomEMZ6CkZ2yaNRNivug46/vFvRnLCu2gBQ==
+"@hypercerts-org/marketplace-sdk@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.10.tgz#4ebe6586fc93be6729951aa112a3d2a752b717b3"
+  integrity sha512-FYrv6NGuQsR/jRd17isYuhD0sJ1B5Tbd68RESTKPjm29dC4WVyIwNNtQcVGNlok3rTy7NjNLYKDyzj+NkFFSYg==
   dependencies:
     "@hypercerts-org/sdk" "^1.0.3"
     "@supabase/supabase-js" "^2.39.2"

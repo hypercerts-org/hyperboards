@@ -1,7 +1,7 @@
 import { useAddress } from "@/hooks/useAddress";
 import { useMutation, useSignMessage } from "wagmi";
 import {
-  fetchNonce,
+  fetchAuthNonce,
   readableMessageToSign,
 } from "@/hooks/useGetAuthenticatedClient";
 import { useToast } from "@chakra-ui/react";
@@ -40,7 +40,7 @@ export const useRegisterUser = () => {
     let nonce: string | undefined;
 
     try {
-      nonce = await fetchNonce(address);
+      nonce = await fetchAuthNonce(address);
     } catch (e) {
       console.error("Error requesting nonce", e);
       toast({

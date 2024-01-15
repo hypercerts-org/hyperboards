@@ -4,7 +4,7 @@ import { useToast } from "@chakra-ui/react";
 import { useAddress } from "@/hooks/useAddress";
 import { useRouter } from "next/router";
 
-export const fetchNonce = async (address: string) => {
+export const fetchAuthNonce = async (address: string) => {
   const res = await fetch("/api/auth/nonce", {
     method: "POST",
     headers: {
@@ -46,7 +46,7 @@ export const useGetAuthenticatedClient = () => {
     let nonce: string | undefined;
 
     try {
-      nonce = await fetchNonce(address);
+      nonce = await fetchAuthNonce(address);
     } catch (e) {
       console.error("Error requesting nonce", e);
       toast({
