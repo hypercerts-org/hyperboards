@@ -30,12 +30,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  console.log("Before NEXT CORS");
   await NextCors(req, res, {
     // Options
-    methods: ["POST"],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     origin: "*",
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   });
+  console.log("After NEXT CORS");
 
   if (req.method !== "POST") {
     res.status(404).json({ success: false, message: "Not found" });
