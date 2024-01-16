@@ -10,7 +10,7 @@ import { OrderStatus } from "@/types/api";
 import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
 import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
 import { Database } from "@/types/hypercerts-database";
-import { deployments } from "@hypercerts-org/contracts";
+// import { deployments } from "@hypercerts-org/contracts";
 
 /**
  * Given an array of params, returns the encoded params.
@@ -72,7 +72,7 @@ const getTypedData = (chainId: number) => ({
   // verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
   // verifyingContract: deployments[chainId].HypercertExchange,
   // TODO: Get correct contract address
-  verifyingContract: "0x7d7b6011c7BaB5A850Bd44f7A5B29C3502fd6491",
+  verifyingContract: "0xfCC76C05867dad129f1D89a593Da8d55821084Eb",
 });
 
 export const makerTypes = {
