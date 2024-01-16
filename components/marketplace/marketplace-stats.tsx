@@ -78,7 +78,7 @@ export const MarketplaceStats = ({ hypercertId }: { hypercertId: string }) => {
   );
 };
 
-export const OwnageStats = ({ hypercertId }: { hypercertId: string }) => {
+export const OwnershipStats = ({ hypercertId }: { hypercertId: string }) => {
   const { data: fractions, isLoading } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
 

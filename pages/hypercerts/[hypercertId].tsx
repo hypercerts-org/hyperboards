@@ -34,7 +34,7 @@ import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForH
 import { CollectionTag } from "@/components/collection-tag";
 import {
   MarketplaceStats,
-  OwnageStats,
+  OwnershipStats,
 } from "@/components/marketplace/marketplace-stats";
 import _, { uniqBy } from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
@@ -247,7 +247,7 @@ export const Index = () => {
                   spacing={8}
                   borderBottom={"1px solid black"}
                 >
-                  <OwnageStats hypercertId={hypercertId as string} />
+                  <OwnershipStats hypercertId={hypercertId as string} />
                   <HStack width={"100%"}>
                     <ListForSaleButton
                       width={"100%"}

@@ -28,17 +28,13 @@ type Props = {
 
 export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
   ({ hypercertId, text = "Buy", ...props }, ref) => {
-    const { isOpen, onClose, onOpen } = useDisclosure({
-      defaultIsOpen: true,
-    });
+    const { isOpen, onClose, onOpen } = useDisclosure();
 
     const { data: orderData } =
       useFetchMarketplaceOrdersForHypercert(hypercertId);
     const { data: hypercert } = useFetchHypercertById(hypercertId);
 
-    const [step, setStep] = React.useState<"buy" | "confirmation">(
-      "confirmation",
-    );
+    const [step, setStep] = React.useState<"buy" | "confirmation">("buy");
     const [boughtFractionId, setBoughtFractionId] = React.useState<string>();
 
     const onConfirmed = (fractionId: string) => {
