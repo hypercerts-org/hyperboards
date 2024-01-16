@@ -270,8 +270,7 @@ const useSendDonation = ({ amount }: { amount: number }) => {
   const { sendTransactionAsync } = useSendTransaction({
     to: ZUZALU_DONATION_SAFE_ADDRESS,
     value: valueInWei,
-    onSuccess: async (data) => {
-      console.log(data);
+    onSuccess: async () => {
       toast({
         title: "Transaction sent",
         description: "Your donation is pending",

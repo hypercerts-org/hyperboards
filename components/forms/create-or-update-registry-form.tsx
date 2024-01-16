@@ -111,8 +111,6 @@ const ClaimsField = ({
     name: "claims",
   });
 
-  console.log(fields);
-
   return (
     <VStack alignItems={"flex-start"}>
       {fields.map((item, index) => (

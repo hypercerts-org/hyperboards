@@ -68,8 +68,6 @@ export const MintingForm = ({
   const isDisabled = isSubmitting || disabled;
   const values = watch();
 
-  console.log(values);
-
   return (
     <HStack w={"100%"} minW={0}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>

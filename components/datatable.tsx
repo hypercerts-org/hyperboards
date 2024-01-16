@@ -36,8 +36,6 @@ export function DataTable<Data extends object>({
     enableMultiRowSelection: false,
   });
 
-  console.log(table);
-
   return (
     <Table>
       <Thead>

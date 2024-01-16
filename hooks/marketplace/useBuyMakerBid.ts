@@ -88,10 +88,9 @@ export const useBuyMakerBid = () => {
       setStep("Awaiting buy signature");
       const tx = await call();
       setStep("Awaiting confirmation");
-      const receipt = await waitForTransactionReceipt(walletClientData, {
+      await waitForTransactionReceipt(walletClientData, {
         hash: tx.hash as `0x${string}`,
       });
-      console.log(receipt);
     } catch (e) {
       console.error(e);
       const currentStep = getCurrentStep();

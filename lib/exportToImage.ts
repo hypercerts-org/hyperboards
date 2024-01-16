@@ -19,7 +19,6 @@ export const exportAsImage = async (
     onclone: (el) => {
       const elementsWithShiftedDownwardText =
         el.querySelectorAll(".shifted-text");
-      console.log(elementsWithShiftedDownwardText);
       elementsWithShiftedDownwardText.forEach((el) => {
         // adjust styles or do whatever you want here
         // @ts-ignore

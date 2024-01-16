@@ -38,8 +38,6 @@ const processRegistryForDisplay = async (
   totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
-  console.log(allowlistEntries);
-
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
