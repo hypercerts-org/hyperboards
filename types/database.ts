@@ -7,308 +7,122 @@ export type Json =
   | Json[]
 
 export interface Database {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
-      allowlistCache: {
+      blueprints: {
         Row: {
-          address: string | null
-          claimId: string | null
-          created_at: string | null
-          fractionCounter: number | null
-          hidden: boolean
-          id: number
-        }
-        Insert: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Update: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Relationships: []
-      }
-      "allowlistCache-goerli": {
-        Row: {
-          address: string | null
-          claimId: string | null
-          created_at: string | null
-          fractionCounter: number | null
-          hidden: boolean
-          id: number
-        }
-        Insert: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Update: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Relationships: []
-      }
-      "allowlistCache-optimism": {
-        Row: {
-          address: string | null
-          claimId: string | null
-          created_at: string | null
-          fractionCounter: number | null
-          hidden: boolean
-          id: number
-        }
-        Insert: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Update: {
-          address?: string | null
-          claimId?: string | null
-          created_at?: string | null
-          fractionCounter?: number | null
-          hidden?: boolean
-          id?: number
-        }
-        Relationships: []
-      }
-      "claim-blueprints-optimism": {
-        Row: {
+          admin_id: string
           created_at: string
-          form_values: string
-          id: string
+          display_size: number
+          form_values: Json
+          id: number
           minter_address: string
           registry_id: string
         }
         Insert: {
+          admin_id: string
           created_at?: string
-          form_values: string
-          id?: string
+          display_size?: number
+          form_values: Json
+          id?: number
           minter_address: string
           registry_id: string
         }
         Update: {
+          admin_id?: string
           created_at?: string
-          form_values?: string
-          id?: string
+          display_size?: number
+          form_values?: Json
+          id?: number
           minter_address?: string
           registry_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "claim-blueprints-optimism_registry_id_fkey"
+            foreignKeyName: "blueprints_admin_id_fkey"
+            columns: ["admin_id"]
+            referencedRelation: "users"
+            referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "blueprints_registry_id_fkey"
             columns: ["registry_id"]
-            referencedRelation: "registries-optimism"
+            referencedRelation: "registries"
             referencedColumns: ["id"]
           }
         ]
       }
-      "claims-metadata-mapping": {
+      claims: {
         Row: {
-          chainId: number | null
-          claimId: string
-          collectionName: string | null
-          collision: string | null
-          createdAt: number | null
-          creatorAddress: string | null
-          date: string | null
-          featured: boolean | null
-          hidden: boolean
-          hypercert: Json | null
-          id: number
-          properties: Json | null
-          title: string | null
-          totalPrice: number | null
-          totalUnits: number | null
-        }
-        Insert: {
-          chainId?: number | null
-          claimId: string
-          collectionName?: string | null
-          collision?: string | null
-          createdAt?: number | null
-          creatorAddress?: string | null
-          date?: string | null
-          featured?: boolean | null
-          hidden?: boolean
-          hypercert?: Json | null
-          id?: number
-          properties?: Json | null
-          title?: string | null
-          totalPrice?: number | null
-          totalUnits?: number | null
-        }
-        Update: {
-          chainId?: number | null
-          claimId?: string
-          collectionName?: string | null
-          collision?: string | null
-          createdAt?: number | null
-          creatorAddress?: string | null
-          date?: string | null
-          featured?: boolean | null
-          hidden?: boolean
-          hypercert?: Json | null
-          id?: number
-          properties?: Json | null
-          title?: string | null
-          totalPrice?: number | null
-          totalUnits?: number | null
-        }
-        Relationships: []
-      }
-      collections: {
-        Row: {
-          chainId: number | null
-          claimId: string | null
-          collectionName: string | null
-          created_at: string | null
-          featured: boolean | null
-          id: number
-        }
-        Insert: {
-          chainId?: number | null
-          claimId?: string | null
-          collectionName?: string | null
-          created_at?: string | null
-          featured?: boolean | null
-          id?: number
-        }
-        Update: {
-          chainId?: number | null
-          claimId?: string | null
-          collectionName?: string | null
-          created_at?: string | null
-          featured?: boolean | null
-          id?: number
-        }
-        Relationships: []
-      }
-      "ftc-purchase": {
-        Row: {
-          address: string
-          ethValue: number
-          id: number
-          textForSponsor: string | null
-          timestamp: string
-          values: Json
-        }
-        Insert: {
-          address: string
-          ethValue: number
-          id?: number
-          textForSponsor?: string | null
-          timestamp?: string
-          values: Json
-        }
-        Update: {
-          address?: string
-          ethValue?: number
-          id?: number
-          textForSponsor?: string | null
-          timestamp?: string
-          values?: Json
-        }
-        Relationships: []
-      }
-      "gtc-alpha-allowlist": {
-        Row: {
-          address: string | null
-          id: number
-          project: string | null
-          units: number | null
-        }
-        Insert: {
-          address?: string | null
-          id: number
-          project?: string | null
-          units?: number | null
-        }
-        Update: {
-          address?: string | null
-          id?: number
-          project?: string | null
-          units?: number | null
-        }
-        Relationships: []
-      }
-      "hidden-hypercerts": {
-        Row: {
-          chainId: number | null
-          claimId: string | null
-          entry_created_at: string
-          hidden: boolean
-          id: number
-        }
-        Insert: {
-          chainId?: number | null
-          claimId?: string | null
-          entry_created_at?: string
-          hidden?: boolean
-          id?: number
-        }
-        Update: {
-          chainId?: number | null
-          claimId?: string | null
-          entry_created_at?: string
-          hidden?: boolean
-          id?: number
-        }
-        Relationships: []
-      }
-      "hyperboard-claims": {
-        Row: {
+          admin_id: string
+          chain_id: number
           created_at: string
+          display_size: number
           hypercert_id: string
           id: string
+          owner_id: string
           registry_id: string
         }
         Insert: {
+          admin_id: string
+          chain_id: number
           created_at?: string
+          display_size?: number
           hypercert_id: string
           id?: string
+          owner_id: string
           registry_id: string
         }
         Update: {
+          admin_id?: string
+          chain_id?: number
           created_at?: string
+          display_size?: number
           hypercert_id?: string
           id?: string
+          owner_id?: string
           registry_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "hyperboard-claims_registry_id_fkey"
+            foreignKeyName: "claims_registry_id_fkey"
             columns: ["registry_id"]
-            referencedRelation: "registries-optimism"
+            referencedRelation: "registries"
             referencedColumns: ["id"]
           }
         ]
       }
-      "hyperboard-sponsor-metadata": {
+      default_sponsor_metadata: {
         Row: {
           address: string
           companyName: string | null
           created_at: string
           firstName: string | null
-          id: string
           image: string
           lastName: string | null
           type: string
@@ -318,7 +132,6 @@ export interface Database {
           companyName?: string | null
           created_at?: string
           firstName?: string | null
-          id?: string
           image: string
           lastName?: string | null
           type: string
@@ -328,91 +141,77 @@ export interface Database {
           companyName?: string | null
           created_at?: string
           firstName?: string | null
-          id?: string
           image?: string
           lastName?: string | null
           type?: string
         }
         Relationships: []
       }
-      "hypercert-projects": {
+      hyperboard_registries: {
         Row: {
-          date_to_order: string | null
-          description: string | null
-          hidden: boolean
-          id: number
-          link: string | null
-          link_display_text: string | null
-          name: string | null
-          organization: string | null
-          stage: string | null
-          time_created: string | null
-          type: string | null
-          visible_date: string | null
+          created_at: string | null
+          hyperboard_id: string
+          label: string | null
+          registry_id: string
+          render_method: string
         }
         Insert: {
-          date_to_order?: string | null
-          description?: string | null
-          hidden?: boolean
-          id?: number
-          link?: string | null
-          link_display_text?: string | null
-          name?: string | null
-          organization?: string | null
-          stage?: string | null
-          time_created?: string | null
-          type?: string | null
-          visible_date?: string | null
+          created_at?: string | null
+          hyperboard_id: string
+          label?: string | null
+          registry_id: string
+          render_method?: string
         }
         Update: {
-          date_to_order?: string | null
-          description?: string | null
-          hidden?: boolean
-          id?: number
-          link?: string | null
-          link_display_text?: string | null
-          name?: string | null
-          organization?: string | null
-          stage?: string | null
-          time_created?: string | null
-          type?: string | null
-          visible_date?: string | null
+          created_at?: string | null
+          hyperboard_id?: string
+          label?: string | null
+          registry_id?: string
+          render_method?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hyperboard_registries_hyperboard_id_fkey"
+            columns: ["hyperboard_id"]
+            referencedRelation: "hyperboards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hyperboard_registries_registries_id_fk"
+            columns: ["registry_id"]
+            referencedRelation: "registries"
+            referencedColumns: ["id"]
+          }
+        ]
       }
-      "hypercerts-store": {
-        Row: {
-          chainId: number | null
-          claimId: string | null
-          collectionName: string | null
-          created_at: string
-          hidden: boolean
-          id: number
-          maxPurchase: number
-        }
-        Insert: {
-          chainId?: number | null
-          claimId?: string | null
-          collectionName?: string | null
-          created_at?: string
-          hidden?: boolean
-          id?: number
-          maxPurchase?: number
-        }
-        Update: {
-          chainId?: number | null
-          claimId?: string | null
-          collectionName?: string | null
-          created_at?: string
-          hidden?: boolean
-          id?: number
-          maxPurchase?: number
-        }
-        Relationships: []
-      }
-      "registries-optimism": {
+      hyperboards: {
         Row: {
           admin_id: string
+          chain_id: number
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          admin_id: string
+          chain_id: number
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          admin_id?: string
+          chain_id?: number
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      registries: {
+        Row: {
+          admin_id: string
+          chain_id: number
           created_at: string
           description: string
           hidden: boolean
@@ -421,6 +220,7 @@ export interface Database {
         }
         Insert: {
           admin_id: string
+          chain_id: number
           created_at?: string
           description: string
           hidden?: boolean
@@ -429,6 +229,7 @@ export interface Database {
         }
         Update: {
           admin_id?: string
+          chain_id?: number
           created_at?: string
           description?: string
           hidden?: boolean
@@ -437,81 +238,51 @@ export interface Database {
         }
         Relationships: []
       }
-      "zuzalu-community-hypercerts": {
-        Row: {
-          chainId: number | null
-          claimId: string
-          collectionName: string | null
-          collision: string | null
-          createdAt: number | null
-          creatorAddress: string | null
-          date: string | null
-          featured: boolean | null
-          hidden: boolean
-          hypercert: Json | null
-          id: number
-          properties: Json | null
-          title: string | null
-          totalUnits: number | null
-        }
-        Insert: {
-          chainId?: number | null
-          claimId: string
-          collectionName?: string | null
-          collision?: string | null
-          createdAt?: number | null
-          creatorAddress?: string | null
-          date?: string | null
-          featured?: boolean | null
-          hidden?: boolean
-          hypercert?: Json | null
-          id?: number
-          properties?: Json | null
-          title?: string | null
-          totalUnits?: number | null
-        }
-        Update: {
-          chainId?: number | null
-          claimId?: string
-          collectionName?: string | null
-          collision?: string | null
-          createdAt?: number | null
-          creatorAddress?: string | null
-          date?: string | null
-          featured?: boolean | null
-          hidden?: boolean
-          hypercert?: Json | null
-          id?: number
-          properties?: Json | null
-          title?: string | null
-          totalUnits?: number | null
-        }
-        Relationships: []
-      }
-      "zuzalu-purchase": {
+      users: {
         Row: {
           address: string
-          ethValue: number
-          id: number
-          textForSponsor: string | null
-          timestamp: string
-          values: Json
+          auth: Json
+          created_at: string
+          email: string | null
+          id: string | null
         }
         Insert: {
           address: string
-          ethValue: number
-          id?: number
-          textForSponsor?: string | null
-          timestamp?: string
-          values: Json
+          auth?: Json
+          created_at?: string
+          email?: string | null
+          id?: string | null
         }
         Update: {
           address?: string
-          ethValue?: number
+          auth?: Json
+          created_at?: string
+          email?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
+      zuzalu_donations: {
+        Row: {
+          address: string
+          amount: string | null
+          created_at: string
+          email: string
+          id: number
+        }
+        Insert: {
+          address: string
+          amount?: string | null
+          created_at?: string
+          email: string
           id?: number
-          textForSponsor?: string | null
-          timestamp?: string
-          values?: Json
+        }
+        Update: {
+          address?: string
+          amount?: string | null
+          created_at?: string
+          email?: string
+          id?: number
         }
         Relationships: []
       }
@@ -520,52 +291,14 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      citext:
-        | {
-            Args: {
-              "": string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              "": boolean
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: string
-          }
-      citext_hash: {
+      add_claim_from_blueprint: {
         Args: {
-          "": string
-        }
-        Returns: number
-      }
-      citextin: {
-        Args: {
-          "": unknown
-        }
-        Returns: string
-      }
-      citextout: {
-        Args: {
-          "": string
-        }
-        Returns: unknown
-      }
-      citextrecv: {
-        Args: {
-          "": unknown
-        }
-        Returns: string
-      }
-      citextsend: {
-        Args: {
-          "": string
+          registry_id: string
+          hypercert_id: string
+          chain_id: number
+          admin_id: string
+          owner_id: string
+          blueprint_id: number
         }
         Returns: string
       }
@@ -577,4 +310,184 @@ export interface Database {
       [_ in never]: never
     }
   }
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          allowed_mime_types: string[] | null
+          avif_autodetection: boolean | null
+          created_at: string | null
+          file_size_limit: number | null
+          id: string
+          name: string
+          owner: string | null
+          public: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id: string
+          name: string
+          owner?: string | null
+          public?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id?: string
+          name?: string
+          owner?: string | null
+          public?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buckets_owner_fkey"
+            columns: ["owner"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      migrations: {
+        Row: {
+          executed_at: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Insert: {
+          executed_at?: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Update: {
+          executed_at?: string | null
+          hash?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      objects: {
+        Row: {
+          bucket_id: string | null
+          created_at: string | null
+          id: string
+          last_accessed_at: string | null
+          metadata: Json | null
+          name: string | null
+          owner: string | null
+          path_tokens: string[] | null
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      can_insert_object: {
+        Args: {
+          bucketid: string
+          name: string
+          owner: string
+          metadata: Json
+        }
+        Returns: undefined
+      }
+      extension: {
+        Args: {
+          name: string
+        }
+        Returns: string
+      }
+      filename: {
+        Args: {
+          name: string
+        }
+        Returns: string
+      }
+      foldername: {
+        Args: {
+          name: string
+        }
+        Returns: unknown
+      }
+      get_size_by_bucket: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          size: number
+          bucket_id: string
+        }[]
+      }
+      search: {
+        Args: {
+          prefix: string
+          bucketname: string
+          limits?: number
+          levels?: number
+          offsets?: number
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          name: string
+          id: string
+          updated_at: string
+          created_at: string
+          last_accessed_at: string
+          metadata: Json
+        }[]
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
+

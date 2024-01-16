@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FtcBoard } from "@/components/ftc-board";
+import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 
 const BoardDetailPage = () => {
   const { query } = useRouter();
@@ -10,7 +10,7 @@ const BoardDetailPage = () => {
     return <div>Invalid uri</div>;
   }
 
-  return <FtcBoard registryId={boardId} />;
+  return <HyperboardRenderer hyperboardId={boardId} />;
 };
 
 export default BoardDetailPage;

@@ -8,6 +8,16 @@ const nextConfig = {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
   },
+  pageExtensions: (() => {
+    const { NEXT_PUBLIC_BUILDTYPE } = process.env;
+    switch (NEXT_PUBLIC_BUILDTYPE) {
+      case "zuzalu":
+        console.log("zuzalu build");
+        return ["zuzalu.tsx"];
+      default:
+        return ["tsx", "ts", "jsx", "js"];
+    }
+  })(),
   async headers() {
     return [
       {
