@@ -2,6 +2,7 @@ import {
   Button,
   ButtonProps,
   Flex,
+  HStack,
   Modal,
   Text,
   useDisclosure,
@@ -19,16 +20,19 @@ import { AvailableOrders } from "@/components/marketplace/available-orders";
 import React from "react";
 import { BalanceOverview } from "@/components/balance-overview";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
-import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
+import { OwnershipStats } from "@/components/marketplace/ownership-stats";
 
 type Props = {
   hypercertId: string;
   text?: string;
+  onClickListForSale?: () => void;
 } & ButtonProps;
 
 export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
-  ({ hypercertId, text = "Buy", ...props }, ref) => {
-    const { isOpen, onClose, onOpen } = useDisclosure();
+  ({ hypercertId, text = "Buy", onClickListForSale, ...props }, ref) => {
+    const { isOpen, onClose, onOpen } = useDisclosure({
+      id: "buy-hypercert-button",
+    });
 
     const { data: orderData } =
       useFetchMarketplaceOrdersForHypercert(hypercertId);
@@ -102,7 +106,39 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
                     <Text fontSize={"xxl"} textStyle={"secondary"}>
                       {hypercert?.metadata.name}
                     </Text>
-                    <MarketplaceStats hypercertId={hypercertId} />
+                    <VStack
+                      width={"510px"}
+                      border={"1px solid black"}
+                      borderColor={"rgba(0, 0, 0, 0.2)"}
+                      py={"28px"}
+                      px={"20px"}
+                      borderRadius={"8px"}
+                    >
+                      <OwnershipStats hypercertId={hypercertId} />
+                      <HStack width={"100%"}>
+                        <Button
+                          variant="blackAndWhiteOutline"
+                          border={"none"}
+                          backgroundColor={"background"}
+                          width={"100%"}
+                          onClick={() => {
+                            onClickListForSale?.();
+                            setStep("buy");
+                            onClose();
+                          }}
+                        >
+                          List for sale
+                        </Button>
+                        <Button
+                          variant="blackAndWhiteOutline"
+                          border={"none"}
+                          width={"100%"}
+                          backgroundColor={"background"}
+                        >
+                          Transfer
+                        </Button>
+                      </HStack>
+                    </VStack>
                     <Button
                       mt={20}
                       variant={"blackAndWhite"}

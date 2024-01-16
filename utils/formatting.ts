@@ -19,7 +19,7 @@ export const formatWorkTimeframe = (timeStamps?: number[]) => {
     return "";
   }
   const dateFormat = "dd MMM yyyy";
-  const start = new Date(timeStamps[0]);
-  const end = new Date(timeStamps[1]);
+  const start = new Date(timeStamps[0] * 1000);
+  const end = new Date(timeStamps[1] * 1000);
   return `${format(start, dateFormat)} - ${format(end, dateFormat)}`;
 };

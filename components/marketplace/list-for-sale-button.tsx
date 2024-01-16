@@ -7,45 +7,69 @@ import {
   ModalOverlay,
 } from "@chakra-ui/modal";
 import { CreateOrderForm } from "@/components/marketplace/create-order-form";
+import React from "react";
 
-export const ListForSaleButton = ({
-  hypercertId,
-  text = "List for sale",
-  onClickViewListings,
-  ...props
-}: {
+type Props = {
   hypercertId: string;
   text?: string;
   onClickViewListings?: () => void;
-} & ButtonProps) => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const { data: orderData } =
-    useFetchMarketplaceOrdersForHypercert(hypercertId);
+  onClick?: () => void;
+} & ButtonProps;
 
-  const onClickViewListingsWithModalClose = () => {
-    onClose();
-    onClickViewListings?.();
-  };
+export const ListForSaleButton = React.forwardRef<HTMLButtonElement, Props>(
+  (
+    {
+      hypercertId,
+      text = "List for sale",
+      onClickViewListings,
+      onClick,
+      ...props
+    },
+    ref,
+  ) => {
+    const { isOpen, onClose, onOpen } = useDisclosure({
+      id: "list-for-sale-button",
+    });
+    const { data: orderData } =
+      useFetchMarketplaceOrdersForHypercert(hypercertId);
 
-  return (
-    <>
-      <Button variant="blackAndWhite" onClick={onOpen} {...props}>
-        {text}
-      </Button>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton size={"lg"} />
-          <ModalBody p="40px" pt={"60px"}>
-            {orderData && (
-              <CreateOrderForm
-                hypercertId={hypercertId}
-                onClickViewListings={onClickViewListingsWithModalClose}
-              />
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+    const onClickViewListingsWithModalClose = () => {
+      onClose();
+      onClickViewListings?.();
+    };
+
+    const onClickButton = () => {
+      onClick?.();
+      onOpen();
+    };
+
+    return (
+      <>
+        <Button
+          ref={ref}
+          variant="blackAndWhite"
+          onClick={onClickButton}
+          {...props}
+        >
+          {text}
+        </Button>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalCloseButton size={"lg"} />
+            <ModalBody p="40px" pt={"60px"}>
+              {orderData && (
+                <CreateOrderForm
+                  hypercertId={hypercertId}
+                  onClickViewListings={onClickViewListingsWithModalClose}
+                />
+              )}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </>
+    );
+  },
+);
+
+ListForSaleButton.displayName = "ListForSaleButton";

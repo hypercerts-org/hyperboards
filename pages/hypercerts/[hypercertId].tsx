@@ -32,16 +32,14 @@ import { PropsWithChildren, useRef } from "react";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useFetchCollectionsForHypercert } from "@/hooks/useFetchCollectionsForHypercert";
 import { CollectionTag } from "@/components/collection-tag";
-import {
-  MarketplaceStats,
-  OwnershipStats,
-} from "@/components/marketplace/marketplace-stats";
+import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
 import _, { uniqBy } from "lodash";
 import { BuyHypercertButton } from "@/components/marketplace/buy-hypercert-button";
 import { useAddress } from "@/hooks/useAddress";
 import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button";
 import Link from "next/link";
 import { ProfileInfo } from "@/components/profile-info";
+import { OwnershipStats } from "@/components/marketplace/ownership-stats";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -64,9 +62,14 @@ export const Index = () => {
   );
 
   const buyButtonRef = useRef<HTMLButtonElement>(null);
+  const listForSaleButtonRef = useRef<HTMLButtonElement>(null);
 
-  const onClickViewListings = () => {
+  const clickViewListings = () => {
     buyButtonRef.current?.click();
+  };
+
+  const clickListForSale = () => {
+    listForSaleButtonRef.current?.click();
   };
 
   const ownedByConnectedUser = !!fractionsData?.some(
@@ -244,7 +247,7 @@ export const Index = () => {
                   width={"100%"}
                   px={5}
                   py={6}
-                  spacing={8}
+                  spacing={4}
                   borderBottom={"1px solid black"}
                 >
                   <OwnershipStats hypercertId={hypercertId as string} />
@@ -252,7 +255,8 @@ export const Index = () => {
                     <ListForSaleButton
                       width={"100%"}
                       hypercertId={hypercertId as string}
-                      onClickViewListings={onClickViewListings}
+                      onClickViewListings={clickViewListings}
+                      ref={listForSaleButtonRef}
                     />
                     <Button
                       variant="blackAndWhiteOutline"
@@ -278,6 +282,7 @@ export const Index = () => {
                     ref={buyButtonRef}
                     width={"100%"}
                     hypercertId={hypercertId as string}
+                    onClickListForSale={clickListForSale}
                   />
                   <Button
                     variant="blackAndWhiteOutline"

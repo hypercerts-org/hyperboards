@@ -83,7 +83,6 @@ export const CreateOrderForm = ({
       required: true,
       minLength: 1,
       validate: (value) => {
-        console.log("validate", value);
         if (!selectedFraction) {
           return "Fraction ID is required";
         }
