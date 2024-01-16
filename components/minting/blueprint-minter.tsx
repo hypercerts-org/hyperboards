@@ -293,6 +293,8 @@ export const BlueprintMinter = ({
     workStart,
   };
 
+  const isDevEnv = process.env.NODE_ENV === "development";
+
   return (
     <>
       {!isCorrectChain && (
@@ -312,9 +314,11 @@ export const BlueprintMinter = ({
           buttonLabel="Mint"
           imageRef={ref}
         />
-        <Image src={previewImageSrc} h={"400px"} w={"320px"} />
+        {isDevEnv && <Image src={previewImageSrc} h={"400px"} w={"320px"} />}
       </HStack>
-      <Button onClick={syncPreviewImage}>Sync preview image</Button>
+      {isDevEnv && (
+        <Button onClick={syncPreviewImage}>Sync preview image</Button>
+      )}
     </>
   );
 };
