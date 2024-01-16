@@ -10,7 +10,8 @@ import { OrderStatus } from "@/types/api";
 import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
 import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
 import { Database } from "@/types/hypercerts-database";
-// import { deployments } from "@hypercerts-org/contracts";
+import NextCors from "nextjs-cors";
+import { deployments, asDeployedChain } from "@hypercerts-org/contracts";
 
 /**
  * Given an array of params, returns the encoded params.
@@ -64,16 +65,23 @@ const inputSchemaPost = z.object({
   additionalParameters: z.string(),
 });
 
-const getTypedData = (chainId: number) => ({
-  name: "LooksRareProtocol",
-  version: "2",
-  chainId,
-  // @ts-ignore
-  // verifyingContract: "0x483e634b79A933CDf369c46f6138a781B7495233",
-  // verifyingContract: deployments[chainId].HypercertExchange,
-  // TODO: Get correct contract address
-  verifyingContract: "0xfCC76C05867dad129f1D89a593Da8d55821084Eb",
-});
+const getTypedData = (chainId: number) => {
+  const verifyingContract =
+    deployments[asDeployedChain(chainId)].HypercertExchange;
+
+  if (!verifyingContract) {
+    throw new Error(
+      `Unknown address for HypercertExchange on chain with id ${chainId}`,
+    );
+  }
+
+  return {
+    name: "LooksRareProtocol",
+    version: "2",
+    chainId,
+    verifyingContract,
+  };
+};
 
 export const makerTypes = {
   Maker: [
@@ -125,6 +133,13 @@ export default async function handler(
     };
   }>,
 ) {
+  await NextCors(req, res, {
+    // Options
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    origin: "*",
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  });
+
   if (req.method === "POST") {
     // Validate inputs
     console.log(req.body);
