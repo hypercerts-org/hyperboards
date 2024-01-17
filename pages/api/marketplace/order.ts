@@ -75,6 +75,8 @@ const getTypedData = (chainId: number) => {
     );
   }
 
+  console.log("verifyingContract", verifyingContract);
+
   return {
     name: "LooksRareProtocol",
     version: "2",
