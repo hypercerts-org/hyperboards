@@ -75,10 +75,6 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         },
       ]);
 
-      if (!client.config.publicClient) {
-        throw new Error("Public client not initialized");
-      }
-
       if (!provider) {
         throw new Error("Provider not initialized");
       }
@@ -146,8 +142,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         [restAmount, ...listingsWithUnits.map((x) => x.units)],
       );
       setStep("Waiting");
-      const publicClient = client.config.publicClient;
-      const receipt = await publicClient?.waitForTransactionReceipt({
+      const receipt = await waitForTransactionReceipt(walletClientData, {
         confirmations: 3,
         hash: hash,
       });
