@@ -1,6 +1,7 @@
 import { useHypercertClient } from "@/components/providers";
 import { useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
+import { ClaimTokensByClaimQuery } from "@hypercerts-org/sdk";
 
 export const useFetchHypercertFractionsByHypercertId = (
   hypercertId: string,
@@ -21,7 +22,9 @@ export const useFetchHypercertFractionsByHypercertId = (
         return null;
       }
 
-      const fractions = await client.indexer.fractionsByClaim(hypercertId);
+      const fractions = (await client.indexer.fractionsByClaim(
+        hypercertId,
+      )) as ClaimTokensByClaimQuery;
       const totalUnitsForAllFractions = fractions.claimTokens.reduce(
         (acc, cur) => acc + BigInt(cur.units),
         0n,

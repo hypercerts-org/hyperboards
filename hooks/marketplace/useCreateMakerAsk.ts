@@ -141,6 +141,9 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         BigInt(selectedFraction.tokenID),
         [restAmount, ...listingsWithUnits.map((x) => x.units)],
       );
+      if (!hash) {
+        throw new Error("No hash found for splitting transaction");
+      }
       setStep("Waiting");
       const receipt = await waitForTransactionReceipt(walletClientData, {
         confirmations: 3,

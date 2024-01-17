@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase, supabaseHypercerts } from "@/lib/supabase";
 
-import { Claim, HypercertClient } from "@hypercerts-org/sdk";
+import {
+  Claim,
+  ClaimTokensByClaimQuery,
+  HypercertClient,
+} from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
@@ -41,9 +45,9 @@ const processRegistryForDisplay = async (
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
-      const fractions = await client.indexer.fractionsByClaim(
+      const fractions = (await client.indexer.fractionsByClaim(
         claim.hypercert_id,
-      );
+      )) as ClaimTokensByClaimQuery;
 
       return {
         claim,

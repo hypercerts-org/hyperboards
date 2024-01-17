@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
-import { Claim } from "@hypercerts-org/sdk";
+import { Claim, ClaimTokensByClaimQuery } from "@hypercerts-org/sdk";
 import { createPublicClient, getContract, http } from "viem";
 import { sepolia } from "viem/chains";
 import { TRADER_CONTRACT } from "@/config";
@@ -123,7 +123,10 @@ export const useStoreHypercerts = () => {
                   }),
                   client.indexer
                     .fractionsByClaim(claimId!)
-                    .then((res) => res.claimTokens),
+                    .then(
+                      (res) =>
+                        res.claimTokens as ClaimTokensByClaimQuery["claimTokens"],
+                    ),
                 ]);
 
                 return {

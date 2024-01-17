@@ -1,6 +1,7 @@
 import { useHypercertClient } from "@/components/providers";
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
+import { ClaimByIdQuery } from "@hypercerts-org/sdk";
 
 export const useFetchHypercertById = (hypercertId: string) => {
   const client = useHypercertClient();
@@ -19,7 +20,9 @@ export const useFetchHypercertById = (hypercertId: string) => {
         return null;
       }
 
-      const claim = await client.indexer.claimById(hypercertId);
+      const claim = (await client.indexer.claimById(
+        hypercertId,
+      )) as ClaimByIdQuery;
 
       if (!claim?.claim?.uri) {
         console.log("no claim");

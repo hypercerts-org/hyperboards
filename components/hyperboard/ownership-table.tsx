@@ -12,6 +12,7 @@ import { getEntriesDisplayData } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
+import { ClaimTokensByClaimQuery } from "@hypercerts-org/sdk";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -423,7 +424,9 @@ const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
         if (!claimFromSupabase) {
           throw new Error("Claim not found");
         }
-        const fractions = await client.indexer.fractionsByClaim(claimId);
+        const fractions = (await client.indexer.fractionsByClaim(
+          claimId,
+        )) as ClaimTokensByClaimQuery;
 
         return {
           claim: claimFromSupabase,
