@@ -1,15 +1,18 @@
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { useQuery } from "@tanstack/react-query";
-import { utils } from "@hypercerts-org/marketplace-sdk";
+import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import _ from "lodash";
 import { formatEther } from "viem";
 import { useChainId } from "wagmi";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { Provider } from "ethers";
 
 export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
   const { data: fractions } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
 
   const chainId = useChainId();
+  const provider = useEthersProvider();
 
   return useQuery(
     ["available-orders", hypercertId],
@@ -22,10 +25,18 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
         throw new Error("No chainId");
       }
 
-      const { data: orders } = await utils.api.fetchOrdersByHypercertId({
-        hypercertId,
+      const hypercertExchangeClient = new HypercertExchangeClient(
         chainId,
-      });
+        // TODO: Fix typing issue with provider
+        // @ts-ignore
+        provider as unknown as Provider,
+      );
+
+      const { data: orders } =
+        await hypercertExchangeClient.api.fetchOrdersByHypercertId({
+          hypercertId,
+          chainId,
+        });
 
       if (!orders) {
         throw new Error("No orders");
