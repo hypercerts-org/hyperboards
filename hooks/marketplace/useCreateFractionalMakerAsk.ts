@@ -126,10 +126,12 @@ export const useCreateFractionalMakerAsk = ({
         await hypercertExchangeClient.createFractionalSaleMakerAsk({
           startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
           endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
-          price: parseEther("1"), // Be careful to use a price in wei, this example is for 1 ETH
+          price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
           itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
-          unitAmount: 10,
-          pricePerUnit: 100,
+          minUnitAmount: BigInt(values.minUnitsToKeep), // Minimum amount of units to keep after the sale
+          maxUnitAmount: BigInt(values.maxUnitAmount), // Maximum amount of units to sell
+          minUnitsToKeep: BigInt(values.minUnitsToKeep), // Minimum amount of units to keep after the sale
+          sellLeftoverFraction: values.sellLeftoverFraction, // If you want to sell the leftover fraction
         });
 
       // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol

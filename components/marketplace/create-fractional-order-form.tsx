@@ -12,6 +12,7 @@ import {
   InputRightElement,
   Select,
   Spinner,
+  Switch,
   Text,
   useToast,
   VStack,
@@ -21,13 +22,16 @@ import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHyperce
 import { formatAddress } from "@/utils/formatting";
 import { useAddress } from "@/hooks/useAddress";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
-import { Alert } from "@chakra-ui/alert";
+import { Alert, AlertIcon } from "@chakra-ui/alert";
 import { useCreateFractionalMakerAsk } from "@/hooks/marketplace/useCreateFractionalMakerAsk";
 
 export interface CreateFractionalOfferFormValues {
   fractionId: string;
-  unitAmount: number;
-  pricePerUnit: number;
+  minUnitAmount: string;
+  maxUnitAmount: string;
+  minUnitsToKeep: string;
+  price: string;
+  sellLeftoverFraction: boolean;
 }
 
 export const CreateFractionalOrderForm = ({
@@ -55,7 +59,13 @@ export const CreateFractionalOrderForm = ({
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CreateFractionalOfferFormValues>({
-    defaultValues: {},
+    defaultValues: {
+      minUnitAmount: "10",
+      maxUnitAmount: "100",
+      minUnitsToKeep: "20",
+      price: "0.00000000000001",
+      sellLeftoverFraction: false,
+    },
     reValidateMode: "onBlur",
     mode: "onBlur",
   });
@@ -131,11 +141,15 @@ export const CreateFractionalOrderForm = ({
               fontSize={"lg"}
               fontWeight={500}
               lineHeight={"28px"}
-              pb={"30px"}
+              pb={"18px"}
             >
-              Split your ownership part
-              <br /> into fractions to list them for sale.
+              Create fractional sale
             </Text>
+            <Alert status="info" maxW={"auto"}>
+              <AlertIcon />
+              You can create a fractional sale for your hypercert so that the
+              buyer can decide how many units they want to buy.
+            </Alert>
             {hasFractionsWithoutActiveOrder ? (
               <VStack height={"100%"}>
                 <FormControl isInvalid={!!errors.fractionId} pb={6}>
@@ -159,32 +173,78 @@ export const CreateFractionalOrderForm = ({
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!errors.unitAmount} pb={6}>
-                  <FormLabel htmlFor="unitAmount">Unit amount</FormLabel>
-                  <Input
-                    disabled={disableInputs}
-                    {...register("unitAmount", {
-                      required: "Unit amount is required",
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors.unitAmount && errors.unitAmount.message}
-                  </FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!errors.pricePerUnit} pb={6}>
-                  <FormLabel htmlFor="pricePerUnit">Price per unit</FormLabel>
+                <FormControl isInvalid={!!errors.price} pb={6}>
+                  <FormLabel htmlFor="price">Price per unit</FormLabel>
                   <InputGroup>
                     <Input
                       disabled={disableInputs}
-                      {...register("pricePerUnit", {
-                        required: "Price per unit is required",
+                      {...register("price", {
+                        required: "Price is required",
                       })}
                     />
                     <InputRightElement>ETH</InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>
-                    {errors.pricePerUnit && errors.pricePerUnit.message}
+                    {errors.price && errors.price.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.minUnitAmount} pb={6}>
+                  <FormLabel htmlFor="unitAmount">
+                    Minimum amount of units per sale
+                  </FormLabel>
+                  <Input
+                    disabled={disableInputs}
+                    {...register("minUnitAmount", {
+                      required: "Unit amount is required",
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.minUnitAmount && errors.minUnitAmount.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.maxUnitAmount} pb={6}>
+                  <FormLabel htmlFor="maxUnitAmount">
+                    Maximum amount of units per sale
+                  </FormLabel>
+                  <Input
+                    disabled={disableInputs}
+                    {...register("maxUnitAmount", {
+                      required: "Max unit amount is required",
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.maxUnitAmount && errors.maxUnitAmount.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.minUnitsToKeep} pb={6}>
+                  <FormLabel htmlFor="minUnitsToKeep">
+                    Minimum amount of units I would like to keep
+                  </FormLabel>
+                  <Input
+                    disabled={disableInputs}
+                    {...register("minUnitsToKeep", {
+                      required: "Min units to keep is required",
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors.minUnitsToKeep && errors.minUnitsToKeep.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={!!errors.sellLeftoverFraction} pb={6}>
+                  <FormLabel htmlFor="sellLeftoverFraction">
+                    Sell leftover units if there are less then the minimum
+                  </FormLabel>
+                  <Switch
+                    disabled={disableInputs}
+                    {...register("sellLeftoverFraction")}
+                  />
+                  <FormErrorMessage>
+                    {errors.sellLeftoverFraction &&
+                      errors.sellLeftoverFraction.message}
                   </FormErrorMessage>
                 </FormControl>
 
@@ -195,7 +255,7 @@ export const CreateFractionalOrderForm = ({
                     variant={"blackAndWhite"}
                     type="submit"
                   >
-                    Create fractional sale
+                    Create
                   </Button>
                 </Center>
               </VStack>

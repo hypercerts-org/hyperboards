@@ -1,4 +1,14 @@
-import { Button, ButtonProps, Modal, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonProps,
+  Modal,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useFetchMarketplaceOrdersForHypercert } from "@/hooks/marketplace/useFetchMarketplaceOrdersForHypercert";
 import {
   ModalBody,
@@ -8,6 +18,7 @@ import {
 } from "@chakra-ui/modal";
 import { CreateOrderForm } from "@/components/marketplace/create-order-form";
 import React from "react";
+import { CreateFractionalOrderForm } from "@/components/marketplace/create-fractional-order-form";
 
 type Props = {
   hypercertId: string;
@@ -55,15 +66,28 @@ export const ListForSaleButton = React.forwardRef<HTMLButtonElement, Props>(
         </Button>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent maxH={"80vh"} overflow={"auto"}>
             <ModalCloseButton size={"lg"} />
             <ModalBody p="40px" pt={"60px"}>
-              {orderData && (
-                <CreateOrderForm
-                  hypercertId={hypercertId}
-                  onClickViewListings={onClickViewListingsWithModalClose}
-                />
-              )}
+              <Tabs>
+                <TabList>
+                  <Tab>Direct sale</Tab>
+                  <Tab>Fractional sale</Tab>
+                </TabList>
+                {orderData && (
+                  <TabPanels>
+                    <TabPanel>
+                      <CreateOrderForm
+                        hypercertId={hypercertId}
+                        onClickViewListings={onClickViewListingsWithModalClose}
+                      />
+                    </TabPanel>
+                    <TabPanel>
+                      <CreateFractionalOrderForm hypercertId={hypercertId} />
+                    </TabPanel>
+                  </TabPanels>
+                )}
+              </Tabs>
             </ModalBody>
           </ModalContent>
         </Modal>
