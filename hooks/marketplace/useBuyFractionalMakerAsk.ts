@@ -59,9 +59,9 @@ export const useBuyFractionalMakerAsk = () => {
         },
       ]);
 
-      // @ts-ignore
       const hypercertExchangeClient = new HypercertExchangeClient(
         chainId,
+        // @ts-ignore
         provider,
         signer,
       );

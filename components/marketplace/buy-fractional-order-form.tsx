@@ -18,8 +18,10 @@ export interface BuyFractionalOrderFormValues {
 
 export const BuyFractionalOrderForm = ({
   order,
+  onCompleted,
 }: {
   order: MarketplaceOrderEntity;
+  onCompleted?: () => void;
 }) => {
   const {
     register,
@@ -39,6 +41,7 @@ export const BuyFractionalOrderForm = ({
       unitAmount: values.unitAmount,
       pricePerUnit: values.pricePerUnit,
     });
+    onCompleted?.();
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
