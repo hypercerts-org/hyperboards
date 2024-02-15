@@ -4,12 +4,12 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
   VStack,
 } from "@chakra-ui/react";
 import { useBuyFractionalMakerAsk } from "@/hooks/marketplace/useBuyFractionalMakerAsk";
 import { MarketplaceOrderEntity } from "@/types/database-entities";
+import { formatEther } from "viem";
 
 export interface BuyFractionalOrderFormValues {
   unitAmount: string;
@@ -30,7 +30,7 @@ export const BuyFractionalOrderForm = ({
   } = useForm<BuyFractionalOrderFormValues>({
     defaultValues: {
       unitAmount: "20",
-      pricePerUnit: "0.00000000000001",
+      pricePerUnit: formatEther(BigInt(order.price)),
     },
   });
   const { mutateAsync: buyFractionalMakerAsk } = useBuyFractionalMakerAsk();
@@ -45,10 +45,9 @@ export const BuyFractionalOrderForm = ({
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Heading mb={4}>Buy Fractional Order Form</Heading>
       <VStack>
         <FormControl isInvalid={!!errors.unitAmount}>
-          <FormLabel>Unit Amount</FormLabel>
+          <FormLabel>Number of units to buy</FormLabel>
           <Input {...register("unitAmount")} />
           <FormErrorMessage>
             {errors.unitAmount && errors.unitAmount.message}
@@ -63,8 +62,8 @@ export const BuyFractionalOrderForm = ({
           </FormErrorMessage>
         </FormControl>
 
-        <Button variant={"blackAndWhite"} type="submit">
-          Buy
+        <Button width={"100%"} variant={"blackAndWhite"} type="submit">
+          Execute
         </Button>
       </VStack>
     </form>
