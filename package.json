@@ -2,6 +2,7 @@
   "name": "hyperboards",
   "version": "0.1.0",
   "private": true,
+  "source": "widget/index.tsx",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +16,9 @@
     "supabase:migration:push": "supabase migration up",
     "supabase:migration:diff": "supabase db diff --schema public",
     "supabase:migration:reset": "supabase db reset",
-    "snaplet:restore": "snaplet snapshot restore --no-reset"
+    "snaplet:restore": "snaplet snapshot restore --no-reset",
+    "widget:serve": "rm -rf dist && parcel serve ./widget/index.html --port 3001 --log-level info --no-cache",
+    "widget:build": "rm -rf dist && parcel build ./widget/index.html --no-source-maps --target default"
   },
   "dependencies": {
     "@celo/rainbowkit-celo": "^1.1.2",
@@ -69,13 +72,17 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@parcel/compressor-brotli": "^2.11.0",
+    "@parcel/compressor-gzip": "^2.11.0",
     "@snaplet/copycat": "^0.18.1",
     "@types/d3": "^7.4.0",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "parcel": "^2.11.0",
     "prettier": "^3.0.3",
+    "process": "^0.11.10",
     "snaplet": "0.71"
   }
 }
