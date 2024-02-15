@@ -10,7 +10,7 @@ import { OrderStatus } from "@/types/api";
 import { verifyTypedData } from "ethers";
 import { Database } from "@/types/hypercerts-database";
 import NextCors from "nextjs-cors";
-import { deployments, asDeployedChain } from "@hypercerts-org/contracts";
+import { addressesByNetwork } from "@hypercerts-org/marketplace-sdk";
 
 const inputSchemaPost = z.object({
   signature: z.string(),
@@ -33,8 +33,8 @@ const inputSchemaPost = z.object({
 });
 
 const getTypedData = (chainId: number) => {
-  const verifyingContract =
-    deployments[asDeployedChain(chainId)].HypercertExchange;
+  // @ts-ignore
+  const verifyingContract = addressesByNetwork[chainId]?.EXCHANGE_V2;
 
   if (!verifyingContract) {
     throw new Error(
