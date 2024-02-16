@@ -1,12 +1,13 @@
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useMutation } from "wagmi";
 import { DefaultSponsorMetadataInsert } from "@/types/database-entities";
+import { useMutation } from "@tanstack/react-query";
 
 export const useCreateDefaultSponsorMetadata = () => {
   const getClient = useGetAuthenticatedClient();
 
-  return useMutation(
-    async ({ data }: { data: DefaultSponsorMetadataInsert }) => {
+  return useMutation({
+    mutationKey: ["createDefaultSponsorMetadata"],
+    mutationFn: async ({ data }: { data: DefaultSponsorMetadataInsert }) => {
       const client = await getClient();
 
       if (!client) {
@@ -18,5 +19,5 @@ export const useCreateDefaultSponsorMetadata = () => {
         .insert([data])
         .throwOnError();
     },
-  );
+  });
 };

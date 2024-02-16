@@ -5,9 +5,9 @@ import { supabase } from "@/lib/supabase";
 export const useFetchMyRegistries = () => {
   const address = useAddress();
 
-  return useQuery(
-    ["myRegistries", address],
-    async () => {
+  return useQuery({
+    queryKey: ["myRegistries", address],
+    queryFn: async () => {
       if (!address) {
         throw new Error("No address found");
       }
@@ -16,8 +16,6 @@ export const useFetchMyRegistries = () => {
         .select("*, claims ( * ), blueprints ( * )")
         .eq("admin_id", address);
     },
-    {
-      enabled: !!address,
-    },
-  );
+    enabled: !!address,
+  });
 };

@@ -11,9 +11,9 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
 
   const chainId = useChainId();
 
-  return useQuery(
-    ["available-orders", hypercertId],
-    async () => {
+  return useQuery({
+    queryKey: ["available-orders", hypercertId],
+    queryFn: async () => {
       if (!fractions) {
         throw new Error("No fractions");
       }
@@ -76,8 +76,6 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
         priceOfCheapestFraction: cheapestFraction?.averagePrice,
       };
     },
-    {
-      enabled: !!fractions,
-    },
-  );
+    enabled: !!fractions,
+  });
 };

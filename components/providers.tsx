@@ -1,17 +1,18 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
-  configureChains,
   createConfig,
+  useAccount,
   useChainId,
+  useConnectorClient,
   useWalletClient,
-  WagmiConfig,
+  WagmiProvider,
 } from "wagmi";
 import { sepolia, optimism } from "viem/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 import {
   connectorsForWallets,
   RainbowKitProvider,
+  getDefaultWallets,
+  getDefaultConfig,
 } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -21,114 +22,79 @@ import { InteractionDialogProvider } from "@/components/interaction-modal";
 import Fonts from "@/fonts";
 import { index } from "@/theme";
 import {
-  ALCHEMY_KEY,
   EAS_CONTRACT_ADDRESS,
   NFT_STORAGE_TOKEN,
   WALLETCONNECT_ID,
   WEB3_STORAGE_TOKEN,
 } from "@/config";
-import {
-  argentWallet,
-  bitskiWallet,
-  braveWallet,
-  coinbaseWallet,
-  dawnWallet,
-  imTokenWallet,
-  injectedWallet,
-  ledgerWallet,
-  metaMaskWallet,
-  mewWallet,
-  okxWallet,
-  omniWallet,
-  phantomWallet,
-  rabbyWallet,
-  rainbowWallet,
-  safeWallet,
-  tahoWallet,
-  trustWallet,
-  walletConnectWallet,
-  xdefiWallet,
-  zerionWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import {
-  Valora,
-  CeloWallet,
-  CeloTerminal,
-  MetaMask as CeloMetaMask,
-} from "@celo/rainbowkit-celo/wallets";
-
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [sepolia, optimism],
-  [
-    alchemyProvider({
-      apiKey: ALCHEMY_KEY,
-    }),
-    publicProvider(),
-  ],
-);
+// import {
+//   argentWallet,
+//   bitskiWallet,
+//   braveWallet,
+//   coinbaseWallet,
+//   dawnWallet,
+//   imTokenWallet,
+//   injectedWallet,
+//   ledgerWallet,
+//   metaMaskWallet,
+//   mewWallet,
+//   okxWallet,
+//   omniWallet,
+//   phantomWallet,
+//   rabbyWallet,
+//   rainbowWallet,
+//   safeWallet,
+//   tahoWallet,
+//   trustWallet,
+//   walletConnectWallet,
+//   xdefiWallet,
+//   zerionWallet,
+// } from "@rainbow-me/rainbowkit/wallets";
+// import {
+//   Valora,
+//   CeloWallet,
+//   CeloTerminal,
+//   MetaMask as CeloMetaMask,
+// } from "@celo/rainbowkit-celo/wallets";
+import { http } from "viem";
+//
+// const { chains, publicClient, webSocketPublicClient } = createConfig(
+//   [sepolia, optimism],
+//   [
+//     alchemyProvider({
+//       apiKey: ALCHEMY_KEY,
+//     }),
+//     publicProvider(),
+//   ],
+// );
 
 const projectId = WALLETCONNECT_ID;
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      argentWallet({ chains, projectId }),
-      bitskiWallet({ chains }),
-      braveWallet({ chains }),
-      coinbaseWallet({ chains, appName: "Hypercerts" }),
-      dawnWallet({ chains }),
-      imTokenWallet({ chains, projectId }),
-      ledgerWallet({ chains, projectId }),
-      metaMaskWallet({ chains, projectId }),
-      mewWallet({ chains }),
-      okxWallet({ chains, projectId }),
-      omniWallet({ chains, projectId }),
-      phantomWallet({ chains }),
-      rabbyWallet({ chains }),
-      rainbowWallet({ projectId, chains }),
-      walletConnectWallet({ projectId, chains }),
-      safeWallet({ chains }),
-      tahoWallet({ chains }),
-      trustWallet({ chains, projectId }),
-      xdefiWallet({ chains }),
-      zerionWallet({ chains, projectId }),
-    ],
-  },
-  {
-    groupName: "Recommended with CELO",
-    wallets: [
-      Valora({ chains, projectId }),
-      CeloWallet({ chains, projectId }),
-      CeloTerminal({ chains, projectId }),
-      CeloMetaMask({ chains, projectId }),
-      walletConnectWallet({ projectId, chains }),
-    ],
-  },
-  {
-    groupName: "Injected",
-    wallets: [injectedWallet({ chains })],
-  },
-]);
-
-const config = createConfig({
-  autoConnect: true,
-  publicClient,
-  webSocketPublicClient,
-  connectors,
+const config = getDefaultConfig({
+  projectId,
+  appName: "Hyperboards",
+  chains: [sepolia, optimism],
+  ssr: true,
 });
+
+// const config = getDefaultConfig({
+//   appName: "RainbowKit App",
+//   projectId: "YOUR_PROJECT_ID",
+//   chains: [optimism, sepolia],
+//   ssr: true,
+// });
+
+const queryClient = new QueryClient();
 
 export const Providers = ({
   showReactQueryDevtools = true,
   children,
 }: PropsWithChildren<{ showReactQueryDevtools?: boolean }>) => {
-  const [queryClient] = React.useState(() => new QueryClient());
-
   return (
-    <WagmiConfig config={config}>
-      <RainbowKitProvider chains={chains}>
-        <HypercertClientProvider>
-          <QueryClientProvider client={queryClient}>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <HypercertClientProvider>
             <ChakraProvider theme={index}>
               <Fonts />
               <InteractionDialogProvider>{children}</InteractionDialogProvider>
@@ -136,10 +102,10 @@ export const Providers = ({
             {showReactQueryDevtools && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}
-          </QueryClientProvider>
-        </HypercertClientProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+          </HypercertClientProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 };
 
@@ -149,7 +115,14 @@ const HypercertClientContext = React.createContext<HypercertClient | undefined>(
 
 export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
   const chainId = useChainId();
-  const { data: walletClient } = useWalletClient();
+  const account = useAccount();
+  // const results = useConnectorClient();
+  // console.log(account.address, results?.data);
+  const { data: walletClient } = useWalletClient({});
+  // const walletClient = null;
+
+  // const walletClient = null;
+  // console.log(chainId, walletClient);
 
   const [client, setClient] = useState<HypercertClient>();
 
@@ -161,6 +134,8 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
     if (!walletClient) {
       return;
     }
+
+    console.log("I never get run");
 
     const hypercertClient = new HypercertClient({
       chain: { id: chainId },

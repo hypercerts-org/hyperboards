@@ -1,4 +1,4 @@
-import { useAccount, useChainId, useMutation, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { isAddress, parseEther } from "viem";
 import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
@@ -12,6 +12,7 @@ import { fetchOrderNonce } from "@/hooks/marketplace/fetchOrderNonce";
 import { CreateOfferFormValues } from "@/components/marketplace/create-order-form";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { constructTokenIdsFromSplitFractionContractReceipt } from "@/utils/constructTokenIdsFromSplitFractionContractReceipt";
+import { useMutation } from "@tanstack/react-query";
 
 export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
   const { onOpen, onClose, setStep } = useInteractionModal();
@@ -26,8 +27,9 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
   const { data: currentFractions } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
 
-  return useMutation(
-    async (values: CreateOfferFormValues) => {
+  return useMutation({
+    mutationKey: ["createMakerAsk"],
+    mutationFn: async (values: CreateOfferFormValues) => {
       if (!client) {
         throw new Error("Client not initialized");
       }
@@ -246,10 +248,8 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         }
       }
     },
-    {
-      onSettled: () => {
-        onClose();
-      },
+    onSettled: () => {
+      onClose();
     },
-  );
+  });
 };

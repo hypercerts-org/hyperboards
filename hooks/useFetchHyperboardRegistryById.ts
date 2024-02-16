@@ -5,13 +5,16 @@ export const useFetchHyperboardRegistryById = (
   hyperboardId: string,
   registryId?: string,
 ) => {
-  return useQuery(["hyperboard-registry", registryId], async () => {
-    if (!registryId) return null;
-    return supabase
-      .from("hyperboard_registries")
-      .select("*")
-      .eq("hyperboard_id", hyperboardId)
-      .eq("registry_id", registryId)
-      .single();
+  return useQuery({
+    queryKey: ["hyperboard-registry", registryId],
+    queryFn: async () => {
+      if (!registryId) return null;
+      return supabase
+        .from("hyperboard_registries")
+        .select("*")
+        .eq("hyperboard_id", hyperboardId)
+        .eq("registry_id", registryId)
+        .single();
+    },
   });
 };

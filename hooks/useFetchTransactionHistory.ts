@@ -37,17 +37,15 @@ const fetchHistoryToAddress = (address: string) =>
     .then((res) => res.result.transfers);
 
 export const useFetchTransactionHistory = (address: string) => {
-  return useQuery(
-    ["transactionHistoryTo", address],
-    async () => {
+  return useQuery({
+    queryKey: ["transactionHistoryTo", address],
+    queryFn: async () => {
       return fetchHistoryToAddress(address);
     },
-    {
-      select: (data) => {
-        const copiedData = [...data];
-        copiedData.sort((a, b) => b.value - a.value);
-        return copiedData;
-      },
+    select: (data) => {
+      const copiedData = [...data];
+      copiedData.sort((a, b) => b.value - a.value);
+      return copiedData;
     },
-  );
+  });
 };

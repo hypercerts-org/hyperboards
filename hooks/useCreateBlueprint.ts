@@ -1,14 +1,15 @@
 import { useAddress } from "@/hooks/useAddress";
-import { useMutation } from "wagmi";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { MintingFormValues } from "@/components/minting/minting-form";
+import { useMutation } from "@tanstack/react-query";
 
 export const useCreateBlueprint = () => {
   const admin_id = useAddress();
   const getClient = useGetAuthenticatedClient();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationKey: ["createBlueprint"],
+    mutationFn: async ({
       address,
       registryId,
       displaySize,
@@ -46,5 +47,5 @@ export const useCreateBlueprint = () => {
 
       return data;
     },
-  );
+  });
 };

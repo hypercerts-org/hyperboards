@@ -1,11 +1,13 @@
-import { useAccount, useBalance, useNetwork } from "wagmi";
+import { useAccount, useBalance, useChainId, useChains } from "wagmi";
 import { Flex, Text } from "@chakra-ui/react";
 
 export const BalanceOverview = () => {
-  const { chain } = useNetwork();
+  const chainId = useChainId();
+  const chains = useChains();
+  const chain = chains.find((chain) => chain.id === chainId);
   const { address } = useAccount();
   const { data } = useBalance({
-    chainId: chain?.id,
+    chainId: chainId,
     address,
   });
 

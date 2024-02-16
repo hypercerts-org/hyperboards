@@ -268,23 +268,32 @@ const useSendDonation = ({ amount }: { amount: number }) => {
   const publicClient = usePublicClient();
 
   const { sendTransactionAsync } = useSendTransaction({
-    to: ZUZALU_DONATION_SAFE_ADDRESS,
-    value: valueInWei,
-    onSuccess: async () => {
-      toast({
-        title: "Transaction sent",
-        description: "Your donation is pending",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+    mutation: {
+      onSettled: async () => {
+        toast({
+          title: "Transaction sent",
+          description: "Your donation is pending",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      },
     },
   });
 
   return async () => {
-    const hash = await sendTransactionAsync();
-    await publicClient.waitForTransactionReceipt(hash);
-    return hash.hash;
+    if (!publicClient) {
+      throw new Error("Public client not initialized");
+    }
+    const hash = await sendTransactionAsync({
+      to: ZUZALU_DONATION_SAFE_ADDRESS as `0x${string}`,
+      value: valueInWei,
+    });
+
+    await publicClient.waitForTransactionReceipt({
+      hash,
+    });
+    return hash;
   };
 };
 
@@ -300,12 +309,15 @@ const addEmailToDonationList = (
   });
 
 const useCurrentEthPrice = () => {
-  return useQuery(["current-eth-price"], async () =>
-    fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
-      { method: "GET" },
-    )
-      .then((res) => res.json() as Promise<{ ethereum: { usd: number } }>)
-      .then((res) => res.ethereum.usd),
-  );
+  return useQuery({
+    queryKey: ["current-eth-price"],
+    queryFn: async () => {
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+        { method: "GET" },
+      );
+      const data = (await response.json()) as { ethereum: { usd: number } };
+      return data.ethereum.usd;
+    },
+  });
 };

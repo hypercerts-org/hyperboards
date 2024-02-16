@@ -9,9 +9,9 @@ export const useFetchHypercertFractionsByHypercertId = (
   const client = useHypercertClient();
   const chainId = useChainId();
 
-  return useQuery(
-    ["hypercert", "id", hypercertId, "chain", chainId, "fractions"],
-    async () => {
+  return useQuery({
+    queryKey: ["hypercert", "id", hypercertId, "chain", chainId, "fractions"],
+    queryFn: async () => {
       if (!client) {
         console.log("no client");
         return null;
@@ -36,8 +36,6 @@ export const useFetchHypercertFractionsByHypercertId = (
         ),
       }));
     },
-    {
-      enabled: !!client && !!chainId,
-    },
-  );
+    enabled: !!client && !!chainId,
+  });
 };

@@ -22,9 +22,12 @@ import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useChainId } from "wagmi";
 
 export const useListRegistries = () => {
-  return useQuery(["list-registries"], async () =>
-    supabase.from("registries").select("*").neq("hidden", true),
-  );
+  return useQuery({
+    queryKey: ["list-registries"],
+    queryFn: async () => {
+      return supabase.from("registries").select("*").neq("hidden", true);
+    },
+  });
 };
 
 const processRegistryForDisplay = async (
@@ -179,9 +182,9 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
   const chainId = useChainId();
   const client = useHypercertClient();
 
-  return useQuery(
-    ["hyperboard-contents", hyperboardId],
-    async () => {
+  return useQuery({
+    queryKey: ["hyperboard-contents", hyperboardId],
+    queryFn: async () => {
       if (!client) {
         toast({
           title: "Error",
@@ -279,10 +282,8 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
         results,
       };
     },
-    {
-      enabled: !!hyperboardId && !!client,
-    },
-  );
+    enabled: !!hyperboardId && !!client,
+  });
 };
 
 export const getEntriesDisplayData = async (addresses: string[]) => {

@@ -24,69 +24,72 @@ interface OwnershipTableProps {
 const useHyperboardOwnership = (hyperboardId: string) => {
   const client = useHypercertClient();
 
-  return useQuery(["hyperboard-ownership", hyperboardId], async () => {
-    if (!client) {
-      return null;
-    }
+  return useQuery({
+    queryKey: ["hyperboard-ownership", hyperboardId],
+    queryFn: async () => {
+      if (!client) {
+        return null;
+      }
 
-    const { data } = await supabase
-      .from("hyperboards")
-      .select(
-        "*, hyperboard_registries ( *, registries ( *, claims ( * ), blueprints ( * ) ) )",
-      )
-      .eq("id", hyperboardId)
-      .single();
+      const { data } = await supabase
+        .from("hyperboards")
+        .select(
+          "*, hyperboard_registries ( *, registries ( *, claims ( * ), blueprints ( * ) ) )",
+        )
+        .eq("id", hyperboardId)
+        .single();
 
-    if (!data) {
-      return null;
-    }
+      if (!data) {
+        return null;
+      }
 
-    const results = await Promise.all(
-      data.hyperboard_registries.map(async (hyperboardRegistry) => {
-        if (!hyperboardRegistry.registries) {
-          return null;
-        }
-        const claims = await Promise.all(
-          sift(hyperboardRegistry.registries.claims).map(async (claim) => {
-            const claimResult = await client.indexer.claimById(
-              claim.hypercert_id,
-            );
-            if (claimResult.claim?.uri) {
-              const metadata = await client.storage.getMetadata(
-                claimResult.claim.uri,
-              );
-              return {
-                claim: {
-                  ...claim,
-                  ...claimResult.claim,
-                },
-                metadata,
-              };
-            }
+      const results = await Promise.all(
+        data.hyperboard_registries.map(async (hyperboardRegistry) => {
+          if (!hyperboardRegistry.registries) {
             return null;
-          }),
-        );
+          }
+          const claims = await Promise.all(
+            sift(hyperboardRegistry.registries.claims).map(async (claim) => {
+              const claimResult = await client.indexer.claimById(
+                claim.hypercert_id,
+              );
+              if (claimResult.claim?.uri) {
+                const metadata = await client.storage.getMetadata(
+                  claimResult.claim.uri,
+                );
+                return {
+                  claim: {
+                    ...claim,
+                    ...claimResult.claim,
+                  },
+                  metadata,
+                };
+              }
+              return null;
+            }),
+          );
 
-        const totalValueInRegistry = _.sum([
-          ...sift(hyperboardRegistry.registries.claims).map(
-            (claim) => claim.display_size,
-          ),
-          ...hyperboardRegistry.registries.blueprints.map(
-            (blueprint) => blueprint.display_size,
-          ),
-        ]);
+          const totalValueInRegistry = _.sum([
+            ...sift(hyperboardRegistry.registries.claims).map(
+              (claim) => claim.display_size,
+            ),
+            ...hyperboardRegistry.registries.blueprints.map(
+              (blueprint) => blueprint.display_size,
+            ),
+          ]);
 
-        return {
-          label: hyperboardRegistry.label,
-          totalValueInRegistry,
-          claims: sift(claims),
-          blueprints: hyperboardRegistry.registries.blueprints,
-          hyperboardRegistry,
-        };
-      }),
-    );
+          return {
+            label: hyperboardRegistry.label,
+            totalValueInRegistry,
+            claims: sift(claims),
+            blueprints: hyperboardRegistry.registries.blueprints,
+            hyperboardRegistry,
+          };
+        }),
+      );
 
-    return sift(results);
+      return sift(results);
+    },
   });
 };
 
@@ -397,136 +400,142 @@ const SelectedIcon = () => (
 const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
   const client = useHypercertClient();
 
-  return useQuery(["claim-ownership", claimIds, blueprintIds], async () => {
-    if (!client) {
-      return null;
-    }
+  return useQuery({
+    queryKey: ["claim-ownership", claimIds, blueprintIds],
+    queryFn: async () => {
+      if (!client) {
+        return null;
+      }
 
-    const [{ data: blueprintData }, { data: claimsFromSupabase }] =
-      await Promise.all([
-        supabase.from("blueprints").select("*").in("id", blueprintIds),
-        supabase
-          .from("claims")
-          .select("*")
-          .in("hypercert_id", [...claimIds])
-          .throwOnError(),
+      const [{ data: blueprintData }, { data: claimsFromSupabase }] =
+        await Promise.all([
+          supabase.from("blueprints").select("*").in("id", blueprintIds),
+          supabase
+            .from("claims")
+            .select("*")
+            .in("hypercert_id", [...claimIds])
+            .throwOnError(),
+        ]);
+
+      if (!claimsFromSupabase?.length && !blueprintData?.length) {
+        return null;
+      }
+
+      const results = await Promise.all(
+        claimIds.map(async (claimId) => {
+          const claimFromSupabase = claimsFromSupabase?.find(
+            (claim) => claim.hypercert_id === claimId,
+          );
+          if (!claimFromSupabase) {
+            throw new Error("Claim not found");
+          }
+          const fractions = (await client.indexer.fractionsByClaim(
+            claimId,
+          )) as ClaimTokensByClaimQuery;
+
+          return {
+            claim: claimFromSupabase,
+            fractions: fractions.claimTokens,
+          };
+        }),
+      );
+      const allFractions = results.flatMap((x) => x.fractions);
+      const allOwnerIds = _.uniq([
+        ...allFractions.map((fraction) => fraction.owner),
+        ...(blueprintData || []).map((blueprint) => blueprint.minter_address),
       ]);
 
-    if (!claimsFromSupabase?.length && !blueprintData?.length) {
-      return null;
-    }
+      const totalOfAllDisplaySizes = BigInt(
+        _.sum([
+          ...(claimsFromSupabase || [])?.map((claim) => claim.display_size),
+          ...(blueprintData || [])?.map((blueprint) => blueprint.display_size),
+        ]),
+      );
+      const totalUnitsInAllClaims =
+        allFractions.reduce(
+          (acc, fraction) => acc + BigInt(fraction.units || 0),
+          0n,
+        ) +
+        BigInt(blueprintData?.length || 0) * NUMBER_OF_UNITS_IN_HYPERCERT;
 
-    const results = await Promise.all(
-      claimIds.map(async (claimId) => {
-        const claimFromSupabase = claimsFromSupabase?.find(
-          (claim) => claim.hypercert_id === claimId,
-        );
-        if (!claimFromSupabase) {
-          throw new Error("Claim not found");
-        }
-        const fractions = (await client.indexer.fractionsByClaim(
-          claimId,
-        )) as ClaimTokensByClaimQuery;
+      // Calculate the amount of surface per display size unit
+      const displayPerUnit =
+        (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
 
-        return {
-          claim: claimFromSupabase,
-          fractions: fractions.claimTokens,
-        };
-      }),
-    );
-    const allFractions = results.flatMap((x) => x.fractions);
-    const allOwnerIds = _.uniq([
-      ...allFractions.map((fraction) => fraction.owner),
-      ...(blueprintData || []).map((blueprint) => blueprint.minter_address),
-    ]);
-
-    const totalOfAllDisplaySizes = BigInt(
-      _.sum([
-        ...(claimsFromSupabase || [])?.map((claim) => claim.display_size),
-        ...(blueprintData || [])?.map((blueprint) => blueprint.display_size),
-      ]),
-    );
-    const totalUnitsInAllClaims =
-      allFractions.reduce(
-        (acc, fraction) => acc + BigInt(fraction.units || 0),
-        0n,
-      ) +
-      BigInt(blueprintData?.length || 0) * NUMBER_OF_UNITS_IN_HYPERCERT;
-
-    // Calculate the amount of surface per display size unit
-    const displayPerUnit =
-      (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
-
-    const ownerMetadata = await getEntriesDisplayData(allOwnerIds);
-    const metadataByAddress = _.keyBy(ownerMetadata.data, (metadata) =>
-      metadata.address.toLowerCase(),
-    );
-
-    const fractionsResults = results.map(({ claim, fractions }) => {
-      // The total number of 'display units' available for this claim
-      const totalDisplayUnitsForClaim =
-        BigInt(claim.display_size) * displayPerUnit;
-
-      // The total number of units in this claim
-      const totalUnitsInClaim = fractions.reduce(
-        (acc, curr) => acc + BigInt(curr.units),
-        0n,
+      const ownerMetadata = await getEntriesDisplayData(allOwnerIds);
+      const metadataByAddress = _.keyBy(ownerMetadata.data, (metadata) =>
+        metadata.address.toLowerCase(),
       );
 
-      // Calculate the number of units per display unit
-      const displayUnitsPerUnit = totalDisplayUnitsForClaim / totalUnitsInClaim;
+      const fractionsResults = results.map(({ claim, fractions }) => {
+        // The total number of 'display units' available for this claim
+        const totalDisplayUnitsForClaim =
+          BigInt(claim.display_size) * displayPerUnit;
 
-      // Calculate the relative number of units per fraction
-      const newFractions = fractions.map((fraction) => ({
-        ...fraction,
-        unitsAdjustedForDisplaySize:
-          (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
-      }));
+        // The total number of units in this claim
+        const totalUnitsInClaim = fractions.reduce(
+          (acc, curr) => acc + BigInt(curr.units),
+          0n,
+        );
 
-      return {
-        claim,
-        fractions: newFractions,
-      };
-    });
+        // Calculate the number of units per display unit
+        const displayUnitsPerUnit =
+          totalDisplayUnitsForClaim / totalUnitsInClaim;
 
-    const blueprintsResults =
-      blueprintData?.map((blueprint) => {
-        const totalDisplayUnitsForBlueprint =
-          BigInt(blueprint.display_size) * displayPerUnit;
+        // Calculate the relative number of units per fraction
+        const newFractions = fractions.map((fraction) => ({
+          ...fraction,
+          unitsAdjustedForDisplaySize:
+            (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+        }));
 
         return {
-          claim: {
-            owner_id: blueprint.minter_address,
-            display_size: blueprint.display_size,
-          },
-          fractions: [
-            {
-              unitsAdjustedForDisplaySize:
-                totalDisplayUnitsForBlueprint / 10n ** 14n,
-            },
-          ],
+          claim,
+          fractions: newFractions,
         };
-      }) || [];
+      });
 
-    const data = _.chain([...fractionsResults, ...blueprintsResults])
-      .groupBy((x) => x.claim.owner_id.toLowerCase())
-      .mapValues((value, key) => ({
-        total: value
-          .flatMap((x) =>
-            x.fractions.map((fraction) => fraction.unitsAdjustedForDisplaySize),
-          )
-          .reduce((acc, curr) => acc + curr, 0n),
-        metadata: metadataByAddress[key],
-      }))
-      .sortBy((x) => x.total)
-      .reverse()
-      .toArray()
-      .value();
+      const blueprintsResults =
+        blueprintData?.map((blueprint) => {
+          const totalDisplayUnitsForBlueprint =
+            BigInt(blueprint.display_size) * displayPerUnit;
 
-    return {
-      data,
-      totalValueForAllFractions: data.reduce((acc, x) => acc + x.total, 0n),
-    };
+          return {
+            claim: {
+              owner_id: blueprint.minter_address,
+              display_size: blueprint.display_size,
+            },
+            fractions: [
+              {
+                unitsAdjustedForDisplaySize:
+                  totalDisplayUnitsForBlueprint / 10n ** 14n,
+              },
+            ],
+          };
+        }) || [];
+
+      const data = _.chain([...fractionsResults, ...blueprintsResults])
+        .groupBy((x) => x.claim.owner_id.toLowerCase())
+        .mapValues((value, key) => ({
+          total: value
+            .flatMap((x) =>
+              x.fractions.map(
+                (fraction) => fraction.unitsAdjustedForDisplaySize,
+              ),
+            )
+            .reduce((acc, curr) => acc + curr, 0n),
+          metadata: metadataByAddress[key],
+        }))
+        .sortBy((x) => x.total)
+        .reverse()
+        .toArray()
+        .value();
+
+      return {
+        data,
+        totalValueForAllFractions: data.reduce((acc, x) => acc + x.total, 0n),
+      };
+    },
   });
 };
 

@@ -1,4 +1,4 @@
-import { useChainId, useContractRead } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
 import {
   WETHAbi,
   addressesByNetwork,
@@ -13,12 +13,12 @@ export const useGetCurrentERC20Allowance = () => {
   const hypercertsExchangeAddress =
     deployments[asDeployedChain(chainId)].HypercertExchange;
   const wethAddress = addressesByNetwork[utils.asDeployedChain(chainId)].WETH;
-  const { data } = useContractRead({
+  const { data } = useReadContract({
     abi: WETHAbi,
     address: wethAddress as `0x${string}`,
     chainId,
     functionName: "allowance",
-    enabled: !!chainId && !!address && !!hypercertsExchangeAddress,
+    // enabled: !!chainId && !!address && !!hypercertsExchangeAddress,
     args: [address, hypercertsExchangeAddress],
   });
 
