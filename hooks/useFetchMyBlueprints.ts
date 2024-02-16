@@ -7,20 +7,23 @@ export const useFetchMyBlueprints = () => {
   const address = useAddress();
   const toast = useToast();
 
-  return useQuery(["myBlueprints", address], async () => {
-    if (!address) {
-      toast({
-        title: "No address found",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
+  return useQuery({
+    queryKey: ["myBlueprints", address],
+    queryFn: async () => {
+      if (!address) {
+        toast({
+          title: "No address found",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
 
-    return supabase
-      .from("blueprints")
-      .select("*, registries ( * )")
-      .eq("minter_address", address);
+      return supabase
+        .from("blueprints")
+        .select("*, registries ( * )")
+        .eq("minter_address", address);
+    },
   });
 };

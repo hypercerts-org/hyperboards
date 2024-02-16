@@ -32,11 +32,7 @@ export const useGetAuthenticatedClient = () => {
   const toast = useToast();
   const { push } = useRouter();
 
-  const { signMessageAsync } = useSignMessage({
-    onSuccess: (signature) => {
-      console.log("Signature: ", signature);
-    },
-  });
+  const { signMessageAsync } = useSignMessage();
 
   return async () => {
     if (!address) {

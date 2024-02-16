@@ -1,4 +1,4 @@
-import { useChainId, useMutation, useWalletClient } from "wagmi";
+import { useChainId, useWalletClient } from "wagmi";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { MarketplaceOrderEntity } from "@/types/database-entities";
@@ -9,6 +9,7 @@ import { useAddress } from "@/hooks/useAddress";
 import { decodeContractError } from "@/utils/decodeContractError";
 import { useGetCurrentERC20Allowance } from "@/hooks/marketplace/useGetCurrentERC20Allowance";
 import { parseEther } from "viem";
+import { useMutation } from "@tanstack/react-query";
 
 export const useBuyFractionalMakerAsk = () => {
   const chainId = useChainId();
@@ -19,8 +20,9 @@ export const useBuyFractionalMakerAsk = () => {
   const address = useAddress();
   const currentAllowance = useGetCurrentERC20Allowance();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationKey: ["buyFractionalMakerAsk"],
+    mutationFn: async ({
       order,
       unitAmount,
       pricePerUnit,
@@ -124,5 +126,5 @@ export const useBuyFractionalMakerAsk = () => {
         onClose();
       }
     },
-  );
+  });
 };

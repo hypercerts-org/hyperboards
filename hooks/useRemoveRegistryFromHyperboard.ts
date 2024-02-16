@@ -1,10 +1,12 @@
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useMutation } from "wagmi";
+import { useMutation } from "@tanstack/react-query";
 
 export const useRemoveRegistryFromHyperboard = () => {
   const getClient = useGetAuthenticatedClient();
-  return useMutation(
-    async ({
+
+  return useMutation({
+    mutationKey: ["removeRegistryFromHyperboard"],
+    mutationFn: async ({
       hyperboardId,
       registryId,
     }: {
@@ -19,5 +21,5 @@ export const useRemoveRegistryFromHyperboard = () => {
         .eq("hyperboard_id", hyperboardId)
         .eq("registry_id", registryId);
     },
-  );
+  });
 };

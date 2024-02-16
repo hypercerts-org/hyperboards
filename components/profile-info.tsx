@@ -5,7 +5,7 @@ import React from "react";
 
 export const ProfileInfo = ({ address }: { address: string }) => {
   const { data: avatarData } = useEnsAvatar();
-  const { data: ensName } = useEnsName();
+  const { data: ensName } = useEnsName({});
 
   const formattedAddress = formatAddress(address);
   const name = ensName ?? formattedAddress;

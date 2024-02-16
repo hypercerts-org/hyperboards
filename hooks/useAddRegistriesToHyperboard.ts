@@ -1,14 +1,15 @@
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useMutation } from "wagmi";
 import { HyperboardRegistryInsert } from "@/types/database-entities";
 import { uniq } from "lodash";
 import { DEFAULT_RENDER_METHOD } from "@/config";
+import { useMutation } from "@tanstack/react-query";
 
 export const useAddRegistriesToHyperboard = () => {
   const getClient = useGetAuthenticatedClient();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationKey: ["addRegistriesToHyperboard"],
+    mutationFn: async ({
       hyperboardId,
       registryIds,
     }: {
@@ -31,5 +32,5 @@ export const useAddRegistriesToHyperboard = () => {
 
       return client.from("hyperboard_registries").insert(inserts).select("*");
     },
-  );
+  });
 };

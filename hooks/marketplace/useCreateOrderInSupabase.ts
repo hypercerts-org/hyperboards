@@ -1,4 +1,4 @@
-import { useChainId, useMutation } from "wagmi";
+import { useChainId } from "wagmi";
 import {
   QuoteType,
   Maker,
@@ -7,14 +7,16 @@ import {
 import { Provider } from "ethers";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
+import { useMutation } from "@tanstack/react-query";
 
 export const useCreateOrderInSupabase = () => {
   const chainId = useChainId();
   const provider = useEthersProvider();
   const signer = useEthersSigner();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationKey: ["createOrderInSupabase"],
+    mutationFn: async ({
       order,
       signature,
     }: {
@@ -50,5 +52,5 @@ export const useCreateOrderInSupabase = () => {
         signature,
       });
     },
-  );
+  });
 };

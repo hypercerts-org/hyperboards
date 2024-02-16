@@ -7,9 +7,9 @@ export const useFetchHypercertById = (hypercertId: string) => {
   const client = useHypercertClient();
   const chainId = useChainId();
 
-  return useQuery(
-    ["hypercert", "id", hypercertId, "chain", chainId],
-    async () => {
+  return useQuery({
+    queryKey: ["hypercert", "id", hypercertId, "chain", chainId],
+    queryFn: async () => {
       if (!client) {
         console.log("no client");
         return null;
@@ -36,8 +36,6 @@ export const useFetchHypercertById = (hypercertId: string) => {
         metadata,
       };
     },
-    {
-      enabled: !!client && !!chainId,
-    },
-  );
+    enabled: !!client && !!chainId,
+  });
 };

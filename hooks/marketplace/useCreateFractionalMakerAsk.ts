@@ -1,4 +1,4 @@
-import { useAccount, useChainId, useMutation, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { isAddress, parseEther } from "viem";
 import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
@@ -13,6 +13,7 @@ import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { CreateFractionalOfferFormValues } from "@/components/marketplace/create-fractional-order-form";
+import { useMutation } from "@tanstack/react-query";
 
 export const useCreateFractionalMakerAsk = ({
   hypercertId,
@@ -31,8 +32,9 @@ export const useCreateFractionalMakerAsk = ({
   const { data: currentFractions } =
     useFetchHypercertFractionsByHypercertId(hypercertId);
 
-  return useMutation(
-    async (values: CreateFractionalOfferFormValues) => {
+  return useMutation({
+    mutationKey: ["createFractionalMakerAsk"],
+    mutationFn: async (values: CreateFractionalOfferFormValues) => {
       if (!client) {
         throw new Error("Client not initialized");
       }
@@ -172,10 +174,8 @@ export const useCreateFractionalMakerAsk = ({
         quoteType: QuoteType.Ask,
       });
     },
-    {
-      onSettled: () => {
-        onClose();
-      },
+    onSettled: () => {
+      onClose();
     },
-  );
+  });
 };

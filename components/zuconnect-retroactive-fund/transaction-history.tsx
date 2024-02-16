@@ -71,6 +71,7 @@ const TransactionRow = ({
 }) => {
   const { data, isFetched } = useEnsName({
     address: from,
+    chainId: 10,
   });
 
   if (!isFetched) {

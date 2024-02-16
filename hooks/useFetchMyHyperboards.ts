@@ -5,9 +5,9 @@ import { supabase } from "@/lib/supabase";
 export const useFetchMyHyperboards = () => {
   const address = useAddress();
 
-  return useQuery(
-    ["myHyperboards", address],
-    async () => {
+  return useQuery({
+    queryKey: ["myHyperboards", address],
+    queryFn: async () => {
       if (!address) {
         throw new Error("No address found");
       }
@@ -16,8 +16,6 @@ export const useFetchMyHyperboards = () => {
         .select("*, hyperboard_registries!hyperboard_id (*, registries (*))")
         .eq("admin_id", address);
     },
-    {
-      enabled: !!address,
-    },
-  );
+    enabled: !!address,
+  });
 };

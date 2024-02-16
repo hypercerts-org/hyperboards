@@ -1,16 +1,17 @@
-import { useWalletClient, WalletClient } from "wagmi";
+import { useWalletClient } from "wagmi";
 import { BrowserProvider, JsonRpcSigner } from "ethers";
 import React from "react";
+import { WalletClient } from "viem";
 
 export function walletClientToSigner(walletClient: WalletClient) {
   const { account, chain, transport } = walletClient;
   const network = {
-    chainId: chain.id,
-    name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address,
+    chainId: chain?.id,
+    name: chain?.name,
+    ensAddress: chain?.contracts?.ensRegistry?.address,
   };
   const provider = new BrowserProvider(transport, network);
-  const signer = new JsonRpcSigner(provider, account.address);
+  const signer = new JsonRpcSigner(provider, account?.address!);
   return signer;
 }
 

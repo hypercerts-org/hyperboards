@@ -39,7 +39,7 @@ const EventsPage = () => {
         </Heading>
         <VStack alignItems={"flex-start"}>
           {data.data.map((registry) => (
-            <Link key={registry.id} href={`/board/${registry.id}`}>
+            <Link key={registry.id} href={`/boards/${registry.id}`}>
               <Heading fontFamily={"Switzer"} size={"sm"}>
                 {registry.name}
               </Heading>

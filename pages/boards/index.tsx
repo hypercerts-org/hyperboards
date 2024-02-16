@@ -5,9 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 export const Index = () => {
-  const { data, isLoading } = useQuery(["all-boards"], async () =>
-    supabase.from("hyperboards").select("*"),
-  );
+  const { data, isLoading } = useQuery({
+    queryKey: ["all-boards"],
+    queryFn: async () => {
+      return supabase.from("hyperboards").select("*");
+    },
+  });
 
   if (isLoading) {
     return (
