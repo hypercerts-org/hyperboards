@@ -301,5 +301,5 @@ const getTileLayout = (width: number, height: number) => {
     }
   }
 
-  throw new Error("Unknown tile layout");
+  throw new Error(`Unknown tile layout for ${width}x${height}`);
 };

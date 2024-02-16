@@ -4,28 +4,31 @@ import {
   registryContentItemToHyperboardEntry,
   useFetchHyperboardContents,
 } from "@/hooks/useFetchHyperboardContents";
-import { Center, Flex, Spinner, VStack } from "@chakra-ui/react";
+import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
-import Head from "next/head";
-import { BreadcrumbEntry, Breadcrumbs } from "@/components/breadcrumbs";
-import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 
 export const HyperboardRenderer = ({
   hyperboardId,
   fullScreen,
+  disableToast = false,
 }: {
   hyperboardId: string;
   fullScreen?: boolean;
+  disableToast?: boolean;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
 
-  const { data, isLoading } = useFetchHyperboardContents(hyperboardId);
+  const { data, isLoading, isLoadingError } = useFetchHyperboardContents(
+    hyperboardId,
+    {
+      disableToast,
+    },
+  );
   const results = data?.results;
-  const hyperboard = data?.hyperboard;
 
   const height = ((dimensions?.width || 1) / 16) * 9;
   const widthPerBoard = `${100 / (results?.length || 1)}%`;
@@ -40,31 +43,6 @@ export const HyperboardRenderer = ({
     }
     return widthPerBoard;
   };
-
-  const crumbs: BreadcrumbEntry[] = [];
-
-  if (hyperboard) {
-    crumbs.push({
-      name: hyperboard.name,
-      onClick: () => setSelectedRegistry(undefined),
-    });
-  }
-
-  if (selectedRegistry) {
-    const registry = hyperboard?.hyperboard_registries.find(
-      (x) => x.registries?.id === selectedRegistry,
-    );
-    if (registry?.registries) {
-      crumbs.push({
-        name: registry.registries?.name,
-        onClick: () => {},
-        isActive: true,
-      });
-    }
-  }
-
-  // TODO: Add start breadcrumb with company icon
-  // TODO: Add second breadcrumb with company name
 
   return (
     <>
@@ -87,13 +65,24 @@ export const HyperboardRenderer = ({
               position: "relative",
             })}
       >
-        {isLoading ? (
-          <Center paddingY={"80px"} width={"100%"}>
-            <Spinner />
+        {isLoadingError && (
+          <Center
+            paddingY={"80px"}
+            width={"100%"}
+            color="white"
+            height={"100%"}
+          >
+            Could not find hyperboard
           </Center>
-        ) : (
+        )}
+        {isLoading && (
+          <Center paddingY={"80px"} width={"100%"} height={"100%"}>
+            <Spinner color="white" />
+          </Center>
+        )}
+        {!isLoading && !isLoadingError && results && (
           <>
-            {results?.map((x) => (
+            {results.map((x) => (
               <Flex
                 key={x.registry.id}
                 width={getWidth(x.registry.id)}

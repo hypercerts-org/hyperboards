@@ -83,8 +83,10 @@ export const Hyperboard = (props: HyperboardProps) => {
     setLeaves(root.leaves() as unknown as Leaf[]);
   };
 
-  const ratio = dimensions ? dimensions.width / dimensions.height : 1;
-  // console.log("dimensions", dimensions, ratio);
+  const ratio =
+    dimensions?.width && dimensions?.height
+      ? dimensions.width / dimensions.height
+      : 1;
 
   return (
     <Flex

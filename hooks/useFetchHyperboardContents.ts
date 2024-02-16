@@ -177,7 +177,10 @@ const processRegistryForDisplay = async (
   };
 };
 
-export const useFetchHyperboardContents = (hyperboardId: string) => {
+export const useFetchHyperboardContents = (
+  hyperboardId: string,
+  options: { disableToast?: boolean } = { disableToast: false },
+) => {
   const toast = useToast();
   const chainId = useChainId();
   const client = useHypercertClient();
@@ -186,13 +189,15 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
     queryKey: ["hyperboard-contents", hyperboardId],
     queryFn: async () => {
       if (!client) {
-        toast({
-          title: "Error",
-          description: "No client found",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        if (!options.disableToast) {
+          toast({
+            title: "Error",
+            description: "No client found",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
         return null;
       }
 
@@ -206,13 +211,17 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
           .single();
 
       if (hyperboardContentsError) {
-        toast({
-          title: "Error",
-          description: hyperboardContentsError.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        if (!options.disableToast) {
+          toast({
+            title: "Error",
+            description: hyperboardContentsError.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
+
+        throw hyperboardContentsError;
       }
 
       if (!hyperboardData?.hyperboard_registries) {
@@ -233,13 +242,15 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
           .in("claimId", allClaimIds);
 
       if (allowlistError) {
-        toast({
-          title: "Error",
-          description: allowlistError.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        if (!options.disableToast) {
+          toast({
+            title: "Error",
+            description: allowlistError.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
       }
 
       const allowlistEntriesWithClaims = sift(
@@ -283,6 +294,7 @@ export const useFetchHyperboardContents = (hyperboardId: string) => {
       };
     },
     enabled: !!hyperboardId && !!client,
+    retry: false,
   });
 };
 
