@@ -93,6 +93,7 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "copyfiles": "^2.4.1",
+    "lokijs": "^1.5.12",
     "parcel": "^2.11.0",
     "parcel-namer-rewrite": "^2.10.3-rc.2",
     "prettier": "^3.0.3",
