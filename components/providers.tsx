@@ -1,20 +1,12 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
-  createConfig,
-  useAccount,
   useChainId,
-  useConnectorClient,
   usePublicClient,
   useWalletClient,
   WagmiProvider,
 } from "wagmi";
 import { sepolia, optimism } from "viem/chains";
-import {
-  connectorsForWallets,
-  RainbowKitProvider,
-  getDefaultWallets,
-  getDefaultConfig,
-} from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -57,7 +49,6 @@ import {
 //   CeloTerminal,
 //   MetaMask as CeloMetaMask,
 // } from "@celo/rainbowkit-celo/wallets";
-import { http } from "viem";
 //
 // const { chains, publicClient, webSocketPublicClient } = createConfig(
 //   [sepolia, optimism],
