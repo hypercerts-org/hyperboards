@@ -2,7 +2,7 @@ import { useChainId, useMutation, useWalletClient } from "wagmi";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { MarketplaceOrderEntity } from "@/types/database-entities";
-import { LooksRare } from "@hypercerts-org/marketplace-sdk";
+import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { useAddress } from "@/hooks/useAddress";
@@ -50,7 +50,7 @@ export const useBuyMakerBid = () => {
     ]);
 
     // @ts-ignore
-    const lr = new LooksRare(chainId, provider, signer);
+    const lr = new HypercertExchangeClient(chainId, provider, signer);
     setStep("Setting up order execution");
     const takerOrder = lr.createTaker(order, address);
 

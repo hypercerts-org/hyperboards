@@ -4,11 +4,13 @@ import { Provider } from "ethers";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useHypercertClient } from "@/components/providers";
-import { LooksRare, QuoteType } from "@hypercerts-org/marketplace-sdk";
+import {
+  HypercertExchangeClient,
+  QuoteType,
+} from "@hypercerts-org/marketplace-sdk";
 import { useCreateOrderInSupabase } from "@/hooks/marketplace/useCreateOrderInSupabase";
 import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { useEthersSigner } from "@/hooks/useEthersSigner";
-import { fetchOrderNonce } from "@/hooks/marketplace/fetchOrderNonce";
 import { CreateOfferFormValues } from "@/components/marketplace/create-order-form";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { constructTokenIdsFromSplitFractionContractReceipt } from "@/utils/constructTokenIdsFromSplitFractionContractReceipt";
@@ -178,11 +180,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
 
         try {
           setStep("Create");
-          const { nonce_counter } = await fetchOrderNonce({
-            address,
-            chainId,
-          });
-          const lr = new LooksRare(
+          const hypercertExchangeClient = new HypercertExchangeClient(
             chainId,
             // TODO: Fix typing issue with provider
             // @ts-ignore
@@ -190,27 +188,21 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
             // @ts-ignore
             signer,
           );
+
           const { maker, isCollectionApproved, isTransferManagerApproved } =
-            await lr.createMakerAsk({
-              collection: contractAddress,
-              collectionType: 2,
-              strategyId: 0,
-              subsetNonce: 0, // keep 0 if you don't know what it is used for
-              orderNonce: nonce_counter.toString(), // You need to retrieve this value from the API
+            await hypercertExchangeClient.createDirectFractionsSaleMakerAsk({
               startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
               endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
               price: parseEther(listing.price), // Be careful to use a price in wei, this example is for 1 ETH
               itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
-              amounts: [1],
-              currency: lr.addresses.WETH, // Currency used to pay the order, use WETH for ETH payment
             });
-
-          console.log(maker);
 
           // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol
           setStep("Approve transfer manager");
           if (!isTransferManagerApproved) {
-            const tx = await lr.grantTransferManagerApproval().call();
+            const tx = await hypercertExchangeClient
+              .grantTransferManagerApproval()
+              .call();
             await waitForTransactionReceipt(walletClientData, {
               hash: tx.hash as `0x${string}`,
             });
@@ -219,7 +211,9 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
           setStep("Approve collection");
           // Approve the collection items to be transferred by the TransferManager
           if (!isCollectionApproved) {
-            const tx = await lr.approveAllCollectionItems(maker.collection);
+            const tx = await hypercertExchangeClient.approveAllCollectionItems(
+              maker.collection,
+            );
             await waitForTransactionReceipt(walletClientData, {
               hash: tx.hash as `0x${string}`,
             });
@@ -227,7 +221,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
 
           // Sign your maker order
           setStep("Sign order");
-          signature = await lr.signMakerOrder(maker);
+          signature = await hypercertExchangeClient.signMakerOrder(maker);
 
           if (!signature) {
             throw new Error("Error signing order");
@@ -236,7 +230,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
           setStep("Create order");
           await createOrder({
             order: maker,
-            signature: signature!,
+            signature: signature,
             signer: address,
             quoteType: QuoteType.Ask,
           });

@@ -1,15 +1,22 @@
 import { useChainId, useMutation } from "wagmi";
-import { QuoteType, Maker, utils } from "@hypercerts-org/marketplace-sdk";
+import {
+  QuoteType,
+  Maker,
+  HypercertExchangeClient,
+} from "@hypercerts-org/marketplace-sdk";
+import { Provider } from "ethers";
+import { useEthersProvider } from "@/hooks/useEthersProvider";
+import { useEthersSigner } from "@/hooks/useEthersSigner";
 
 export const useCreateOrderInSupabase = () => {
   const chainId = useChainId();
+  const provider = useEthersProvider();
+  const signer = useEthersSigner();
 
   return useMutation(
     async ({
       order,
-      signer,
       signature,
-      quoteType,
     }: {
       order: Maker;
       signer: string;
@@ -21,12 +28,26 @@ export const useCreateOrderInSupabase = () => {
         throw new Error("No chainId");
       }
 
-      return utils.api.createOrder({
-        order,
-        signer,
-        signature,
-        quoteType,
+      if (!provider) {
+        throw new Error("No provider");
+      }
+
+      if (!signer) {
+        throw new Error("No signer");
+      }
+
+      const hypercertExchangeClient = new HypercertExchangeClient(
         chainId,
+        // TODO: Fix typing issue with provider
+        // @ts-ignore
+        provider as unknown as Provider,
+        // @ts-ignore
+        signer,
+      );
+
+      return hypercertExchangeClient.registerOrder({
+        order,
+        signature,
       });
     },
   );

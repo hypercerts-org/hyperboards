@@ -7,43 +7,10 @@ import {
 
 import { z } from "zod";
 import { OrderStatus } from "@/types/api";
-import { AbiCoder, BytesLike, verifyTypedData } from "ethers";
-import { SolidityType, StrategyType } from "@hypercerts-org/marketplace-sdk";
+import { verifyTypedData } from "ethers";
 import { Database } from "@/types/hypercerts-database";
 import NextCors from "nextjs-cors";
-import { deployments, asDeployedChain } from "@hypercerts-org/contracts";
-
-/**
- * Given an array of params, returns the encoded params.
- * To be used for orders signature and orders execution
- * @param params Array of params
- * @param types Array of solidity types
- * @returns encoded params
- */
-export const encodeParams = (
-  params: any[],
-  types: SolidityType[],
-): BytesLike => {
-  return AbiCoder.defaultAbiCoder().encode(types, params);
-};
-
-/**
- * Get additional params types for a maker order based on the strategy used
- * @param strategy Maker strategy
- * @returns Array of solidity types for encoding
- */
-export const getMakerParamsTypes = (strategy: StrategyType): SolidityType[] => {
-  if (
-    strategy === StrategyType.standard ||
-    strategy === StrategyType.collection
-  ) {
-    return [];
-  }
-  if (strategy === StrategyType.collectionWithMerkleTree) {
-    return ["bytes32"]; // Merkle tree root
-  }
-  return [];
-};
+import { addressesByNetwork } from "@hypercerts-org/marketplace-sdk";
 
 const inputSchemaPost = z.object({
   signature: z.string(),
@@ -66,8 +33,8 @@ const inputSchemaPost = z.object({
 });
 
 const getTypedData = (chainId: number) => {
-  const verifyingContract =
-    deployments[asDeployedChain(chainId)].HypercertExchange;
+  // @ts-ignore
+  const verifyingContract = addressesByNetwork[chainId]?.EXCHANGE_V2;
 
   if (!verifyingContract) {
     throw new Error(
@@ -156,22 +123,7 @@ export default async function handler(
     }
     const { signature, chainId, ...makerOrder } = parsedBody.data;
 
-    // Verify the signature
-    const preparedMakerOrder = {
-      ...makerOrder,
-      price: BigInt(makerOrder.price),
-      globalNonce: BigInt(makerOrder.globalNonce),
-      additionalParameters: encodeParams(
-        [],
-        getMakerParamsTypes(StrategyType.standard),
-      ),
-    };
-    console.log(
-      "[marketplace-api] Verifying signature",
-      preparedMakerOrder,
-      makerTypes,
-      signature,
-    );
+    console.log("[marketplace-api] Verifying signature", makerTypes, signature);
     const recoveredAddress = verifyTypedData(
       getTypedData(chainId),
       makerTypes,
