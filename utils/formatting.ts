@@ -23,3 +23,32 @@ export const formatWorkTimeframe = (timeStamps?: number[]) => {
   const end = new Date(timeStamps[1] * 1000);
   return `${format(start, dateFormat)} - ${format(end, dateFormat)}`;
 };
+
+export const formatStrategyType = (strategyType: number) => {
+  switch (strategyType) {
+    case 0:
+      return "Standard";
+    case 1:
+      return "Collection";
+    case 2:
+      return "Collection with Merkle Tree";
+    case 4:
+      return "Dutch Auction";
+    case 5:
+      return "Item IDs Range";
+    case 6:
+      return "Hypercert Collection Offer";
+    case 7:
+      return "Hypercert Collection Offer with Proof";
+    case 8:
+      return "Hypercert Collection Offer with Allowlist";
+    case 9:
+      return "Hypercert Dutch Auction";
+    case 10:
+      return "Hypercert Fraction Offer";
+    case 11:
+      return "Hypercert Fraction Offer with Allowlist";
+    default:
+      return "Unknown";
+  }
+};
