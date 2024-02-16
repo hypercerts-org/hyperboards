@@ -9,9 +9,13 @@
       "includeNodeModules": true
     }
   },
+  "parcel-namer-rewrite": {
+    "hashing": "never",
+    "disable": false
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn widget:build && yarn widget:copy-to-public && next build",
     "start": "next start",
     "lint": "next lint",
     "supabase:init": "supabase init",
@@ -23,9 +27,10 @@
     "supabase:migration:diff": "supabase db diff --schema public",
     "supabase:migration:reset": "supabase db reset",
     "snaplet:restore": "snaplet snapshot restore --no-reset",
-    "widget:serve": "rm -rf dist-widget && parcel serve ./widget/index.html --port 3001 --log-level info --no-cache --target widget",
-    "widget:build": "rm -rf dist-widget && parcel build ./widget/index.html --no-source-maps --no-cache --no-content-hash --target widget",
-    "widget:start": "rm -rf dist-widget && yarn widget:build && npx -y http-server 'dist-widget' -p 3001"
+    "widget:build": "rimraf dist-widget && parcel build ./widget/hyperboard-widget.tsx --no-source-maps --no-cache --no-content-hash --target widget",
+    "widget:copy-to-public": "copyfiles \"dist-widget/*.js\" --up 1 public/widget",
+    "widget:dev": "rimraf dist-widget && parcel serve ./widget/index.html --port 3001 --log-level info --no-cache --target widget",
+    "widget:serve": "npx -y http-server 'dist-widget' -p 3001"
   },
   "dependencies": {
     "@celo/rainbowkit-celo": "^1.1.2",
@@ -87,9 +92,12 @@
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "copyfiles": "^2.4.1",
     "parcel": "^2.11.0",
+    "parcel-namer-rewrite": "^2.10.3-rc.2",
     "prettier": "^3.0.3",
     "process": "^0.11.10",
+    "rimraf": "^5.0.5",
     "snaplet": "0.71"
   }
 }
