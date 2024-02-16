@@ -1,11 +1,6 @@
-import { useRef, useState } from "react";
-import { useSize } from "@chakra-ui/react-use-size";
-import {
-  registryContentItemToHyperboardEntry,
-  useFetchHyperboardContents,
-} from "@/hooks/useFetchHyperboardContents";
-import { Center, Flex, IconButton, Spinner, VStack } from "@chakra-ui/react";
-import { Hyperboard } from "@/components/hyperboard";
+import { useState } from "react";
+import { useFetchHyperboardContents } from "@/hooks/useFetchHyperboardContents";
+import { Center, Flex, IconButton, VStack } from "@chakra-ui/react";
 import * as React from "react";
 import Head from "next/head";
 import { BreadcrumbEntry, Breadcrumbs } from "@/components/breadcrumbs";
@@ -20,17 +15,12 @@ export const HyperboardRendererWithUi = ({
   hyperboardId: string;
 }) => {
   const { push, query } = useRouter();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const dimensions = useSize(containerRef);
 
-  const [selectedRegistry, setSelectedRegistry] = useState<string>();
+  const [selectedRegistryParent, setSelectedRegistryParent] =
+    useState<string>();
 
-  const { data, isLoading } = useFetchHyperboardContents(hyperboardId);
-  const results = data?.results;
+  const { data } = useFetchHyperboardContents(hyperboardId);
   const hyperboard = data?.hyperboard;
-
-  const height = ((dimensions?.width || 1) / 16) * 9;
-  const widthPerBoard = `${100 / (results?.length || 1)}%`;
 
   const fullScreen = query.fullScreen === "true";
   const toggleFullScreen = async () => {
@@ -51,29 +41,18 @@ export const HyperboardRendererWithUi = ({
     }
   };
 
-  const getWidth = (registryId: string) => {
-    if (selectedRegistry === registryId) {
-      return "100%";
-    }
-
-    if (selectedRegistry && selectedRegistry !== registryId) {
-      return "0%";
-    }
-    return widthPerBoard;
-  };
-
   const crumbs: BreadcrumbEntry[] = [];
 
   if (hyperboard) {
     crumbs.push({
       name: hyperboard.name,
-      onClick: () => setSelectedRegistry(undefined),
+      onClick: () => setSelectedRegistryParent(undefined),
     });
   }
 
-  if (selectedRegistry) {
+  if (selectedRegistryParent) {
     const registry = hyperboard?.hyperboard_registries.find(
-      (x) => x.registries?.id === selectedRegistry,
+      (x) => x.registries?.id === selectedRegistryParent,
     );
     if (registry?.registries) {
       crumbs.push({
@@ -106,6 +85,8 @@ export const HyperboardRendererWithUi = ({
             <HyperboardRenderer
               hyperboardId={hyperboardId}
               fullScreen={fullScreen}
+              onSelectedRegistryChange={setSelectedRegistryParent}
+              selectedRegistryParent={selectedRegistryParent}
             />
             <IconButton
               variant={"blackAndWhiteOutline"}
@@ -130,8 +111,8 @@ export const HyperboardRendererWithUi = ({
           <OwnershipTable
             hyperboardId={hyperboard.id}
             showHeader
-            selectedRegistry={selectedRegistry}
-            onSelectRegistry={setSelectedRegistry}
+            selectedRegistry={selectedRegistryParent}
+            onSelectRegistry={setSelectedRegistryParent}
           />
         )}
       </Center>

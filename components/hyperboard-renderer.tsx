@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSize } from "@chakra-ui/react-use-size";
 import {
   registryContentItemToHyperboardEntry,
@@ -12,15 +12,25 @@ export const HyperboardRenderer = ({
   hyperboardId,
   fullScreen,
   disableToast = false,
+  selectedRegistryParent,
+  onSelectedRegistryChange,
 }: {
   hyperboardId: string;
   fullScreen?: boolean;
   disableToast?: boolean;
+  selectedRegistryParent?: string;
+  onSelectedRegistryChange?: (registryId?: string) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
+
+  useEffect(() => {
+    if (selectedRegistryParent !== selectedRegistry) {
+      setSelectedRegistry(selectedRegistryParent);
+    }
+  }, [selectedRegistryParent]);
 
   const { data, isLoading, isLoadingError } = useFetchHyperboardContents(
     hyperboardId,
@@ -42,6 +52,15 @@ export const HyperboardRenderer = ({
       return "0%";
     }
     return widthPerBoard;
+  };
+
+  const onSelectedRegistryChangeHandler = (registryId: string) => {
+    setSelectedRegistry((currentId) =>
+      currentId === registryId ? undefined : registryId,
+    );
+    if (onSelectedRegistryChange) {
+      onSelectedRegistryChange(registryId);
+    }
   };
 
   return (
@@ -92,9 +111,7 @@ export const HyperboardRenderer = ({
               >
                 <Hyperboard
                   onClickLabel={() =>
-                    setSelectedRegistry((currentId) =>
-                      currentId === x.registry.id ? undefined : x.registry.id,
-                    )
+                    onSelectedRegistryChangeHandler(x.registry.id)
                   }
                   label={x.label || "Unlabelled"}
                   height={height}
