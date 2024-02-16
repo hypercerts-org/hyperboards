@@ -5,6 +5,7 @@
   "source": "widget/index.tsx",
   "targets": {
     "widget": {
+      "distDir": "./dist-widget",
       "includeNodeModules": true
     }
   },
@@ -22,8 +23,9 @@
     "supabase:migration:diff": "supabase db diff --schema public",
     "supabase:migration:reset": "supabase db reset",
     "snaplet:restore": "snaplet snapshot restore --no-reset",
-    "widget:serve": "rm -rf dist && parcel serve ./widget/index.html --port 3001 --log-level info --no-cache --target widget",
-    "widget:build": "rm -rf dist && parcel build ./widget/index.html --no-source-maps --target widget"
+    "widget:serve": "rm -rf dist-widget && parcel serve ./widget/index.html --port 3001 --log-level info --no-cache --target widget",
+    "widget:build": "rm -rf dist-widget && parcel build ./widget/index.html --no-source-maps --no-cache --no-content-hash --target widget",
+    "widget:start": "rm -rf dist-widget && yarn widget:build && npx -y http-server 'dist-widget' -p 3001"
   },
   "dependencies": {
     "@celo/rainbowkit-celo": "^1.1.2",

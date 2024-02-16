@@ -4,6 +4,7 @@ import {
   useAccount,
   useChainId,
   useConnectorClient,
+  usePublicClient,
   useWalletClient,
   WagmiProvider,
 } from "wagmi";
@@ -115,23 +116,13 @@ const HypercertClientContext = React.createContext<HypercertClient | undefined>(
 
 export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
   const chainId = useChainId();
-  const account = useAccount();
-  // const results = useConnectorClient();
-  // console.log(account.address, results?.data);
   const { data: walletClient } = useWalletClient({});
-  // const walletClient = null;
-
-  // const walletClient = null;
-  // console.log(chainId, walletClient);
+  const publicClient = usePublicClient({});
 
   const [client, setClient] = useState<HypercertClient>();
 
   useEffect(() => {
     if (!chainId) {
-      return;
-    }
-
-    if (!walletClient) {
       return;
     }
 
@@ -142,6 +133,8 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       easContractAddress: EAS_CONTRACT_ADDRESS,
       // @ts-ignore
       walletClient,
+      // @ts-ignore
+      publicClient,
     });
 
     setClient(hypercertClient);

@@ -38,3 +38,4 @@ next-env.d.ts
 /.snaplet/
 /dist/
 /.parcel-cache/
+/dist-widget/
