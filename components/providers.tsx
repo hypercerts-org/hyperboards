@@ -135,8 +135,6 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
       return;
     }
 
-    console.log("I never get run");
-
     const hypercertClient = new HypercertClient({
       chain: { id: chainId },
       nftStorageToken: NFT_STORAGE_TOKEN,

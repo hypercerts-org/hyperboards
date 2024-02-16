@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
-import { HyperboardRenderer } from "@/components/hyperboard-renderer";
+import { HyperboardRendererWithUi } from "@/components/hyperboard-renderer-with-ui";
 
 export const Index = () => {
   const { query } = useRouter();
 
   const hyperboardId = query.hyperboardId as string;
 
-  return <HyperboardRenderer hyperboardId={hyperboardId} />;
+  return <HyperboardRendererWithUi hyperboardId={hyperboardId} />;
 };
 
 export default Index;

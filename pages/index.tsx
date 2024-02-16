@@ -1,6 +1,6 @@
 import React from "react";
-import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 import Head from "next/head";
+import { HyperboardRendererWithUi } from "@/components/hyperboard-renderer-with-ui";
 
 function Index() {
   return (
@@ -8,7 +8,7 @@ function Index() {
       <Head>
         <title>Hyperboards - FTC</title>
       </Head>
-      <HyperboardRenderer
+      <HyperboardRendererWithUi
         hyperboardId={"e57ed678-ef52-404c-b7aa-986314a07192"}
       />
     </>

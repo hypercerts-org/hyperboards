@@ -1,5 +1,5 @@
 import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
-import { HyperboardRenderer } from "@/components/hyperboard-renderer";
+import { HyperboardRendererWithUi } from "@/components/hyperboard-renderer-with-ui";
 
 export const PLASMIC = initPlasmicLoader({
   projects: [
@@ -14,7 +14,7 @@ export const PLASMIC = initPlasmicLoader({
   preview: true,
 });
 
-PLASMIC.registerComponent(HyperboardRenderer, {
+PLASMIC.registerComponent(HyperboardRendererWithUi, {
   name: "FtcBoard",
   importPath: "./components/ftc-board",
   props: {},
