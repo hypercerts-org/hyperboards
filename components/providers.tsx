@@ -20,45 +20,28 @@ import {
   WALLETCONNECT_ID,
   WEB3_STORAGE_TOKEN,
 } from "@/config";
-// import {
-//   argentWallet,
-//   bitskiWallet,
-//   braveWallet,
-//   coinbaseWallet,
-//   dawnWallet,
-//   imTokenWallet,
-//   injectedWallet,
-//   ledgerWallet,
-//   metaMaskWallet,
-//   mewWallet,
-//   okxWallet,
-//   omniWallet,
-//   phantomWallet,
-//   rabbyWallet,
-//   rainbowWallet,
-//   safeWallet,
-//   tahoWallet,
-//   trustWallet,
-//   walletConnectWallet,
-//   xdefiWallet,
-//   zerionWallet,
-// } from "@rainbow-me/rainbowkit/wallets";
-// import {
-//   Valora,
-//   CeloWallet,
-//   CeloTerminal,
-//   MetaMask as CeloMetaMask,
-// } from "@celo/rainbowkit-celo/wallets";
-//
-// const { chains, publicClient, webSocketPublicClient } = createConfig(
-//   [sepolia, optimism],
-//   [
-//     alchemyProvider({
-//       apiKey: ALCHEMY_KEY,
-//     }),
-//     publicProvider(),
-//   ],
-// );
+import {
+  argentWallet,
+  bitskiWallet,
+  braveWallet,
+  dawnWallet,
+  imTokenWallet,
+  injectedWallet,
+  ledgerWallet,
+  metaMaskWallet,
+  mewWallet,
+  okxWallet,
+  omniWallet,
+  phantomWallet,
+  rabbyWallet,
+  rainbowWallet,
+  safeWallet,
+  tahoWallet,
+  trustWallet,
+  walletConnectWallet,
+  xdefiWallet,
+  zerionWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
 const projectId = WALLETCONNECT_ID;
 
@@ -67,6 +50,40 @@ const config = getDefaultConfig({
   appName: "Hyperboards",
   chains: [sepolia, optimism],
   ssr: true,
+  wallets: [
+    {
+      groupName: "Recommended",
+      wallets: [
+        argentWallet,
+        bitskiWallet,
+        braveWallet,
+        dawnWallet,
+        imTokenWallet,
+        ledgerWallet,
+        metaMaskWallet,
+        mewWallet,
+        okxWallet,
+        omniWallet,
+        phantomWallet,
+        rabbyWallet,
+        rainbowWallet,
+        walletConnectWallet,
+        safeWallet,
+        tahoWallet,
+        trustWallet,
+        xdefiWallet,
+        zerionWallet,
+      ],
+    },
+    // {
+    //   groupName: "Recommended with CELO",
+    //   wallets: [Valora, CeloWallet, CeloTerminal, walletConnectWallet],
+    // },
+    {
+      groupName: "Injected",
+      wallets: [injectedWallet],
+    },
+  ],
 });
 
 // const config = getDefaultConfig({
