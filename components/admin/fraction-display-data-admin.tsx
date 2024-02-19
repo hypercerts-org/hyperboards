@@ -15,6 +15,8 @@ import { useAddress } from "@/hooks/useAddress";
 import { downloadBlob } from "@/utils/downloadBlob";
 import { arrayToCsv, parseCsv } from "@/utils/csv";
 import React, { useRef } from "react";
+import { useCreateOrUpdateFractionSpecificMetadata } from "@/hooks/useCreateOrUpdateFractionSpecificMetadata";
+import { useChainId } from "wagmi";
 
 export const FractionDisplayDataAdmin = ({
   registryId,
@@ -30,7 +32,7 @@ export const FractionDisplayDataAdmin = ({
   return (
     <>
       {registry.data?.claims?.map((claim) => (
-        <DefaultDisplayDataForClainm
+        <DefaultDisplayDataForClaim
           key={claim.id}
           claimId={claim.hypercert_id}
         />
@@ -39,7 +41,8 @@ export const FractionDisplayDataAdmin = ({
   );
 };
 
-const DefaultDisplayDataForClainm = ({ claimId }: { claimId: string }) => {
+const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
+  const chainId = useChainId();
   const { data: fractions } = useFetchHypercertFractionsByHypercertId(claimId);
   const address = useAddress();
   const fractionsOwnedByAdmin = fractions?.filter(
@@ -47,7 +50,8 @@ const DefaultDisplayDataForClainm = ({ claimId }: { claimId: string }) => {
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const csvHeaders = ["Fraction ID", "Units", "GitHub username"];
+  const csvHeaders = ["fractionId", "Units", "githubUsername"];
+  const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
   const onDownloadTemplateCsv = () => {
     if (!fractionsOwnedByAdmin?.length) {
@@ -77,6 +81,14 @@ const DefaultDisplayDataForClainm = ({ claimId }: { claimId: string }) => {
       const csv = event.target?.result;
       const parsedCSV = parseCsv(csv as string, ";");
       console.log(parsedCSV);
+      await mutateAsync({
+        values: parsedCSV.map((row) => ({
+          hypercertId: claimId,
+          fractionId: row["fractionId"],
+          chainId: chainId,
+          values: { githubUsername: row["githubUsername"] },
+        })),
+      });
     };
     reader.readAsText(file);
   };
