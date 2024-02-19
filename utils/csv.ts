@@ -13,3 +13,23 @@ export function arrayToCsv(headers: string[], data: any[][]) {
 
   return [formattedHeaders, ...formattedRows].join("\r\n"); // rows starting on new lines
 }
+
+export function parseCsv(
+  csv: string,
+  separator = ",",
+): Record<string, string>[] {
+  const [headerRow, ...rows] = csv.split("\r\n");
+  const headers = headerRow.split(separator);
+  const data = rows.map((row) => row.split(separator));
+
+  return data.map((row) => {
+    return row.reduce((acc, value, index) => {
+      const key = headers[index];
+
+      return {
+        ...acc,
+        [key]: value,
+      };
+    }, {});
+  });
+}

@@ -13,7 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { useAddress } from "@/hooks/useAddress";
 import { downloadBlob } from "@/utils/downloadBlob";
-import { arrayToCsv } from "@/utils/csv";
+import { arrayToCsv, parseCsv } from "@/utils/csv";
+import React, { useRef } from "react";
 
 export const FractionDisplayDataAdmin = ({
   registryId,
@@ -44,6 +45,9 @@ const DefaultDisplayDataForClainm = ({ claimId }: { claimId: string }) => {
   const fractionsOwnedByAdmin = fractions?.filter(
     (fraction) => fraction.owner === address?.toLowerCase(),
   );
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const csvHeaders = ["Fraction ID", "Units", "GitHub username"];
 
   const onDownloadTemplateCsv = () => {
     if (!fractionsOwnedByAdmin?.length) {
@@ -55,19 +59,43 @@ const DefaultDisplayDataForClainm = ({ claimId }: { claimId: string }) => {
       fraction.units,
       "",
     ]);
-    const csvHeaders = ["Fraction ID", "Units", "GitHub username"];
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${claimId}-fractions-template.csv`, `text/csv`);
   };
+
+  const onClickFileUpload = () => {
+    inputRef.current?.click();
+  };
+
+  const onCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const csv = event.target?.result;
+      const parsedCSV = parseCsv(csv as string, ";");
+      console.log(parsedCSV);
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <>
       <TableContainer width={"100%"}>
         <Table variant={"striped"} colorScheme="blue" size={"sm"}>
           <TableCaption placement={"top"}>
-            Fractions owned by you for claim {claimId}
             <Button colorScheme="blue" onClick={onDownloadTemplateCsv}>
               Download template CSV
             </Button>
+            <Button onClick={onClickFileUpload}>Upload complete CSV</Button>
+            <input
+              ref={inputRef}
+              type="file"
+              style={{ display: "none" }}
+              onChange={onCsvUpload}
+            />
           </TableCaption>
           <Thead>
             <Tr>
