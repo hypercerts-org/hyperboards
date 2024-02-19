@@ -8,7 +8,7 @@ export const useFetchRegistryById = (registryId?: string) => {
       if (!registryId) return null;
       return supabase
         .from("registries")
-        .select("*, blueprints (*)")
+        .select("*, blueprints (*), claims (*)")
         .eq("id", registryId)
         .single();
     },

@@ -1,0 +1,15 @@
+/** Convert a 2D array into a CSV string
+ */
+export function arrayToCsv(headers: string[], data: any[][]) {
+  const formattedHeaders = headers.join(",");
+  const formattedRows = data.map(
+    (row) =>
+      row
+        .map(String) // convert every value to String
+        .map((v) => v.replaceAll('"', '""')) // escape double quotes
+        .map((v) => `"${v}"`) // quote it
+        .join(","), // comma-separated
+  );
+
+  return [formattedHeaders, ...formattedRows].join("\r\n"); // rows starting on new lines
+}
