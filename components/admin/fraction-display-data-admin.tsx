@@ -17,6 +17,7 @@ import { arrayToCsv, parseCsv } from "@/utils/csv";
 import React, { useRef } from "react";
 import { useCreateOrUpdateFractionSpecificMetadata } from "@/hooks/useCreateOrUpdateFractionSpecificMetadata";
 import { useChainId } from "wagmi";
+import { useFetchFractionSpecificDisplay } from "@/hooks/useFetchFractionSpecificDisplay";
 
 export const FractionDisplayDataAdmin = ({
   registryId,
@@ -44,10 +45,19 @@ export const FractionDisplayDataAdmin = ({
 const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
   const chainId = useChainId();
   const { data: fractions } = useFetchHypercertFractionsByHypercertId(claimId);
-  const address = useAddress();
-  const fractionsOwnedByAdmin = fractions?.filter(
-    (fraction) => fraction.owner === address?.toLowerCase(),
+  const { data: fractionSpecificData } = useFetchFractionSpecificDisplay(
+    claimId,
+    chainId,
   );
+  const address = useAddress();
+  const fractionsOwnedByAdmin = fractions
+    ?.filter((fraction) => fraction.owner === address?.toLowerCase())
+    .map((fraction) => ({
+      ...fraction,
+      value:
+        fractionSpecificData?.find((x) => x.fraction_id === fraction.id)
+          ?.value || "",
+    }));
   const inputRef = useRef<HTMLInputElement>(null);
 
   const csvHeaders = ["fractionId", "Units", "githubUsername"];
@@ -61,7 +71,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
     const csvData = fractionsOwnedByAdmin.map((fraction) => [
       fraction.id,
       fraction.units,
-      "",
+      fraction.value,
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${claimId}-fractions-template.csv`, `text/csv`);
@@ -113,6 +123,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
             <Tr>
               <Th>Fraction ID</Th>
               <Th>Units</Th>
+              <Th>Percentage</Th>
               <Th>GitHub username</Th>
             </Tr>
           </Thead>
@@ -121,7 +132,8 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
               <Tr key={fraction.id}>
                 <Td>{fraction.id}</Td>
                 <Td>{fraction.units}</Td>
-                <Td>N/A</Td>
+                <Td>{fraction.percentage}</Td>
+                <Td>{fraction.value}</Td>
               </Tr>
             ))}
           </Tbody>

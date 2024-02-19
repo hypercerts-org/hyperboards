@@ -1,6 +1,7 @@
 import { FractionSponsorMetadataInsert } from "@/types/database-entities";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
 import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@chakra-ui/react";
 
 type Values = {
   hypercertId: string;
@@ -11,6 +12,7 @@ type Values = {
 
 export const useCreateOrUpdateFractionSpecificMetadata = (strategy: string) => {
   const getClient = useGetAuthenticatedClient();
+  const toast = useToast();
 
   return useMutation({
     mutationKey: ["fraction-specific-metadata", "create-or-update"],
@@ -28,6 +30,15 @@ export const useCreateOrUpdateFractionSpecificMetadata = (strategy: string) => {
       }
 
       return client.from("fraction_sponsor_metadata").upsert(insertValues);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Fraction specific metadata updated",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     },
   });
 };
