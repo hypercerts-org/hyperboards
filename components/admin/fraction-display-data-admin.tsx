@@ -2,6 +2,7 @@ import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import {
   Button,
+  HStack,
   Table,
   TableCaption,
   TableContainer,
@@ -89,7 +90,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const csv = event.target?.result;
-      const parsedCSV = parseCsv(csv as string, ";");
+      const parsedCSV = parseCsv(csv as string);
       console.log(parsedCSV);
       await mutateAsync({
         values: parsedCSV.map((row) => ({
@@ -108,10 +109,12 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
       <TableContainer width={"100%"}>
         <Table variant={"striped"} colorScheme="blue" size={"sm"}>
           <TableCaption placement={"top"}>
-            <Button colorScheme="blue" onClick={onDownloadTemplateCsv}>
-              Download template CSV
-            </Button>
-            <Button onClick={onClickFileUpload}>Upload complete CSV</Button>
+            <HStack>
+              <Button colorScheme="blue" onClick={onDownloadTemplateCsv}>
+                Download CSV
+              </Button>
+              <Button onClick={onClickFileUpload}>Upload CSV</Button>
+            </HStack>
             <input
               ref={inputRef}
               type="file"
