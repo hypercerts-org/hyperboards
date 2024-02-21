@@ -106,11 +106,8 @@ const processRegistryForDisplay = async (
   });
 
   const allowlistResults = allowlistEntries.map((entry) => {
-    const totalDisplayUnitsForClaim = displayPerUnit;
-
     // Calculate the number of units per display unit
-    const displayUnitsPerUnit =
-      totalDisplayUnitsForClaim / BigInt(entry.claim.totalUnits);
+    const displayUnitsPerUnit = displayPerUnit / BigInt(entry.claim.totalUnits);
     return {
       owner: entry.address?.toLowerCase(),
       unitsAdjustedForDisplaySize:
@@ -191,11 +188,11 @@ const processRegistryForDisplay = async (
     .value();
 
   // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const content = _.chain({
+  const content = _.chain([
     ...regularFractions,
     ...blueprintResults,
     ...allowlistResults,
-  })
+  ])
     .groupBy((fraction) => fraction.owner)
     .mapValues((fractionsPerOwner, owner) => {
       return {
