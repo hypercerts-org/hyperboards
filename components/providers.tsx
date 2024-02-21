@@ -122,7 +122,10 @@ const HypercertClientContext = React.createContext<HypercertClient | undefined>(
   undefined,
 );
 
-export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
+export const HypercertClientProvider = ({
+  chainOverride,
+  children,
+}: PropsWithChildren & { chainOverride?: number }) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({});
   const publicClient = usePublicClient({});
@@ -135,7 +138,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
     }
 
     const hypercertClient = new HypercertClient({
-      chain: { id: chainId },
+      chain: { id: chainOverride || chainId },
       nftStorageToken: NFT_STORAGE_TOKEN,
       web3StorageToken: WEB3_STORAGE_TOKEN,
       easContractAddress: EAS_CONTRACT_ADDRESS,
@@ -146,7 +149,7 @@ export const HypercertClientProvider = ({ children }: PropsWithChildren) => {
     });
 
     setClient(hypercertClient);
-  }, [chainId, walletClient]);
+  }, [chainId, walletClient, chainOverride]);
 
   return (
     <HypercertClientContext.Provider value={client}>
