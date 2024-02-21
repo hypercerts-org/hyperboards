@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFetchHyperboardContents } from "@/hooks/useFetchHyperboardContents";
-import { Center, Flex, IconButton, VStack } from "@chakra-ui/react";
+import { Center, Flex, IconButton, Spinner, VStack } from "@chakra-ui/react";
 import * as React from "react";
 import Head from "next/head";
 import { BreadcrumbEntry, Breadcrumbs } from "@/components/breadcrumbs";
@@ -8,8 +8,10 @@ import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 import { MdOutlineFullscreen, MdOutlineFullscreenExit } from "react-icons/md";
 import { useRouter } from "next/router";
 import { HyperboardRenderer } from "@/components/hyperboard-renderer";
+import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
+import { HypercertClientProvider } from "@/components/providers";
 
-export const HyperboardRendererWithUi = ({
+const HyperboardRendererWithUiInternal = ({
   hyperboardId,
 }: {
   hyperboardId: string;
@@ -117,5 +119,31 @@ export const HyperboardRendererWithUi = ({
         )}
       </Center>
     </>
+  );
+};
+
+export const HyperboardRendererWithUi = ({
+  hyperboardId,
+}: {
+  hyperboardId: string;
+}) => {
+  const { data, isLoading } = useFetchHyperboardData(hyperboardId);
+
+  if (isLoading) {
+    return (
+      <Center py={8}>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <HypercertClientProvider chainOverride={data.chain_id}>
+      <HyperboardRendererWithUiInternal hyperboardId={hyperboardId} />
+    </HypercertClientProvider>
   );
 };

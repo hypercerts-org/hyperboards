@@ -1,9 +1,7 @@
 import * as React from "react";
-import { registerComponent } from "@plasmicapp/react-web/lib/host";
 import { PlasmicCanvasHost } from "@plasmicapp/loader-nextjs";
 import { PLASMIC } from "@/plasmic-init";
 import { Providers } from "@/components/providers";
-import { HyperboardRendererWithUi } from "@/components/hyperboard-renderer-with-ui";
 
 // You can register any code components that you want to use here; see
 // https://docs.plasmic.app/learn/code-components-ref/
@@ -23,9 +21,3 @@ export default function PlasmicHost() {
     )
   );
 }
-
-registerComponent(HyperboardRendererWithUi, {
-  name: "FtcBoard",
-  importPath: "./components/ftc-board",
-  props: {},
-});
