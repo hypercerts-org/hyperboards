@@ -1,18 +1,47 @@
 import React from "react";
-import Head from "next/head";
-import { HyperboardRendererWithUi } from "@/components/hyperboard-renderer-with-ui";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { Center, Heading, Spinner, VStack } from "@chakra-ui/react";
+import { HyperboardEntity } from "@/types/database-entities";
+import Link from "next/link";
 
-function Index() {
+export const Index = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["all-boards"],
+    queryFn: async () => {
+      return supabase.from("hyperboards").select("*");
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Center py={8}>
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (!data || !data.data?.length) {
+    return (
+      <Center py={8}>
+        <Heading textStyle={"secondary"}>No boards found</Heading>
+      </Center>
+    );
+  }
+
   return (
-    <>
-      <Head>
-        <title>Hyperboards - FTC</title>
-      </Head>
-      <HyperboardRendererWithUi
-        hyperboardId={"e57ed678-ef52-404c-b7aa-986314a07192"}
-      />
-    </>
+    <Center py={8}>
+      <VStack spacing={4}>
+        {data.data.map((board: HyperboardEntity) => (
+          <Link href={`/boards/${board.id}`} key={board.id}>
+            <Heading size={"lg"} textStyle={"secondary"}>
+              {board.name}
+            </Heading>
+          </Link>
+        ))}
+      </VStack>
+    </Center>
   );
-}
+};
 
 export default Index;

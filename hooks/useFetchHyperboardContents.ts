@@ -19,7 +19,7 @@ import {
 } from "@/types/database-entities";
 import { sift } from "@/utils/sift";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
-import { useChainId } from "wagmi";
+import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
 
 export const useListRegistries = () => {
   return useQuery({
@@ -220,8 +220,10 @@ export const useFetchHyperboardContents = (
   options: { disableToast?: boolean } = { disableToast: false },
 ) => {
   const toast = useToast();
-  const chainId = useChainId();
   const client = useHypercertClient();
+
+  const { data: hyperboardData, error: hyperboardContentsError } =
+    useFetchHyperboardData(hyperboardId);
 
   return useQuery({
     queryKey: ["hyperboard-contents", hyperboardId],
@@ -238,15 +240,6 @@ export const useFetchHyperboardContents = (
         }
         return null;
       }
-
-      const { data: hyperboardData, error: hyperboardContentsError } =
-        await supabase
-          .from("hyperboards")
-          .select(
-            "*, hyperboard_registries ( *, registries ( *, claims ( * ), blueprints ( * ) ) )",
-          )
-          .eq("id", hyperboardId)
-          .single();
 
       if (hyperboardContentsError) {
         if (!options.disableToast) {
@@ -276,7 +269,7 @@ export const useFetchHyperboardContents = (
         await supabaseHypercerts
           .from("allowlistCache-chainId")
           .select("*")
-          .eq("chainId", chainId)
+          .eq("chainId", hyperboardData.chain_id)
           .in("claimId", allClaimIds);
 
       if (allowlistError) {
@@ -331,7 +324,7 @@ export const useFetchHyperboardContents = (
         results,
       };
     },
-    enabled: !!hyperboardId && !!client,
+    enabled: !!hyperboardId && !!hyperboardData && !!client,
     retry: false,
   });
 };
