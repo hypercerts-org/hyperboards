@@ -97,14 +97,18 @@ const queryClient = new QueryClient();
 
 export const Providers = ({
   showReactQueryDevtools = true,
+  resetCSS = true,
   children,
-}: PropsWithChildren<{ showReactQueryDevtools?: boolean }>) => {
+}: PropsWithChildren<{
+  showReactQueryDevtools?: boolean;
+  resetCSS?: boolean;
+}>) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <HypercertClientProvider>
-            <ChakraProvider theme={index}>
+            <ChakraProvider theme={index} resetCSS={resetCSS}>
               <Fonts />
               <InteractionDialogProvider>{children}</InteractionDialogProvider>
             </ChakraProvider>
