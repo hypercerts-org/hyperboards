@@ -58,13 +58,18 @@ const DefaultDisplayDataForClaim = ({
     ?.filter((fraction) => fraction.owner === address?.toLowerCase())
     .map((fraction) => ({
       ...fraction,
-      value:
-        fractionSpecificData?.find((x) => x.fraction_id === fraction.id)
-          ?.value || "",
+      ...(fractionSpecificData?.find((x) => x.fraction_id === fraction.id) ||
+        {}),
     }));
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const csvHeaders = ["hypercertId", "fractionId", "Units", "githubUsername"];
+  const csvHeaders = [
+    "hypercertName",
+    "hypercertId",
+    "fractionId",
+    "Units",
+    "githubUsername",
+  ];
   const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
   const onDownloadTemplateCsv = () => {
@@ -73,10 +78,11 @@ const DefaultDisplayDataForClaim = ({
       return;
     }
     const csvData = fractionsOwnedByAdmin.map((fraction) => [
+      fraction.metadata?.name || "",
       fraction.hypercertId,
       fraction.id,
       fraction.units,
-      fraction.value,
+      fraction.value || "",
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${registryId}-fractions-template.csv`, `text/csv`);
@@ -117,6 +123,7 @@ const DefaultDisplayDataForClaim = ({
           </TableCaption>
           <Thead>
             <Tr>
+              <Th>Hypercert name</Th>
               <Th>Fraction ID</Th>
               <Th>Units</Th>
               <Th>Percentage</Th>
@@ -126,6 +133,7 @@ const DefaultDisplayDataForClaim = ({
           <Tbody>
             {fractionsOwnedByAdmin?.map((fraction) => (
               <Tr key={fraction.id}>
+                <Td>{fraction.metadata?.name}</Td>
                 <Td>{fraction.tokenID}</Td>
                 <Td>{fraction.units}</Td>
                 <Td>{fraction.percentage}</Td>
