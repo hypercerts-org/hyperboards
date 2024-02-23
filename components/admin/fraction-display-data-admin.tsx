@@ -1,8 +1,5 @@
 import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
-import {
-  useFetchHypercertFractionsByHypercertId,
-  useFetchHypercertFractionsByHypercertIds,
-} from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { useFetchHypercertFractionsByHypercertIds } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import {
   Button,
   HStack,
