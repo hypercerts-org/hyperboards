@@ -18,7 +18,7 @@ widgetDivs.forEach((container) => {
   console.log("rendering hyperboard", hyperboardId);
   const root = createRoot(container); // createRoot(container!) if you use TypeScript
   root.render(
-    <Providers showReactQueryDevtools={false}>
+    <Providers showReactQueryDevtools={false} resetCSS={false}>
       <HyperboardRenderer hyperboardId={hyperboardId} disableToast />
     </Providers>,
   );
