@@ -386,7 +386,9 @@ export const registryContentItemToHyperboardEntry = ({
   isBlueprint,
   ...item
 }: {
-  displayData: DefaultSponsorMetadataEntity;
+  displayData: Omit<DefaultSponsorMetadataEntity, "address"> & {
+    value: string;
+  };
   isBlueprint: boolean;
   totalValue: bigint;
 }): HyperboardEntry => {
@@ -409,7 +411,7 @@ export const registryContentItemToHyperboardEntry = ({
     firstName: item.displayData.firstName,
     image: item.displayData.image,
     value: item.totalValue,
-    id: item.displayData.address,
+    id: item.displayData.value,
     isBlueprint,
   };
 };
