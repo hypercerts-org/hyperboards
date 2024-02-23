@@ -20,7 +20,14 @@ export function parseCsv(
 ): Record<string, string>[] {
   const [headerRow, ...rows] = csv.split("\r\n");
   const headers = headerRow.split(separator);
-  const data = rows.map((row) => row.split(separator));
+  const data = rows.map((row) =>
+    row.split(separator).map((v) => {
+      if (v.startsWith('"') && v.endsWith('"')) {
+        return v.slice(1, -1);
+      }
+      return v;
+    }),
+  );
 
   return data.map((row) => {
     return row.reduce((acc, value, index) => {

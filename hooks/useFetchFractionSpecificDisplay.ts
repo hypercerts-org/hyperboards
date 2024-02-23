@@ -2,17 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 export const useFetchFractionSpecificDisplay = (
-  claimId: string,
+  claimIds: string[],
   chainId: number,
 ) => {
   return useQuery({
-    queryKey: ["fraction-specific-display", claimId, chainId],
+    queryKey: ["fraction-specific-display", claimIds, chainId],
     queryFn: async () => {
-      if (!claimId) return null;
+      if (!claimIds.length) return null;
       return supabase
         .from("fraction_sponsor_metadata")
         .select("*")
-        .eq("hypercert_id", claimId)
+        .in("hypercert_id", claimIds)
         .eq("chain_id", chainId)
         .throwOnError();
     },

@@ -1,5 +1,8 @@
 import { useFetchRegistryById } from "@/hooks/useFetchRegistryById";
-import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import {
+  useFetchHypercertFractionsByHypercertId,
+  useFetchHypercertFractionsByHypercertIds,
+} from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import {
   Button,
   HStack,
@@ -32,22 +35,25 @@ export const FractionDisplayDataAdmin = ({
   }
 
   return (
-    <>
-      {registry.data?.claims?.map((claim) => (
-        <DefaultDisplayDataForClaim
-          key={claim.id}
-          claimId={claim.hypercert_id}
-        />
-      ))}
-    </>
+    <DefaultDisplayDataForClaim
+      registryId={registryId}
+      claimIds={registry?.data.claims.map((claim) => claim.hypercert_id) || []}
+    />
   );
 };
 
-const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
+const DefaultDisplayDataForClaim = ({
+  registryId,
+  claimIds,
+}: {
+  registryId: string;
+  claimIds: string[];
+}) => {
   const chainId = useChainId();
-  const { data: fractions } = useFetchHypercertFractionsByHypercertId(claimId);
+  const { data: fractions } =
+    useFetchHypercertFractionsByHypercertIds(claimIds);
   const { data: fractionSpecificData } = useFetchFractionSpecificDisplay(
-    claimId,
+    claimIds,
     chainId,
   );
   const address = useAddress();
@@ -61,7 +67,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
     }));
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const csvHeaders = ["fractionId", "Units", "githubUsername"];
+  const csvHeaders = ["hypercertId", "fractionId", "Units", "githubUsername"];
   const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
   const onDownloadTemplateCsv = () => {
@@ -70,12 +76,13 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
       return;
     }
     const csvData = fractionsOwnedByAdmin.map((fraction) => [
+      fraction.hypercertId,
       fraction.id,
       fraction.units,
       fraction.value,
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
-    downloadBlob(csv, `${claimId}-fractions-template.csv`, `text/csv`);
+    downloadBlob(csv, `${registryId}-fractions-template.csv`, `text/csv`);
   };
 
   const onClickFileUpload = () => {
@@ -94,7 +101,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
       console.log(parsedCSV);
       await mutateAsync({
         values: parsedCSV.map((row) => ({
-          hypercertId: claimId,
+          hypercertId: row["hypercertId"],
           fractionId: row["fractionId"],
           chainId: chainId,
           values: { githubUsername: row["githubUsername"] },
@@ -108,19 +115,8 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
     <>
       <TableContainer width={"100%"}>
         <Table variant={"striped"} colorScheme="blue" size={"sm"}>
-          <TableCaption placement={"top"}>
-            <HStack>
-              <Button colorScheme="blue" onClick={onDownloadTemplateCsv}>
-                Download CSV
-              </Button>
-              <Button onClick={onClickFileUpload}>Upload CSV</Button>
-            </HStack>
-            <input
-              ref={inputRef}
-              type="file"
-              style={{ display: "none" }}
-              onChange={onCsvUpload}
-            />
+          <TableCaption placement="top">
+            Fraction specific display data
           </TableCaption>
           <Thead>
             <Tr>
@@ -133,7 +129,7 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
           <Tbody>
             {fractionsOwnedByAdmin?.map((fraction) => (
               <Tr key={fraction.id}>
-                <Td>{fraction.id}</Td>
+                <Td>{fraction.tokenID}</Td>
                 <Td>{fraction.units}</Td>
                 <Td>{fraction.percentage}</Td>
                 <Td>{fraction.value}</Td>
@@ -142,6 +138,18 @@ const DefaultDisplayDataForClaim = ({ claimId }: { claimId: string }) => {
           </Tbody>
         </Table>
       </TableContainer>
+      <HStack>
+        <Button colorScheme="blue" onClick={onDownloadTemplateCsv}>
+          Download CSV
+        </Button>
+        <Button onClick={onClickFileUpload}>Upload CSV</Button>
+      </HStack>
+      <input
+        ref={inputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={onCsvUpload}
+      />
     </>
   );
 };
