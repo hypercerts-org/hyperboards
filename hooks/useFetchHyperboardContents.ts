@@ -101,7 +101,8 @@ const processRegistryForDisplay = async (
       unitsAdjustedForDisplaySize:
         (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: false,
-      claim,
+      hypercertId: claim.hypercert_id,
+      hypercertOwnerAddress: claim.owner_id,
     }));
   });
 
@@ -109,10 +110,12 @@ const processRegistryForDisplay = async (
     // Calculate the number of units per display unit
     const displayUnitsPerUnit = displayPerUnit / BigInt(entry.claim.totalUnits);
     return {
-      owner: entry.address?.toLowerCase(),
+      owner: entry.address!.toLowerCase(),
       unitsAdjustedForDisplaySize:
         (BigInt(entry.claim.totalUnits) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
+      hypercertId: entry.claimId,
+      hypercertOwnerAddress: undefined,
     };
   });
 
@@ -130,6 +133,8 @@ const processRegistryForDisplay = async (
       unitsAdjustedForDisplaySize:
         (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
+      hypercertId: blueprint.id,
+      hypercertOwnerAddress: undefined,
     };
   });
 
@@ -156,24 +161,51 @@ const processRegistryForDisplay = async (
     registry.chain_id,
   );
 
-  // Filter out all fractions with fraction specific display data
-  const [fractionsOwnedByCreatorWithFallback, regularFractions] = _.partition(
-    fractions,
-    (fraction) =>
-      fraction.owner === fraction.claim?.owner_id &&
-      !!fractionSpecificDisplayDataResponse.data?.find(
+  const fractionsWithDisplayData = fractions.map((fraction) => {
+    const fractionSpecificDisplayData =
+      fractionSpecificDisplayDataResponse.data?.find(
         (x) => x.fraction_id === fraction.id,
-      ),
-  );
-
-  const fractionSpecificContent = _.chain(fractionsOwnedByCreatorWithFallback)
-    .map((fraction) => ({
+      );
+    if (
+      fraction.owner === fraction.hypercertOwnerAddress &&
+      fractionSpecificDisplayData
+    ) {
+      return {
+        ...fraction,
+        displayData: fractionSpecificDisplayData,
+        ownerId: fractionSpecificDisplayData.value,
+      };
+    }
+    return {
       ...fraction,
-      displayData: fractionSpecificDisplayDataResponse.data?.find(
-        (x) => x.fraction_id === fraction.id,
-      ),
-    }))
-    .groupBy((fraction) => fraction.displayData!.value)
+      displayData: {
+        ...claimDisplayData[fraction.owner],
+        value: fraction.owner,
+      },
+      ownerId: fraction.owner,
+    };
+  });
+
+  const bluePrintsAndAllowlistWithDisplayData = [
+    ...blueprintResults,
+    ...allowlistResults,
+  ].map((fraction) => {
+    return {
+      ...fraction,
+      displayData: {
+        ...claimDisplayData[fraction.owner],
+        value: fraction.owner,
+      },
+      ownerId: fraction.owner,
+    };
+  });
+
+  // Group by owner, merge with display data and calculate total value of all fractions per owner
+  const content = _.chain([
+    ...fractionsWithDisplayData,
+    ...bluePrintsAndAllowlistWithDisplayData,
+  ])
+    .groupBy((fraction) => fraction.ownerId)
     .mapValues((fractionsPerOwner) => {
       return {
         fractions: fractionsPerOwner,
@@ -187,31 +219,34 @@ const processRegistryForDisplay = async (
     })
     .value();
 
-  // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const content = _.chain([
-    ...regularFractions,
-    ...blueprintResults,
-    ...allowlistResults,
+  const byClaim = _.chain([
+    ...fractionsWithDisplayData,
+    ...bluePrintsAndAllowlistWithDisplayData,
   ])
-    .groupBy((fraction) => fraction.owner)
-    .mapValues((fractionsPerOwner, owner) => {
-      return {
-        fractions: fractionsPerOwner,
-        displayData: claimDisplayData[owner],
-        isBlueprint: fractionsPerOwner.every((x) => x.isBlueprint),
-        totalValue: fractionsPerOwner.reduce(
-          (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
-          0n,
-        ),
-      };
+    .groupBy((fraction) => fraction.hypercertId)
+    .mapValues((fractionsPerClaim) => {
+      return _.chain(fractionsPerClaim)
+        .groupBy((fraction) => fraction.ownerId)
+        .mapValues((fractionsPerOwner) => {
+          return {
+            fractions: fractionsPerOwner,
+            displayData: fractionsPerOwner[0].displayData,
+            isBlueprint: fractionsPerOwner.every((x) => x.isBlueprint),
+            totalValue: fractionsPerOwner.reduce(
+              (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
+              0n,
+            ),
+          };
+        })
+        .value();
     })
-    .merge(fractionSpecificContent)
     .value();
 
   return {
     content,
     registry,
     label,
+    byClaim,
   };
 };
 

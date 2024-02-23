@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Center, Flex, Icon, Image, Spinner, Text } from "@chakra-ui/react";
+import { Center, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import { useHypercertClient } from "@/components/providers";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -8,11 +8,9 @@ import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
-import { getEntriesDisplayData } from "@/hooks/useFetchHyperboardContents";
+import { useFetchHyperboardContents } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
-import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
-import { ClaimTokensByClaimQuery } from "@hypercerts-org/sdk";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -101,10 +99,12 @@ export const OwnershipTable = ({
 }: OwnershipTableProps) => {
   // TODO: Show blueprints in ownership table
   const { data } = useHyperboardOwnership(hyperboardId);
+  const { data: hyperboardContentData } =
+    useFetchHyperboardContents(hyperboardId);
   const [selectedClaim, setSelectedClaim] = useState<string>();
   const [selectedBlueprint, setSelectedBlueprint] = useState<number>();
 
-  if (!data) {
+  if (!data || !hyperboardContentData) {
     return null;
   }
 
@@ -112,41 +112,57 @@ export const OwnershipTable = ({
     if (selectedClaim) {
       return {
         claimIds: [selectedClaim],
-        blueprintIds: [],
       };
     }
 
     if (selectedBlueprint) {
       return {
-        claimIds: [],
-        blueprintIds: [selectedBlueprint],
+        claimIds: [selectedBlueprint.toString()],
       };
     }
 
     if (selectedRegistry) {
-      const registry = data.find(
-        (registry) =>
-          registry.hyperboardRegistry.registry_id === selectedRegistry,
+      const registry = hyperboardContentData.results.find(
+        (registry) => registry.registry.id === selectedRegistry,
       );
       if (registry) {
         return {
-          claimIds: registry.claims.map((claim) => claim.claim.id),
-          blueprintIds: registry.blueprints.map((blueprint) => blueprint.id),
+          claimIds: Object.keys(registry.byClaim),
         };
       }
     }
 
     return {
       claimIds: [],
-      blueprintIds: [],
     };
   };
 
-  const { claimIds, blueprintIds } = getClaimIds();
+  const { claimIds } = getClaimIds();
 
   const indexOfSelectedRegistry = data.findIndex(
     (registry) => registry.hyperboardRegistry.registry_id === selectedRegistry,
   );
+
+  const dataToShow = _.chain(hyperboardContentData.results)
+    // Get all claims
+    .map((registry) => registry.byClaim)
+    // Filter out only for the selected claims
+    .map((claimsById) =>
+      _.pickBy(claimsById, (_, claimId) => claimIds.includes(claimId)),
+    )
+    // Create a flat list of all claims
+    .flatMap((x) => Object.values(x))
+    .flatMap((claim) => Object.values(claim))
+    // Only show every owner once in the overview
+    .groupBy((claim) => claim.displayData?.value)
+    .mapValues((claims) => ({
+      displayData: claims[0].displayData,
+      total: claims.reduce((acc, x) => acc + x.totalValue, 0n),
+    }))
+    .values()
+    // Sort by total ownership
+    .sortBy((x) => -x.total)
+    .value();
 
   return (
     <>
@@ -290,10 +306,7 @@ export const OwnershipTable = ({
           overflowY={"auto"}
           className={"custom-scrollbar"}
         >
-          <ClaimOwnershipOverview
-            claimIds={claimIds}
-            blueprintIds={blueprintIds}
-          />
+          <ClaimOwnershipOverview data={dataToShow} />
         </Flex>
       </Flex>
     </>
@@ -397,169 +410,19 @@ const SelectedIcon = () => (
   />
 );
 
-const useClaimOwnership = (claimIds: string[], blueprintIds: number[]) => {
-  const client = useHypercertClient();
-
-  return useQuery({
-    queryKey: ["claim-ownership", claimIds, blueprintIds],
-    queryFn: async () => {
-      if (!client) {
-        return null;
-      }
-
-      const [{ data: blueprintData }, { data: claimsFromSupabase }] =
-        await Promise.all([
-          supabase.from("blueprints").select("*").in("id", blueprintIds),
-          supabase
-            .from("claims")
-            .select("*")
-            .in("hypercert_id", [...claimIds])
-            .throwOnError(),
-        ]);
-
-      if (!claimsFromSupabase?.length && !blueprintData?.length) {
-        return null;
-      }
-
-      const results = await Promise.all(
-        claimIds.map(async (claimId) => {
-          const claimFromSupabase = claimsFromSupabase?.find(
-            (claim) => claim.hypercert_id === claimId,
-          );
-          if (!claimFromSupabase) {
-            throw new Error("Claim not found");
-          }
-          const fractions = (await client.indexer.fractionsByClaim(
-            claimId,
-          )) as ClaimTokensByClaimQuery;
-
-          return {
-            claim: claimFromSupabase,
-            fractions: fractions.claimTokens,
-          };
-        }),
-      );
-      const allFractions = results.flatMap((x) => x.fractions);
-      const allOwnerIds = _.uniq([
-        ...allFractions.map((fraction) => fraction.owner),
-        ...(blueprintData || []).map((blueprint) => blueprint.minter_address),
-      ]);
-
-      const totalOfAllDisplaySizes = BigInt(
-        _.sum([
-          ...(claimsFromSupabase || [])?.map((claim) => claim.display_size),
-          ...(blueprintData || [])?.map((blueprint) => blueprint.display_size),
-        ]),
-      );
-      const totalUnitsInAllClaims =
-        allFractions.reduce(
-          (acc, fraction) => acc + BigInt(fraction.units || 0),
-          0n,
-        ) +
-        BigInt(blueprintData?.length || 0) * NUMBER_OF_UNITS_IN_HYPERCERT;
-
-      // Calculate the amount of surface per display size unit
-      const displayPerUnit =
-        (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
-
-      const ownerMetadata = await getEntriesDisplayData(allOwnerIds);
-      const metadataByAddress = _.keyBy(ownerMetadata.data, (metadata) =>
-        metadata.address.toLowerCase(),
-      );
-
-      const fractionsResults = results.map(({ claim, fractions }) => {
-        // The total number of 'display units' available for this claim
-        const totalDisplayUnitsForClaim =
-          BigInt(claim.display_size) * displayPerUnit;
-
-        // The total number of units in this claim
-        const totalUnitsInClaim = fractions.reduce(
-          (acc, curr) => acc + BigInt(curr.units),
-          0n,
-        );
-
-        // Calculate the number of units per display unit
-        const displayUnitsPerUnit =
-          totalDisplayUnitsForClaim / totalUnitsInClaim;
-
-        // Calculate the relative number of units per fraction
-        const newFractions = fractions.map((fraction) => ({
-          ...fraction,
-          unitsAdjustedForDisplaySize:
-            (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
-        }));
-
-        return {
-          claim,
-          fractions: newFractions,
-        };
-      });
-
-      const blueprintsResults =
-        blueprintData?.map((blueprint) => {
-          const totalDisplayUnitsForBlueprint =
-            BigInt(blueprint.display_size) * displayPerUnit;
-
-          return {
-            claim: {
-              owner_id: blueprint.minter_address,
-              display_size: blueprint.display_size,
-            },
-            fractions: [
-              {
-                unitsAdjustedForDisplaySize:
-                  totalDisplayUnitsForBlueprint / 10n ** 14n,
-              },
-            ],
-          };
-        }) || [];
-
-      const data = _.chain([...fractionsResults, ...blueprintsResults])
-        .groupBy((x) => x.claim.owner_id.toLowerCase())
-        .mapValues((value, key) => ({
-          total: value
-            .flatMap((x) =>
-              x.fractions.map(
-                (fraction) => fraction.unitsAdjustedForDisplaySize,
-              ),
-            )
-            .reduce((acc, curr) => acc + curr, 0n),
-          metadata: metadataByAddress[key],
-        }))
-        .sortBy((x) => x.total)
-        .reverse()
-        .toArray()
-        .value();
-
-      return {
-        data,
-        totalValueForAllFractions: data.reduce((acc, x) => acc + x.total, 0n),
-      };
-    },
-  });
-};
-
 const ClaimOwnershipOverview = ({
-  claimIds,
-  blueprintIds,
+  data,
 }: {
-  claimIds: string[];
-  blueprintIds: number[];
+  data: {
+    displayData: Partial<DefaultSponsorMetadataEntity> & { value: string };
+    total: bigint;
+  }[];
 }) => {
-  const { data, isLoading } = useClaimOwnership(claimIds, blueprintIds);
-
-  if (data?.data.length === 0) {
+  const totalValueForAllFractions = data.reduce((acc, x) => acc + x.total, 0n);
+  if (data.length === 0) {
     return (
       <Center height={"100%"} width={"100%"}>
         Select board to see ownership stats
-      </Center>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <Center height={"100%"} width={"100%"}>
-        <Spinner />
       </Center>
     );
   }
@@ -574,12 +437,11 @@ const ClaimOwnershipOverview = ({
 
   return (
     <>
-      {data.data.map((ownership) => {
+      {data.map((ownership) => {
         const percentage =
-          Number((ownership.total * 10000n) / data.totalValueForAllFractions) /
-          100;
+          Number((ownership.total * 10000n) / totalValueForAllFractions) / 100;
         return (
-          <Flex key={ownership.metadata?.address} backgroundColor={"white"}>
+          <Flex key={ownership.displayData?.value} backgroundColor={"white"}>
             <Flex
               borderBottom={"1px solid rgba(0, 0, 0, 0.3)"}
               width={"100%"}
@@ -587,7 +449,7 @@ const ClaimOwnershipOverview = ({
               mx={"20px"}
               py={1}
             >
-              <Text>{formatMetadata(ownership.metadata)}</Text>
+              <Text>{formatMetadata(ownership.displayData)}</Text>
               <Text textStyle={"secondary"}>{percentage.toFixed(2)}%</Text>
             </Flex>
           </Flex>
@@ -598,7 +460,7 @@ const ClaimOwnershipOverview = ({
 };
 
 const formatMetadata = (
-  displayMetadata: DefaultSponsorMetadataEntity | null,
+  displayMetadata: Partial<DefaultSponsorMetadataEntity>,
 ) => {
   if (!displayMetadata) {
     return "Unknown";
