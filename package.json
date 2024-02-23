@@ -33,6 +33,7 @@
     "widget:serve": "npx -y http-server 'dist-widget' -p 3001"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.0",
     "@celo/rainbowkit-celo": "^1.1.2",
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
