@@ -70,6 +70,12 @@ export interface Database {
             referencedColumns: ["address"]
           },
           {
+            foreignKeyName: "blueprints_minter_address_fkey"
+            columns: ["minter_address"]
+            referencedRelation: "default_sponsor_metadata"
+            referencedColumns: ["address"]
+          },
+          {
             foreignKeyName: "blueprints_registry_id_fkey"
             columns: ["registry_id"]
             referencedRelation: "registries"
@@ -147,6 +153,48 @@ export interface Database {
         }
         Relationships: []
       }
+      fraction_sponsor_metadata: {
+        Row: {
+          chain_id: number
+          companyName: string | null
+          created_at: string
+          firstName: string | null
+          fraction_id: string
+          hypercert_id: string
+          image: string
+          lastName: string | null
+          strategy: string
+          type: string
+          value: string
+        }
+        Insert: {
+          chain_id: number
+          companyName?: string | null
+          created_at?: string
+          firstName?: string | null
+          fraction_id: string
+          hypercert_id: string
+          image: string
+          lastName?: string | null
+          strategy: string
+          type: string
+          value: string
+        }
+        Update: {
+          chain_id?: number
+          companyName?: string | null
+          created_at?: string
+          firstName?: string | null
+          fraction_id?: string
+          hypercert_id?: string
+          image?: string
+          lastName?: string | null
+          strategy?: string
+          type?: string
+          value?: string
+        }
+        Relationships: []
+      }
       hyperboard_registries: {
         Row: {
           created_at: string | null
@@ -177,7 +225,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "hyperboard_registries_registries_id_fk"
+            foreignKeyName: "hyperboard_registries_registry_id_fkey"
             columns: ["registry_id"]
             referencedRelation: "registries"
             referencedColumns: ["id"]
@@ -288,7 +336,42 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      blueprints_with_sponsor_metadata: {
+        Row: {
+          admin_id: string | null
+          companyName: string | null
+          created_at: string | null
+          display_size: number | null
+          firstName: string | null
+          form_values: Json | null
+          id: number | null
+          image: string | null
+          lastName: string | null
+          minter_address: string | null
+          registry_id: string | null
+          type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blueprints_admin_id_fkey"
+            columns: ["admin_id"]
+            referencedRelation: "users"
+            referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "blueprints_minter_address_fkey"
+            columns: ["minter_address"]
+            referencedRelation: "default_sponsor_metadata"
+            referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "blueprints_registry_id_fkey"
+            columns: ["registry_id"]
+            referencedRelation: "registries"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
       add_claim_from_blueprint: {

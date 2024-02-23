@@ -47,6 +47,7 @@ const HyperboardRendererWithUiInternal = ({
 
   if (hyperboard) {
     crumbs.push({
+      id: hyperboard.id,
       name: hyperboard.name,
       onClick: () => setSelectedRegistryParent(undefined),
     });
@@ -61,6 +62,7 @@ const HyperboardRendererWithUiInternal = ({
         name: registry.registries?.name,
         onClick: () => {},
         isActive: true,
+        id: registry.registries?.id,
       });
     }
   }

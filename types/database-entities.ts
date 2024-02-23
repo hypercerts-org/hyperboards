@@ -30,3 +30,6 @@ export type BlueprintEntity = Database["public"]["Tables"]["blueprints"]["Row"];
 
 export type AllowlistCacheEntity =
   HypercertsDatabase["public"]["Tables"]["allowlistCache-chainId"]["Row"];
+
+export type FractionSponsorMetadataInsert =
+  Database["public"]["Tables"]["fraction_sponsor_metadata"]["Insert"];

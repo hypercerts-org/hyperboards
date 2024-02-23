@@ -59,24 +59,22 @@ const processRegistryForDisplay = async (
     }),
   );
 
-  // Calculate the total number of units in all claims
+  // Calculate the total number of units in all claims, allowlistEntries and blueprints combined
   const totalUnitsInAllowlistEntries = allowlistEntries.reduce(
     (acc, entry) => acc + BigInt(entry.claim?.totalUnits || 0),
     0n,
   );
   const totalUnitsInBlueprints =
     BigInt(blueprints.length) * NUMBER_OF_UNITS_IN_HYPERCERT;
-  const totalUnitsInAllClaims =
-    claimsAndFractions
-      .map((claim) => claim.fractions)
-      .flat()
-      .reduce((acc, fraction) => acc + BigInt(fraction.units || 0), 0n) +
-    totalUnitsInBlueprints +
-    totalUnitsInAllowlistEntries;
+  const totalUnitsInClaims = claimsAndFractions
+    .map((claim) => claim.fractions)
+    .flat()
+    .reduce((acc, fraction) => acc + BigInt(fraction.units || 0), 0n);
+  const totalUnits =
+    totalUnitsInClaims + totalUnitsInBlueprints + totalUnitsInAllowlistEntries;
 
   // Calculate the amount of surface per display size unit
-  const displayPerUnit =
-    (totalUnitsInAllClaims * 10n ** 18n) / totalOfAllDisplaySizes;
+  const displayPerUnit = (totalUnits * 10n ** 18n) / totalOfAllDisplaySizes;
 
   const fractionsResults = claimsAndFractions.map(({ claim, fractions }) => {
     // The total number of 'display units' available for this claim
@@ -98,24 +96,26 @@ const processRegistryForDisplay = async (
 
     // Calculate the relative number of units per fraction
     return fractions.map((fraction) => ({
+      id: fraction.id,
       owner: fraction.owner.toLowerCase(),
       unitsAdjustedForDisplaySize:
         (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: false,
+      hypercertId: claim.hypercert_id,
+      hypercertOwnerAddress: claim.owner_id,
     }));
   });
 
   const allowlistResults = allowlistEntries.map((entry) => {
-    const totalDisplayUnitsForClaim = displayPerUnit;
-
     // Calculate the number of units per display unit
-    const displayUnitsPerUnit =
-      totalDisplayUnitsForClaim / BigInt(entry.claim.totalUnits);
+    const displayUnitsPerUnit = displayPerUnit / BigInt(entry.claim.totalUnits);
     return {
-      owner: entry.address?.toLowerCase(),
+      owner: entry.address!.toLowerCase(),
       unitsAdjustedForDisplaySize:
         (BigInt(entry.claim.totalUnits) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
+      hypercertId: entry.claimId,
+      hypercertOwnerAddress: undefined,
     };
   });
 
@@ -133,6 +133,8 @@ const processRegistryForDisplay = async (
       unitsAdjustedForDisplaySize:
         (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
+      hypercertId: blueprint.id,
+      hypercertOwnerAddress: undefined,
     };
   });
 
@@ -150,17 +152,64 @@ const processRegistryForDisplay = async (
     x.address.toLowerCase(),
   );
 
-  // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const content = _.chain({
-    ...fractions,
+  // Fetch fallback display data
+  const fractionSpecificDisplayDataResponse = await getFractionsDisplayData(
+    claimsAndFractions
+      .map((x) => x.fractions)
+      .flat()
+      .map((x) => x.id),
+    registry.chain_id,
+  );
+
+  const fractionsWithDisplayData = fractions.map((fraction) => {
+    const fractionSpecificDisplayData =
+      fractionSpecificDisplayDataResponse.data?.find(
+        (x) => x.fraction_id === fraction.id,
+      );
+    if (
+      fraction.owner === fraction.hypercertOwnerAddress &&
+      fractionSpecificDisplayData
+    ) {
+      return {
+        ...fraction,
+        displayData: fractionSpecificDisplayData,
+        ownerId: fractionSpecificDisplayData.value,
+      };
+    }
+    return {
+      ...fraction,
+      displayData: {
+        ...claimDisplayData[fraction.owner],
+        value: fraction.owner,
+      },
+      ownerId: fraction.owner,
+    };
+  });
+
+  const bluePrintsAndAllowlistWithDisplayData = [
     ...blueprintResults,
     ...allowlistResults,
-  })
-    .groupBy((fraction) => fraction.owner)
-    .mapValues((fractionsPerOwner, owner) => {
+  ].map((fraction) => {
+    return {
+      ...fraction,
+      displayData: {
+        ...claimDisplayData[fraction.owner],
+        value: fraction.owner,
+      },
+      ownerId: fraction.owner,
+    };
+  });
+
+  // Group by owner, merge with display data and calculate total value of all fractions per owner
+  const content = _.chain([
+    ...fractionsWithDisplayData,
+    ...bluePrintsAndAllowlistWithDisplayData,
+  ])
+    .groupBy((fraction) => fraction.ownerId)
+    .mapValues((fractionsPerOwner) => {
       return {
         fractions: fractionsPerOwner,
-        displayData: claimDisplayData[owner],
+        displayData: fractionsPerOwner[0].displayData,
         isBlueprint: fractionsPerOwner.every((x) => x.isBlueprint),
         totalValue: fractionsPerOwner.reduce(
           (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
@@ -170,10 +219,34 @@ const processRegistryForDisplay = async (
     })
     .value();
 
+  const byClaim = _.chain([
+    ...fractionsWithDisplayData,
+    ...bluePrintsAndAllowlistWithDisplayData,
+  ])
+    .groupBy((fraction) => fraction.hypercertId)
+    .mapValues((fractionsPerClaim) => {
+      return _.chain(fractionsPerClaim)
+        .groupBy((fraction) => fraction.ownerId)
+        .mapValues((fractionsPerOwner) => {
+          return {
+            fractions: fractionsPerOwner,
+            displayData: fractionsPerOwner[0].displayData,
+            isBlueprint: fractionsPerOwner.every((x) => x.isBlueprint),
+            totalValue: fractionsPerOwner.reduce(
+              (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
+              0n,
+            ),
+          };
+        })
+        .value();
+    })
+    .value();
+
   return {
     content,
     registry,
     label,
+    byClaim,
   };
 };
 
@@ -298,11 +371,24 @@ export const getEntriesDisplayData = async (addresses: string[]) => {
     .in("address", addresses);
 };
 
+export const getFractionsDisplayData = async (
+  fractionIds: string[],
+  chainId: number,
+) => {
+  return supabase
+    .from("fraction_sponsor_metadata")
+    .select("*")
+    .in("fraction_id", fractionIds)
+    .eq("chain_id", chainId);
+};
+
 export const registryContentItemToHyperboardEntry = ({
   isBlueprint,
   ...item
 }: {
-  displayData: DefaultSponsorMetadataEntity;
+  displayData: Omit<DefaultSponsorMetadataEntity, "address"> & {
+    value: string;
+  };
   isBlueprint: boolean;
   totalValue: bigint;
 }): HyperboardEntry => {
@@ -325,7 +411,7 @@ export const registryContentItemToHyperboardEntry = ({
     firstName: item.displayData.firstName,
     image: item.displayData.image,
     value: item.totalValue,
-    id: item.displayData.address,
+    id: item.displayData.value,
     isBlueprint,
   };
 };

@@ -39,3 +39,48 @@ export const useFetchHypercertFractionsByHypercertId = (
     enabled: !!client && !!chainId,
   });
 };
+
+export const useFetchHypercertFractionsByHypercertIds = (
+  hypercertIds: string[],
+) => {
+  const client = useHypercertClient();
+  const chainId = useChainId();
+
+  return useQuery({
+    queryKey: ["hypercert", "ids", hypercertIds, "chain", chainId, "fractions"],
+    queryFn: async () => {
+      if (!client) {
+        console.log("no client");
+        return null;
+      }
+
+      if (!chainId) {
+        console.log("no chainId");
+        return null;
+      }
+
+      return Promise.all(
+        hypercertIds.map(async (hypercertId) => {
+          const fractions = (await client.indexer.fractionsByClaim(
+            hypercertId,
+          )) as ClaimTokensByClaimQuery;
+          const totalUnitsForAllFractions = fractions.claimTokens.reduce(
+            (acc, cur) => acc + BigInt(cur.units),
+            0n,
+          );
+          return fractions.claimTokens.map((fraction) => ({
+            ...fraction,
+            hypercertId,
+            percentage: Number(
+              (BigInt(fraction.units) * 100n) / totalUnitsForAllFractions,
+            ),
+          }));
+        }),
+      );
+    },
+    enabled: !!client && !!chainId,
+    select: (data) => {
+      return data?.flat();
+    },
+  });
+};

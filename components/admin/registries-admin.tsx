@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useFetchMyRegistries } from "@/hooks/useFetchMyRegistries";
 import { CreateRegistryModal } from "@/components/admin/create-registry-modal";
-import { useState } from "react";
+import React, { useState } from "react";
 import { AiFillEdit } from "react-icons/ai";
 import { CreateUpdateRegistryFormValues } from "@/components/forms/create-or-update-registry-form";
 import { DeleteRegistryButton } from "@/components/admin/delete-registry-button";
@@ -31,6 +31,7 @@ import { formatAddress } from "@/utils/formatting";
 import { DeleteClaimButton } from "@/components/admin/delete-claim-button";
 import { DeleteBlueprintButton } from "@/components/admin/delete-blueprint-button";
 import { CreateBlueprintModal } from "@/components/admin/create-blueprint-modal";
+import { FractionDisplayDataAdmin } from "@/components/admin/fraction-display-data-admin";
 
 export const RegistriesAdmin = () => {
   const {
@@ -68,7 +69,7 @@ export const RegistriesAdmin = () => {
         </Button>
         {data?.data?.map(({ blueprints, ...registry }) => (
           <Card key={registry.id} p={4} width={"100%"}>
-            <VStack alignItems={"flex-start"}>
+            <VStack alignItems={"flex-start"} width={"100%"}>
               <HStack justifyContent={"space-between"} width={"100%"}>
                 <Heading>{registry.name}</Heading>
                 <HStack>
@@ -155,6 +156,7 @@ export const RegistriesAdmin = () => {
                   Create Blueprint
                 </Button>
               </Center>
+              <FractionDisplayDataAdmin registryId={registry.id} />
             </VStack>
           </Card>
         ))}
