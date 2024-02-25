@@ -52,12 +52,13 @@ async function applyGithubStrategy(
       const firstName = values.firstName || githubUsername;
       const lastName = values.lastName || githubUsername;
       const companyName = values.companyName || githubUsername;
+      const type = values.type || "person";
       const image = values.image || `https://github.com/${githubUsername}.png`;
       return {
         hypercert_id: hypercertId,
         fraction_id: fractionId,
         chain_id: chainId,
-        type: "person",
+        type,
         image,
         companyName,
         firstName,

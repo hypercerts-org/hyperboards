@@ -47,12 +47,13 @@ const DefaultDisplayDataForClaim = ({
   claimIds: string[];
 }) => {
   const chainId = useChainId();
-  const { data: fractions } =
+  const { data: fractions, refetch: refetchFractions } =
     useFetchHypercertFractionsByHypercertIds(claimIds);
-  const { data: fractionSpecificData } = useFetchFractionSpecificDisplay(
-    claimIds,
-    chainId,
-  );
+  const { data: fractionSpecificData, refetch: refetchFractionSpecificData } =
+    useFetchFractionSpecificDisplay(claimIds, chainId);
+  const refresh = async () => {
+    await Promise.all([refetchFractions, refetchFractionSpecificData]);
+  };
   const address = useAddress();
   const fractionsOwnedByAdmin = fractions
     ?.filter((fraction) => fraction.owner === address?.toLowerCase())
@@ -73,6 +74,7 @@ const DefaultDisplayDataForClaim = ({
     "lastName",
     "companyName",
     "image",
+    "type",
   ];
   const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
@@ -91,6 +93,7 @@ const DefaultDisplayDataForClaim = ({
       fraction.lastName,
       fraction.companyName,
       fraction.image,
+      fraction.type,
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${registryId}-fractions-template.csv`, `text/csv`);
@@ -121,9 +124,11 @@ const DefaultDisplayDataForClaim = ({
             firstName: row["firstName"],
             lastName: row["lastName"],
             companyName: row["companyName"],
+            type: row["type"],
           },
         })),
       });
+      await refresh();
     };
     reader.readAsText(file);
   };
@@ -146,6 +151,7 @@ const DefaultDisplayDataForClaim = ({
               <Th>Last name</Th>
               <Th>Company name</Th>
               <Th>Image URL</Th>
+              <Th>Type</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -162,6 +168,7 @@ const DefaultDisplayDataForClaim = ({
                 <Td>
                   <a href={fraction.image}>{fraction.image}</a>
                 </Td>
+                <Td>{fraction.type}</Td>
               </Tr>
             ))}
           </Tbody>
