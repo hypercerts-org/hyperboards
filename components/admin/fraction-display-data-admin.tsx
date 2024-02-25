@@ -57,9 +57,9 @@ const DefaultDisplayDataForClaim = ({
   const fractionsOwnedByAdmin = fractions
     ?.filter((fraction) => fraction.owner === address?.toLowerCase())
     .map((fraction) => ({
-      ...fraction,
       ...(fractionSpecificData?.find((x) => x.fraction_id === fraction.id) ||
         {}),
+      ...fraction,
     }));
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +69,10 @@ const DefaultDisplayDataForClaim = ({
     "fractionId",
     "Units",
     "githubUsername",
+    "firstName",
+    "lastName",
+    "companyName",
+    "image",
   ];
   const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
@@ -83,6 +87,10 @@ const DefaultDisplayDataForClaim = ({
       fraction.id,
       fraction.units,
       fraction.value || "",
+      fraction.firstName,
+      fraction.lastName,
+      fraction.companyName,
+      fraction.image,
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${registryId}-fractions-template.csv`, `text/csv`);
@@ -107,7 +115,13 @@ const DefaultDisplayDataForClaim = ({
           hypercertId: row["hypercertId"],
           fractionId: row["fractionId"],
           chainId: chainId,
-          values: { githubUsername: row["githubUsername"] },
+          values: {
+            githubUsername: row["githubUsername"],
+            image: row["image"],
+            firstName: row["firstName"],
+            lastName: row["lastName"],
+            companyName: row["companyName"],
+          },
         })),
       });
     };
@@ -128,6 +142,10 @@ const DefaultDisplayDataForClaim = ({
               <Th>Units</Th>
               <Th>Percentage</Th>
               <Th>GitHub username</Th>
+              <Th>First name</Th>
+              <Th>Last name</Th>
+              <Th>Company name</Th>
+              <Th>Image URL</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -138,6 +156,12 @@ const DefaultDisplayDataForClaim = ({
                 <Td>{fraction.units}</Td>
                 <Td>{fraction.percentage}</Td>
                 <Td>{fraction.value}</Td>
+                <Td>{fraction.firstName}</Td>
+                <Td>{fraction.lastName}</Td>
+                <Td>{fraction.companyName}</Td>
+                <Td>
+                  <a href={fraction.image}>{fraction.image}</a>
+                </Td>
               </Tr>
             ))}
           </Tbody>
