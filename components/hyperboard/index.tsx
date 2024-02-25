@@ -4,6 +4,7 @@ import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard/Tile";
 import { useSize } from "@chakra-ui/react-use-size";
 import { Flex, Text } from "@chakra-ui/react";
+import _ from "lodash";
 
 export interface HyperboardProps {
   data: HyperboardEntry[];
@@ -32,7 +33,7 @@ export const Hyperboard = (props: HyperboardProps) => {
     name: "root",
     image: "",
     value: 0,
-    children: props.data.map((d) => ({
+    children: _.sortBy(props.data, (x) => -x.value).map((d) => ({
       ...d,
     })),
   };
