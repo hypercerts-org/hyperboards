@@ -47,19 +47,20 @@ const DefaultDisplayDataForClaim = ({
   claimIds: string[];
 }) => {
   const chainId = useChainId();
-  const { data: fractions } =
+  const { data: fractions, refetch: refetchFractions } =
     useFetchHypercertFractionsByHypercertIds(claimIds);
-  const { data: fractionSpecificData } = useFetchFractionSpecificDisplay(
-    claimIds,
-    chainId,
-  );
+  const { data: fractionSpecificData, refetch: refetchFractionSpecificData } =
+    useFetchFractionSpecificDisplay(claimIds, chainId);
+  const refresh = async () => {
+    await Promise.all([refetchFractions, refetchFractionSpecificData]);
+  };
   const address = useAddress();
   const fractionsOwnedByAdmin = fractions
     ?.filter((fraction) => fraction.owner === address?.toLowerCase())
     .map((fraction) => ({
-      ...fraction,
       ...(fractionSpecificData?.find((x) => x.fraction_id === fraction.id) ||
         {}),
+      ...fraction,
     }));
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +70,11 @@ const DefaultDisplayDataForClaim = ({
     "fractionId",
     "Units",
     "githubUsername",
+    "firstName",
+    "lastName",
+    "companyName",
+    "image",
+    "type",
   ];
   const { mutateAsync } = useCreateOrUpdateFractionSpecificMetadata("github");
 
@@ -83,6 +89,11 @@ const DefaultDisplayDataForClaim = ({
       fraction.id,
       fraction.units,
       fraction.value || "",
+      fraction.firstName,
+      fraction.lastName,
+      fraction.companyName,
+      fraction.image,
+      fraction.type,
     ]);
     const csv = arrayToCsv(csvHeaders, csvData);
     downloadBlob(csv, `${registryId}-fractions-template.csv`, `text/csv`);
@@ -107,9 +118,17 @@ const DefaultDisplayDataForClaim = ({
           hypercertId: row["hypercertId"],
           fractionId: row["fractionId"],
           chainId: chainId,
-          values: { githubUsername: row["githubUsername"] },
+          values: {
+            githubUsername: row["githubUsername"],
+            image: row["image"],
+            firstName: row["firstName"],
+            lastName: row["lastName"],
+            companyName: row["companyName"],
+            type: row["type"],
+          },
         })),
       });
+      await refresh();
     };
     reader.readAsText(file);
   };
@@ -128,6 +147,11 @@ const DefaultDisplayDataForClaim = ({
               <Th>Units</Th>
               <Th>Percentage</Th>
               <Th>GitHub username</Th>
+              <Th>First name</Th>
+              <Th>Last name</Th>
+              <Th>Company name</Th>
+              <Th>Image URL</Th>
+              <Th>Type</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -138,6 +162,13 @@ const DefaultDisplayDataForClaim = ({
                 <Td>{fraction.units}</Td>
                 <Td>{fraction.percentage}</Td>
                 <Td>{fraction.value}</Td>
+                <Td>{fraction.firstName}</Td>
+                <Td>{fraction.lastName}</Td>
+                <Td>{fraction.companyName}</Td>
+                <Td>
+                  <a href={fraction.image}>{fraction.image}</a>
+                </Td>
+                <Td>{fraction.type}</Td>
               </Tr>
             ))}
           </Tbody>
