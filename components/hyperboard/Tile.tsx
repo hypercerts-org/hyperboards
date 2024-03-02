@@ -2,10 +2,10 @@ import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Flex, Image, Text } from "@chakra-ui/react";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
+import { useHover } from "@uidotdev/usehooks";
 
-const borderRadius = "8px";
+const borderRadius = "0px";
 const logosAndText = "black";
-const background = "white";
 
 export const Tile = ({
   entry,
@@ -53,7 +53,6 @@ export const Tile = ({
           position={"relative"}
           height={"100%"}
           justifyContent={"space-between"}
-          backgroundColor={entry.isBlueprint ? "gray.100" : undefined}
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
             <Text
@@ -106,7 +105,6 @@ export const Tile = ({
           position={"relative"}
           height={"100%"}
           justifyContent={"space-between"}
-          backgroundColor={entry.isBlueprint ? "gray.100" : undefined}
         >
           <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
             <Text
@@ -161,22 +159,35 @@ const Wrapper = ({
   top: number;
   left: number;
 } & React.PropsWithChildren) => {
+  const [ref, isHover] = useHover();
   return (
     <Flex
+      ref={ref}
       overflow={"hidden"}
       position="absolute"
       width={width}
       height={height}
       top={top}
       left={left}
-      backgroundColor={background}
       borderRadius={borderRadius}
-      _hover={{
-        backgroundColor: "gray.100",
-      }}
+      border={"1.2px solid white"}
     >
+      <Background hovering={isHover} />
       {children}
     </Flex>
+  );
+};
+
+const Background = ({ hovering }: { hovering: boolean }) => {
+  return (
+    <Flex
+      position={"absolute"}
+      width={"100%"}
+      height={"100%"}
+      backgroundColor={"white"}
+      borderRadius={borderRadius}
+      opacity={hovering ? 0.8 : 0.5}
+    />
   );
 };
 

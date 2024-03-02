@@ -43,6 +43,8 @@ export const HyperboardRenderer = ({
   const height = ((dimensions?.width || 1) / 16) * 9;
   const widthPerBoard = `${100 / (results?.length || 1)}%`;
 
+  const backgroundImageUrl = data?.hyperboard.background_image;
+
   const getWidth = (registryId: string) => {
     if (selectedRegistry === registryId) {
       return "100%";
@@ -63,12 +65,20 @@ export const HyperboardRenderer = ({
     }
   };
 
+  const backgroundStyle = backgroundImageUrl
+    ? {
+        backgroundImage: `url(${backgroundImageUrl})`,
+      }
+    : {
+        backgroundColor: "black",
+      };
+
   return (
     <>
       <Flex
         ref={containerRef}
         overflow={"hidden"}
-        backgroundColor={"black"}
+        {...backgroundStyle}
         aspectRatio={"16 / 9"}
         {...(fullScreen
           ? {
