@@ -27,7 +27,7 @@ export const Hyperboard = (props: HyperboardProps) => {
 
   const [leaves, setLeaves] = useState<Leaf[]>([]);
 
-  const padding = 1;
+  const padding = 0;
 
   const formattedData = {
     name: "root",
@@ -92,8 +92,7 @@ export const Hyperboard = (props: HyperboardProps) => {
   return (
     <Flex
       width={"100%"}
-      padding={"1px"}
-      backgroundColor={"black"}
+      padding={"0px"}
       flexDirection={"column"}
       overflow={"hidden"}
       maxHeight={props.height}
@@ -107,6 +106,7 @@ export const Hyperboard = (props: HyperboardProps) => {
         textTransform={"uppercase"}
         color={"white"}
         fontFamily={"Director-Variable"}
+        backgroundColor={"black"}
       >
         <Text>{props.label}</Text>
         <Text ml={6}>{props.data.length}</Text>
@@ -119,7 +119,6 @@ export const Hyperboard = (props: HyperboardProps) => {
           height: "100%",
           overflow: "hidden",
           position: "relative",
-          backgroundColor: "black",
         }}
       >
         {leaves.map((leaf, index) => {
