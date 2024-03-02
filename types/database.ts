@@ -161,6 +161,7 @@ export interface Database {
           firstName: string | null
           fraction_id: string
           hypercert_id: string
+          id: string
           image: string
           lastName: string | null
           strategy: string
@@ -174,6 +175,7 @@ export interface Database {
           firstName?: string | null
           fraction_id: string
           hypercert_id: string
+          id?: string
           image: string
           lastName?: string | null
           strategy: string
@@ -187,6 +189,7 @@ export interface Database {
           firstName?: string | null
           fraction_id?: string
           hypercert_id?: string
+          id?: string
           image?: string
           lastName?: string | null
           strategy?: string
@@ -235,6 +238,7 @@ export interface Database {
       hyperboards: {
         Row: {
           admin_id: string
+          background_image: string | null
           chain_id: number
           created_at: string | null
           id: string
@@ -242,6 +246,7 @@ export interface Database {
         }
         Insert: {
           admin_id: string
+          background_image?: string | null
           chain_id: number
           created_at?: string | null
           id?: string
@@ -249,6 +254,7 @@ export interface Database {
         }
         Update: {
           admin_id?: string
+          background_image?: string | null
           chain_id?: number
           created_at?: string | null
           id?: string
