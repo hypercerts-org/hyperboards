@@ -244,6 +244,7 @@ export interface Database {
           grayscale_images: boolean
           id: string
           name: string
+          tile_border_color: string | null
         }
         Insert: {
           admin_id: string
@@ -253,6 +254,7 @@ export interface Database {
           grayscale_images?: boolean
           id?: string
           name: string
+          tile_border_color?: string | null
         }
         Update: {
           admin_id?: string
@@ -262,6 +264,7 @@ export interface Database {
           grayscale_images?: boolean
           id?: string
           name?: string
+          tile_border_color?: string | null
         }
         Relationships: []
       }

@@ -45,6 +45,7 @@ export const HyperboardRenderer = ({
 
   const backgroundImageUrl = data?.hyperboard.background_image;
   const grayscaleImages = !!data?.hyperboard.grayscale_images;
+  const borderColor = data?.hyperboard.tile_border_color || undefined;
 
   const getWidth = (registryId: string) => {
     if (selectedRegistry === registryId) {
@@ -128,6 +129,7 @@ export const HyperboardRenderer = ({
                   label={x.label || "Unlabelled"}
                   height={height}
                   grayscaleImages={grayscaleImages}
+                  borderColor={borderColor}
                   data={
                     (Object.values(x.content) || {})
                       .filter((x) => x.displayData)

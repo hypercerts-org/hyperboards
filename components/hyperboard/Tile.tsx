@@ -20,6 +20,7 @@ export const Tile = ({
   left: number;
   padding: number;
   grayScale?: boolean;
+  borderColor?: string;
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
   if (entry.type === "company") {
@@ -158,11 +159,13 @@ const Wrapper = ({
   top,
   left,
   children,
+  borderColor = "white",
 }: {
   width: number;
   height: number;
   top: number;
   left: number;
+  borderColor?: string;
 } & React.PropsWithChildren) => {
   const [ref, isHover] = useHover();
   return (
@@ -175,7 +178,7 @@ const Wrapper = ({
       top={top}
       left={left}
       borderRadius={borderRadius}
-      border={"1.2px solid white"}
+      border={`1.2px solid ${borderColor}`}
     >
       <Background hovering={isHover} />
       {children}
