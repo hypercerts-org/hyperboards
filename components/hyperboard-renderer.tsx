@@ -68,6 +68,7 @@ export const HyperboardRenderer = ({
   const backgroundStyle = backgroundImageUrl
     ? {
         backgroundImage: `url(${backgroundImageUrl})`,
+        backgroundSize: "cover",
       }
     : {
         backgroundColor: "black",
