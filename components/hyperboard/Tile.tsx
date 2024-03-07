@@ -10,6 +10,7 @@ const logosAndText = "black";
 export const Tile = ({
   entry,
   padding,
+  grayScale = true,
   ...wrapperProps
 }: {
   entry: HyperboardEntry;
@@ -18,6 +19,7 @@ export const Tile = ({
   top: number;
   left: number;
   padding: number;
+  grayScale?: boolean;
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
   if (entry.type === "company") {
@@ -38,6 +40,7 @@ export const Tile = ({
             maxHeight={"80%"}
             src={entry.image}
             alt={entry.image}
+            filter={grayScale ? `grayScale(${opacity})` : undefined}
           />
         </Flex>
       </Wrapper>
@@ -83,6 +86,7 @@ export const Tile = ({
             maxWidth={`${layout.image}px`}
             maxHeight={`${layout.image}px`}
             objectFit={"cover"}
+            filter={grayScale ? `grayScale(${opacity})` : undefined}
           />
         </Flex>
         {entry.isBlueprint && (
@@ -140,6 +144,7 @@ export const Tile = ({
             width={`${layout.image}px`}
             maxWidth={`${layout.image}px`}
             maxHeight={`${layout.image}px`}
+            filter={grayScale ? `grayScale(${opacity})` : undefined}
           />
         </Flex>
       </Wrapper>

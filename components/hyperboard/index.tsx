@@ -11,6 +11,7 @@ export interface HyperboardProps {
   height: number;
   label: string;
   onClickLabel: () => void;
+  grayscaleImages?: boolean;
 }
 
 type Leaf = {
@@ -132,6 +133,7 @@ export const Hyperboard = (props: HyperboardProps) => {
               height={leaf.y1 - leaf.y0}
               top={leaf.y0}
               left={leaf.x0 * ratio}
+              grayScale={props.grayscaleImages}
             />
           );
         })}

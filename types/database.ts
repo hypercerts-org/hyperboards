@@ -241,6 +241,7 @@ export interface Database {
           background_image: string | null
           chain_id: number
           created_at: string | null
+          grayscale_images: boolean
           id: string
           name: string
         }
@@ -249,6 +250,7 @@ export interface Database {
           background_image?: string | null
           chain_id: number
           created_at?: string | null
+          grayscale_images?: boolean
           id?: string
           name: string
         }
@@ -257,6 +259,7 @@ export interface Database {
           background_image?: string | null
           chain_id?: number
           created_at?: string | null
+          grayscale_images?: boolean
           id?: string
           name?: string
         }
