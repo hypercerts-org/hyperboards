@@ -1,11 +1,23 @@
 import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Flex, Image, Text, Tooltip } from "@chakra-ui/react";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useHover } from "@uidotdev/usehooks";
+import { isAddress } from "viem";
+import { formatAddress } from "@/utils/formatting";
 
 const borderRadius = "0px";
 const logosAndText = "black";
+
+const formatTooltipLabel = ({ companyName, id }: HyperboardEntry) => {
+  if (companyName === id) {
+    return `${companyName}`;
+  }
+
+  const formattedId = isAddress(id) ? formatAddress(id) : id;
+
+  return `${companyName}, ${formattedId}`;
+};
 
 export const Tile = ({
   entry,
@@ -23,6 +35,7 @@ export const Tile = ({
   borderColor?: string;
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
+  const toolTipLabel = formatTooltipLabel(entry);
   if (entry.type === "company") {
     return (
       <Wrapper {...wrapperProps}>
@@ -34,15 +47,17 @@ export const Tile = ({
           alignItems="center"
           justifyContent="center"
         >
-          <Image
-            opacity={opacity}
-            className={"company-logo"}
-            maxWidth={"60%"}
-            maxHeight={"80%"}
-            src={entry.image}
-            alt={entry.image}
-            filter={grayScale ? `grayScale(${opacity})` : undefined}
-          />
+          <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+            <Image
+              opacity={opacity}
+              className={"company-logo"}
+              maxWidth={"60%"}
+              maxHeight={"80%"}
+              src={entry.image}
+              alt={entry.image}
+              filter={grayScale ? `grayScale(${opacity})` : undefined}
+            />
+          </Tooltip>
         </Flex>
       </Wrapper>
     );
@@ -51,53 +66,57 @@ export const Tile = ({
   if (entry.type === "person") {
     const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
     return (
-      <Wrapper {...wrapperProps}>
-        <Flex
-          width={"100%"}
-          position={"relative"}
-          height={"100%"}
-          justifyContent={"space-between"}
-        >
-          <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
-            <Text
-              fontSize={`${layout.font}px`}
-              color={logosAndText}
-              fontFamily={"Switzer"}
-              opacity={opacity}
-            >
-              {entry.firstName}
-            </Text>
-            <Text
-              opacity={opacity}
-              fontSize={`${layout.font}px`}
-              color={logosAndText}
-            >
-              {entry.lastName}
-            </Text>
+      <Tooltip label={"Test label"} aria-label={entry.companyName || ""}>
+        <Wrapper {...wrapperProps}>
+          <Flex
+            width={"100%"}
+            position={"relative"}
+            height={"100%"}
+            justifyContent={"space-between"}
+          >
+            <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
+              <Text
+                fontSize={`${layout.font}px`}
+                color={logosAndText}
+                fontFamily={"Switzer"}
+                opacity={opacity}
+              >
+                {entry.firstName}
+              </Text>
+              <Text
+                opacity={opacity}
+                fontSize={`${layout.font}px`}
+                color={logosAndText}
+              >
+                {entry.lastName}
+              </Text>
+            </Flex>
+            <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+              <Image
+                opacity={opacity}
+                borderTopRightRadius={borderRadius}
+                borderBottomLeftRadius={borderRadius}
+                marginBottom={"auto"}
+                src={entry.image}
+                alt={"Test alt"}
+                height={`${layout.image}px`}
+                width={`${layout.image}px`}
+                maxWidth={`${layout.image}px`}
+                maxHeight={`${layout.image}px`}
+                objectFit={"cover"}
+                filter={grayScale ? `grayScale(${opacity})` : undefined}
+              />
+            </Tooltip>
           </Flex>
-          <Image
-            opacity={opacity}
-            borderTopRightRadius={borderRadius}
-            borderBottomLeftRadius={borderRadius}
-            marginBottom={"auto"}
-            src={entry.image}
-            alt={"Test alt"}
-            height={`${layout.image}px`}
-            width={`${layout.image}px`}
-            maxWidth={`${layout.image}px`}
-            maxHeight={`${layout.image}px`}
-            objectFit={"cover"}
-            filter={grayScale ? `grayScale(${opacity})` : undefined}
-          />
-        </Flex>
-        {entry.isBlueprint && (
-          <BlueprintTooltip
-            position={"absolute"}
-            top={padding}
-            left={padding}
-          />
-        )}
-      </Wrapper>
+          {entry.isBlueprint && (
+            <BlueprintTooltip
+              position={"absolute"}
+              top={padding}
+              left={padding}
+            />
+          )}
+        </Wrapper>
+      </Tooltip>
     );
   }
 
@@ -132,21 +151,23 @@ export const Tile = ({
               </Text>
             )}
           </Flex>
-          <Image
-            position={"absolute"}
-            right={0}
-            top={0}
-            borderTopRightRadius={borderRadius}
-            borderBottomLeftRadius={borderRadius}
-            marginBottom={"auto"}
-            src={entry.image}
-            alt={"Test alt"}
-            height={`${layout.image}px`}
-            width={`${layout.image}px`}
-            maxWidth={`${layout.image}px`}
-            maxHeight={`${layout.image}px`}
-            filter={grayScale ? `grayScale(${opacity})` : undefined}
-          />
+          <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+            <Image
+              position={"absolute"}
+              right={0}
+              top={0}
+              borderTopRightRadius={borderRadius}
+              borderBottomLeftRadius={borderRadius}
+              marginBottom={"auto"}
+              src={entry.image}
+              alt={"Test alt"}
+              height={`${layout.image}px`}
+              width={`${layout.image}px`}
+              maxWidth={`${layout.image}px`}
+              maxHeight={`${layout.image}px`}
+              filter={grayScale ? `grayScale(${opacity})` : undefined}
+            />
+          </Tooltip>
         </Flex>
       </Wrapper>
     );
