@@ -365,21 +365,19 @@ export const useFetchHyperboardContents = (
 };
 
 export const getEntriesDisplayData = async (addresses: string[]) => {
-  return supabase
-    .from("default_sponsor_metadata")
-    .select("*")
-    .in("address", addresses);
+  return supabase.rpc("default_sponsor_metadata_by_address", {
+    addresses,
+  });
 };
 
 export const getFractionsDisplayData = async (
   fractionIds: string[],
   chainId: number,
 ) => {
-  return supabase
-    .from("fraction_sponsor_metadata")
-    .select("*")
-    .in("fraction_id", fractionIds)
-    .eq("chain_id", chainId);
+  return supabase.rpc("fraction_sponsor_metadata_by_fraction_id", {
+    fraction_ids: fractionIds,
+    chain_id: chainId,
+  });
 };
 
 export const registryContentItemToHyperboardEntry = ({
