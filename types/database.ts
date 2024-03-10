@@ -70,12 +70,6 @@ export interface Database {
             referencedColumns: ["address"]
           },
           {
-            foreignKeyName: "blueprints_minter_address_fkey"
-            columns: ["minter_address"]
-            referencedRelation: "default_sponsor_metadata"
-            referencedColumns: ["address"]
-          },
-          {
             foreignKeyName: "blueprints_registry_id_fkey"
             columns: ["registry_id"]
             referencedRelation: "registries"
@@ -228,7 +222,7 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "hyperboard_registries_registry_id_fkey"
+            foreignKeyName: "hyperboard_registries_registries_id_fk"
             columns: ["registry_id"]
             referencedRelation: "registries"
             referencedColumns: ["id"]
@@ -348,42 +342,7 @@ export interface Database {
       }
     }
     Views: {
-      blueprints_with_sponsor_metadata: {
-        Row: {
-          admin_id: string | null
-          companyName: string | null
-          created_at: string | null
-          display_size: number | null
-          firstName: string | null
-          form_values: Json | null
-          id: number | null
-          image: string | null
-          lastName: string | null
-          minter_address: string | null
-          registry_id: string | null
-          type: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "blueprints_admin_id_fkey"
-            columns: ["admin_id"]
-            referencedRelation: "users"
-            referencedColumns: ["address"]
-          },
-          {
-            foreignKeyName: "blueprints_minter_address_fkey"
-            columns: ["minter_address"]
-            referencedRelation: "default_sponsor_metadata"
-            referencedColumns: ["address"]
-          },
-          {
-            foreignKeyName: "blueprints_registry_id_fkey"
-            columns: ["registry_id"]
-            referencedRelation: "registries"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       add_claim_from_blueprint: {
@@ -396,6 +355,40 @@ export interface Database {
           blueprint_id: number
         }
         Returns: string
+      }
+      default_sponsor_metadata_by_address: {
+        Args: {
+          addresses: string[]
+        }
+        Returns: {
+          address: string
+          companyName: string | null
+          created_at: string
+          firstName: string | null
+          image: string
+          lastName: string | null
+          type: string
+        }[]
+      }
+      fraction_sponsor_metadata_by_fraction_id: {
+        Args: {
+          fraction_ids: string[]
+          chain_id: number
+        }
+        Returns: {
+          chain_id: number
+          companyName: string | null
+          created_at: string
+          firstName: string | null
+          fraction_id: string
+          hypercert_id: string
+          id: string
+          image: string
+          lastName: string | null
+          strategy: string
+          type: string
+          value: string
+        }[]
       }
     }
     Enums: {
