@@ -131,9 +131,9 @@ export const HyperboardRenderer = ({
                   grayscaleImages={grayscaleImages}
                   borderColor={borderColor}
                   data={
-                    (Object.values(x.content) || {})
-                      .filter((x) => x.displayData)
-                      .map(registryContentItemToHyperboardEntry) || []
+                    (Object.values(x.content) || {}).map(
+                      registryContentItemToHyperboardEntry,
+                    ) || []
                   }
                 />
               </Flex>

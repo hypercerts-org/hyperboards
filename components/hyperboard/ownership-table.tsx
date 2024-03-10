@@ -9,6 +9,8 @@ import { useFetchHyperboardContents } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
+import { formatAddress } from "@/utils/formatting";
+import { isAddress } from "viem";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -417,16 +419,30 @@ const ClaimOwnershipOverview = ({
 };
 
 const formatMetadata = (
-  displayMetadata: Partial<DefaultSponsorMetadataEntity>,
+  displayMetadata: Partial<DefaultSponsorMetadataEntity> & { value: string },
 ) => {
+  console.log(displayMetadata);
   if (!displayMetadata) {
     return "Unknown";
   }
-  const { companyName, type, firstName, lastName } = displayMetadata;
+  const { companyName, type, firstName, lastName, address, value } =
+    displayMetadata;
 
   if (type === "company") {
     return companyName;
   }
 
-  return `${firstName} ${lastName}`;
+  if (firstName && lastName) {
+    return `${firstName} ${lastName}`;
+  }
+
+  if (address) {
+    return formatAddress(address);
+  }
+
+  if (isAddress(value)) {
+    return formatAddress(value);
+  }
+
+  return value;
 };
