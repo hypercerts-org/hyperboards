@@ -241,24 +241,30 @@ export interface Database {
           background_image: string | null
           chain_id: number
           created_at: string | null
+          grayscale_images: boolean
           id: string
           name: string
+          tile_border_color: string | null
         }
         Insert: {
           admin_id: string
           background_image?: string | null
           chain_id: number
           created_at?: string | null
+          grayscale_images?: boolean
           id?: string
           name: string
+          tile_border_color?: string | null
         }
         Update: {
           admin_id?: string
           background_image?: string | null
           chain_id?: number
           created_at?: string | null
+          grayscale_images?: boolean
           id?: string
           name?: string
+          tile_border_color?: string | null
         }
         Relationships: []
       }

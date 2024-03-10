@@ -1,15 +1,29 @@
 import React from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Center, Flex, Image, Text, Tooltip } from "@chakra-ui/react";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useHover } from "@uidotdev/usehooks";
+import { isAddress } from "viem";
+import { formatAddress } from "@/utils/formatting";
+import { useEnsName } from "wagmi";
 
 const borderRadius = "0px";
 const logosAndText = "black";
 
+const formatTooltipLabel = ({ companyName, id }: HyperboardEntry) => {
+  if (companyName === id) {
+    return `${companyName}`;
+  }
+
+  const formattedId = isAddress(id) ? formatAddress(id) : id;
+
+  return `${companyName}, ${formattedId}`;
+};
+
 export const Tile = ({
   entry,
   padding,
+  grayScale = true,
   ...wrapperProps
 }: {
   entry: HyperboardEntry;
@@ -18,8 +32,15 @@ export const Tile = ({
   top: number;
   left: number;
   padding: number;
+  grayScale?: boolean;
+  borderColor?: string;
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
+  const toolTipLabel = formatTooltipLabel(entry);
+
+  const showBackupImage =
+    !entry.image && !entry.companyName && !entry.firstName && !entry.lastName;
+
   if (entry.type === "company") {
     return (
       <Wrapper {...wrapperProps}>
@@ -31,14 +52,21 @@ export const Tile = ({
           alignItems="center"
           justifyContent="center"
         >
-          <Image
-            opacity={opacity}
-            className={"company-logo"}
-            maxWidth={"60%"}
-            maxHeight={"80%"}
-            src={entry.image}
-            alt={entry.image}
-          />
+          {showBackupImage ? (
+            <BackupForImage id={entry.id} />
+          ) : (
+            <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+              <Image
+                opacity={opacity}
+                className={"company-logo"}
+                maxWidth={"60%"}
+                maxHeight={"80%"}
+                src={entry.image}
+                alt={entry.image}
+                filter={grayScale ? `grayScale(${opacity})` : undefined}
+              />
+            </Tooltip>
+          )}
         </Flex>
       </Wrapper>
     );
@@ -48,43 +76,56 @@ export const Tile = ({
     const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
     return (
       <Wrapper {...wrapperProps}>
-        <Flex
-          width={"100%"}
-          position={"relative"}
-          height={"100%"}
-          justifyContent={"space-between"}
-        >
-          <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
-            <Text
-              fontSize={`${layout.font}px`}
-              color={logosAndText}
-              fontFamily={"Switzer"}
-              opacity={opacity}
-            >
-              {entry.firstName}
-            </Text>
-            <Text
-              opacity={opacity}
-              fontSize={`${layout.font}px`}
-              color={logosAndText}
-            >
-              {entry.lastName}
-            </Text>
+        {showBackupImage ? (
+          <BackupForImage id={entry.id} />
+        ) : (
+          <Flex
+            width={"100%"}
+            position={"relative"}
+            height={"100%"}
+            justifyContent={"space-between"}
+          >
+            <>
+              <Flex
+                flexDirection={"column"}
+                marginTop={"auto"}
+                padding={padding}
+              >
+                <Text
+                  fontSize={`${layout.font}px`}
+                  color={logosAndText}
+                  fontFamily={"Switzer"}
+                  opacity={opacity}
+                >
+                  {entry.firstName}
+                </Text>
+                <Text
+                  opacity={opacity}
+                  fontSize={`${layout.font}px`}
+                  color={logosAndText}
+                >
+                  {entry.lastName}
+                </Text>
+              </Flex>
+              <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+                <Image
+                  opacity={opacity}
+                  borderTopRightRadius={borderRadius}
+                  borderBottomLeftRadius={borderRadius}
+                  marginBottom={"auto"}
+                  src={entry.image}
+                  alt={"Test alt"}
+                  height={`${layout.image}px`}
+                  width={`${layout.image}px`}
+                  maxWidth={`${layout.image}px`}
+                  maxHeight={`${layout.image}px`}
+                  objectFit={"cover"}
+                  filter={grayScale ? `grayScale(${opacity})` : undefined}
+                />
+              </Tooltip>
+            </>
           </Flex>
-          <Image
-            opacity={opacity}
-            borderTopRightRadius={borderRadius}
-            borderBottomLeftRadius={borderRadius}
-            marginBottom={"auto"}
-            src={entry.image}
-            alt={"Test alt"}
-            height={`${layout.image}px`}
-            width={`${layout.image}px`}
-            maxWidth={`${layout.image}px`}
-            maxHeight={`${layout.image}px`}
-            objectFit={"cover"}
-          />
-        </Flex>
+        )}
         {entry.isBlueprint && (
           <BlueprintTooltip
             position={"absolute"}
@@ -127,24 +168,60 @@ export const Tile = ({
               </Text>
             )}
           </Flex>
-          <Image
-            position={"absolute"}
-            right={0}
-            top={0}
-            borderTopRightRadius={borderRadius}
-            borderBottomLeftRadius={borderRadius}
-            marginBottom={"auto"}
-            src={entry.image}
-            alt={"Test alt"}
-            height={`${layout.image}px`}
-            width={`${layout.image}px`}
-            maxWidth={`${layout.image}px`}
-            maxHeight={`${layout.image}px`}
-          />
+          {showBackupImage ? (
+            <BackupForImage id={entry.id} />
+          ) : (
+            <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+              <Image
+                position={"absolute"}
+                right={0}
+                top={0}
+                borderTopRightRadius={borderRadius}
+                borderBottomLeftRadius={borderRadius}
+                marginBottom={"auto"}
+                src={entry.image}
+                alt={"Test alt"}
+                height={`${layout.image}px`}
+                width={`${layout.image}px`}
+                maxWidth={`${layout.image}px`}
+                maxHeight={`${layout.image}px`}
+                filter={grayScale ? `grayScale(${opacity})` : undefined}
+              />
+            </Tooltip>
+          )}
         </Flex>
       </Wrapper>
     );
   }
+
+  return (
+    <Wrapper {...wrapperProps}>
+      <BackupForImage id={entry.id} />
+    </Wrapper>
+  );
+};
+
+const BackupForImage = ({ id }: { id: string }) => {
+  const { data: ensName, isLoading } = useEnsName({
+    address: isAddress(id) ? id : undefined,
+    chainId: 1,
+    query: {
+      enabled: isAddress(id),
+    },
+  });
+  const fallback = isAddress(id) ? formatAddress(id) : id;
+
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <Center height={"100%"} width={"100%"}>
+      <Text color="black" opacity={0.99} fontSize={"xl"}>
+        {ensName || fallback}
+      </Text>
+    </Center>
+  );
 };
 
 const Wrapper = ({
@@ -153,11 +230,13 @@ const Wrapper = ({
   top,
   left,
   children,
+  borderColor = "white",
 }: {
   width: number;
   height: number;
   top: number;
   left: number;
+  borderColor?: string;
 } & React.PropsWithChildren) => {
   const [ref, isHover] = useHover();
   return (
@@ -170,7 +249,7 @@ const Wrapper = ({
       top={top}
       left={left}
       borderRadius={borderRadius}
-      border={"1.2px solid white"}
+      border={`1.2px solid ${borderColor}`}
     >
       <Background hovering={isHover} />
       {children}

@@ -44,6 +44,8 @@ export const HyperboardRenderer = ({
   const widthPerBoard = `${100 / (results?.length || 1)}%`;
 
   const backgroundImageUrl = data?.hyperboard.background_image;
+  const grayscaleImages = !!data?.hyperboard.grayscale_images;
+  const borderColor = data?.hyperboard.tile_border_color || undefined;
 
   const getWidth = (registryId: string) => {
     if (selectedRegistry === registryId) {
@@ -68,6 +70,7 @@ export const HyperboardRenderer = ({
   const backgroundStyle = backgroundImageUrl
     ? {
         backgroundImage: `url(${backgroundImageUrl})`,
+        backgroundSize: "cover",
       }
     : {
         backgroundColor: "black",
@@ -125,10 +128,12 @@ export const HyperboardRenderer = ({
                   }
                   label={x.label || "Unlabelled"}
                   height={height}
+                  grayscaleImages={grayscaleImages}
+                  borderColor={borderColor}
                   data={
-                    (Object.values(x.content) || {})
-                      .filter((x) => x.displayData)
-                      .map(registryContentItemToHyperboardEntry) || []
+                    (Object.values(x.content) || {}).map(
+                      registryContentItemToHyperboardEntry,
+                    ) || []
                   }
                 />
               </Flex>
