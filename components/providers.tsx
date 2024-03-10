@@ -5,7 +5,7 @@ import {
   useWalletClient,
   WagmiProvider,
 } from "wagmi";
-import { sepolia, optimism } from "viem/chains";
+import { sepolia, optimism, mainnet } from "viem/chains";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -48,7 +48,7 @@ const projectId = WALLETCONNECT_ID;
 const config = getDefaultConfig({
   projectId,
   appName: "Hyperboards",
-  chains: [sepolia, optimism],
+  chains: [sepolia, optimism, mainnet],
   ssr: true,
   wallets: [
     {

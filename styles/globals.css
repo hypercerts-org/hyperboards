@@ -106,3 +106,7 @@ a {
   /*background-color: var(--tertiary);*/
 }
 
+/* TODO: Temporary hack to remove ethereum button from chain selector */
+button[data-testid='rk-chain-option-1'] {
+  display: none !important;
+}

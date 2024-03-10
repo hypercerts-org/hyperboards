@@ -41,6 +41,8 @@ export const Tile = ({
   const showBackupImage =
     !entry.image && !entry.companyName && !entry.firstName && !entry.lastName;
 
+  const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
+
   if (entry.type === "company") {
     return (
       <Wrapper {...wrapperProps}>
@@ -53,7 +55,7 @@ export const Tile = ({
           justifyContent="center"
         >
           {showBackupImage ? (
-            <BackupForImage id={entry.id} />
+            <BackupForImage id={entry.id} fontSize={layout.font} />
           ) : (
             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
               <Image
@@ -77,7 +79,7 @@ export const Tile = ({
     return (
       <Wrapper {...wrapperProps}>
         {showBackupImage ? (
-          <BackupForImage id={entry.id} />
+          <BackupForImage id={entry.id} fontSize={layout.font} />
         ) : (
           <Flex
             width={"100%"}
@@ -169,7 +171,7 @@ export const Tile = ({
             )}
           </Flex>
           {showBackupImage ? (
-            <BackupForImage id={entry.id} />
+            <BackupForImage id={entry.id} fontSize={layout.font} />
           ) : (
             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
               <Image
@@ -196,18 +198,15 @@ export const Tile = ({
 
   return (
     <Wrapper {...wrapperProps}>
-      <BackupForImage id={entry.id} />
+      <BackupForImage id={entry.id} fontSize={layout.font} />
     </Wrapper>
   );
 };
 
-const BackupForImage = ({ id }: { id: string }) => {
-  const { data: ensName, isLoading } = useEnsName({
+const BackupForImage = ({ id, fontSize }: { id: string; fontSize: number }) => {
+  const { data, isLoading } = useEnsName({
     address: isAddress(id) ? id : undefined,
     chainId: 1,
-    query: {
-      enabled: isAddress(id),
-    },
   });
   const fallback = isAddress(id) ? formatAddress(id) : id;
 
@@ -217,8 +216,8 @@ const BackupForImage = ({ id }: { id: string }) => {
 
   return (
     <Center height={"100%"} width={"100%"}>
-      <Text color="black" opacity={0.99} fontSize={"xl"}>
-        {ensName || fallback}
+      <Text color="black" opacity={0.99} fontSize={fontSize}>
+        {data || fallback}
       </Text>
     </Center>
   );
