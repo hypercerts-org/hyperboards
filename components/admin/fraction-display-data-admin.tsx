@@ -17,7 +17,6 @@ import { downloadBlob } from "@/utils/downloadBlob";
 import { arrayToCsv, parseCsv } from "@/utils/csv";
 import React, { useRef } from "react";
 import { useCreateOrUpdateFractionSpecificMetadata } from "@/hooks/useCreateOrUpdateFractionSpecificMetadata";
-import { useChainId } from "wagmi";
 import { useFetchFractionSpecificDisplay } from "@/hooks/useFetchFractionSpecificDisplay";
 
 export const FractionDisplayDataAdmin = ({
@@ -46,7 +45,8 @@ const DefaultDisplayDataForClaim = ({
   registryId: string;
   claimIds: string[];
 }) => {
-  const chainId = useChainId();
+  const { data: registryData } = useFetchRegistryById(registryId);
+  const chainId = registryData?.data?.chain_id;
   const { data: fractions, refetch: refetchFractions } =
     useFetchHypercertFractionsByHypercertIds(claimIds);
   const { data: fractionSpecificData, refetch: refetchFractionSpecificData } =
@@ -107,6 +107,9 @@ const DefaultDisplayDataForClaim = ({
     const file = e.target.files?.[0];
     if (!file) {
       return;
+    }
+    if (!chainId) {
+      throw new Error("Unknown chain ID");
     }
     const reader = new FileReader();
     reader.onload = async (event) => {

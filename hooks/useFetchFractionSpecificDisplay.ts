@@ -5,7 +5,7 @@ import { ClaimByIdQuery } from "@hypercerts-org/sdk";
 
 export const useFetchFractionSpecificDisplay = (
   claimIds: string[],
-  chainId: number,
+  chainId?: number,
 ) => {
   const client = useHypercertClient();
 
@@ -16,6 +16,10 @@ export const useFetchFractionSpecificDisplay = (
 
       if (!client) {
         throw new Error("Hypercert client not available");
+      }
+
+      if (!chainId) {
+        throw new Error("Chain ID not available");
       }
 
       const metadata = await Promise.all(
@@ -56,5 +60,6 @@ export const useFetchFractionSpecificDisplay = (
         };
       });
     },
+    enabled: !!chainId,
   });
 };
