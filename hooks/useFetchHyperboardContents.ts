@@ -143,7 +143,7 @@ const processRegistryForDisplay = async (
   const ownerAddresses = _.uniq([
     ...fractions.map((x) => x.owner),
     ...allowlistResults.map((x) => x.owner),
-    blueprints.map((b) => b.minter_address.toLowerCase()),
+    ...blueprints.map((b) => b.minter_address.toLowerCase()),
   ]) as string[];
 
   // Fetch display data for all owners
