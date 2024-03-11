@@ -375,8 +375,8 @@ export const getFractionsDisplayData = async (
   chainId: number,
 ) => {
   return supabase.rpc("fraction_sponsor_metadata_by_fraction_id", {
-    fraction_ids: fractionIds,
-    chain_id: chainId,
+    fractions: fractionIds,
+    chain: chainId,
   });
 };
 

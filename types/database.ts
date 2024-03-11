@@ -372,8 +372,8 @@ export interface Database {
       }
       fraction_sponsor_metadata_by_fraction_id: {
         Args: {
-          fraction_ids: string[]
-          chain_id: number
+          fractions: string[]
+          chain: number
         }
         Returns: {
           chain_id: number
