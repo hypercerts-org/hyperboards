@@ -111,7 +111,6 @@ export default async function handler(
 
   if (req.method === "POST") {
     // Validate inputs
-    console.log(req.body);
     const parsedBody = inputSchemaPost.safeParse(req.body);
     if (!parsedBody.success) {
       console.error(parsedBody.error);
@@ -122,15 +121,22 @@ export default async function handler(
       });
     }
     const { signature, chainId, ...makerOrder } = parsedBody.data;
+    const typedData = getTypedData(chainId);
 
-    console.log("[marketplace-api] Verifying signature", makerTypes, signature);
+    console.log("[marketplace-api] Verifying signature");
+    console.log("[marketplace-api] Chain ID", chainId);
+    console.log("[marketplace-api] Maker Order", makerOrder);
+    console.log("[marketplace-api] Signature", signature);
+    console.log("[marketplace-api] Maker Types", makerTypes);
+    console.log("[marketplace-api] typed data", typedData);
+
     const recoveredAddress = verifyTypedData(
-      getTypedData(chainId),
+      typedData,
       makerTypes,
       makerOrder,
       signature,
     );
-    console.log("[marketplace-api] Signature verified", recoveredAddress);
+    console.log("[marketplace-api] Recovered address", recoveredAddress);
 
     if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
       return res
