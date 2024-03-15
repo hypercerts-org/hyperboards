@@ -9,10 +9,13 @@ import {
 
 import { z } from "zod";
 import { OrderStatus } from "@/types/api";
-import { verifyTypedData } from "ethers";
+import { ethers, verifyTypedData } from "ethers";
 import { Database } from "@/types/hypercerts-database";
 import NextCors from "nextjs-cors";
-import { addressesByNetwork } from "@hypercerts-org/marketplace-sdk";
+import {
+  HypercertExchangeClient,
+  utils,
+} from "@hypercerts-org/marketplace-sdk";
 import { ClaimTokenByIdQuery, HypercertClient } from "@hypercerts-org/sdk";
 
 const inputSchemaPost = z.object({
@@ -34,46 +37,6 @@ const inputSchemaPost = z.object({
   amounts: z.array(z.number()),
   additionalParameters: z.string(),
 });
-
-const getTypedData = (chainId: number) => {
-  // @ts-ignore
-  const verifyingContract = addressesByNetwork[chainId]?.EXCHANGE_V2;
-
-  if (!verifyingContract) {
-    throw new Error(
-      `Unknown address for HypercertExchange on chain with id ${chainId}`,
-    );
-  }
-
-  console.log("verifyingContract", verifyingContract);
-
-  return {
-    name: "LooksRareProtocol",
-    version: "2",
-    chainId,
-    verifyingContract,
-  };
-};
-
-export const makerTypes = {
-  Maker: [
-    { name: "quoteType", type: "uint8" },
-    { name: "globalNonce", type: "uint256" },
-    { name: "subsetNonce", type: "uint256" },
-    { name: "orderNonce", type: "uint256" },
-    { name: "strategyId", type: "uint256" },
-    { name: "collectionType", type: "uint8" },
-    { name: "collection", type: "address" },
-    { name: "currency", type: "address" },
-    { name: "signer", type: "address" },
-    { name: "startTime", type: "uint256" },
-    { name: "endTime", type: "uint256" },
-    { name: "price", type: "uint256" },
-    { name: "itemIds", type: "uint256[]" },
-    { name: "amounts", type: "uint256[]" },
-    { name: "additionalParameters", type: "bytes" },
-  ],
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -124,18 +87,24 @@ export default async function handler(
       });
     }
     const { signature, chainId, ...makerOrder } = parsedBody.data;
-    const typedData = getTypedData(chainId);
+
+    const hec = new HypercertExchangeClient(
+      chainId,
+      // @ts-ignore
+      new ethers.JsonRpcProvider(),
+    );
+    const typedData = hec.getTypedDataDomain();
 
     console.log("[marketplace-api] Verifying signature");
     console.log("[marketplace-api] Chain ID", chainId);
     console.log("[marketplace-api] Maker Order", makerOrder);
     console.log("[marketplace-api] Signature", signature);
-    console.log("[marketplace-api] Maker Types", makerTypes);
+    console.log("[marketplace-api] Maker Types", utils.makerTypes);
     console.log("[marketplace-api] typed data", typedData);
 
     const recoveredAddress = verifyTypedData(
       typedData,
-      makerTypes,
+      utils.makerTypes,
       makerOrder,
       signature,
     );
@@ -179,7 +148,8 @@ export default async function handler(
     if (
       !claimTokens.every(
         (claimToken) =>
-          claimToken.claimToken?.owner.toLowerCase() === recoveredAddress,
+          claimToken.claimToken?.owner.toLowerCase() ===
+          recoveredAddress.toLowerCase(),
       )
     ) {
       return res.status(401).json({
