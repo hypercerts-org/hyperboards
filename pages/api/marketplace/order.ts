@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import {
+  EAS_CONTRACT_ADDRESS,
+  NFT_STORAGE_TOKEN,
   SUPABASE_HYPERCERTS_SERVICE_ROLE_KEY,
   SUPABASE_HYPERCERTS_URL,
 } from "@/config";
@@ -11,6 +13,7 @@ import { verifyTypedData } from "ethers";
 import { Database } from "@/types/hypercerts-database";
 import NextCors from "nextjs-cors";
 import { addressesByNetwork } from "@hypercerts-org/marketplace-sdk";
+import { ClaimTokenByIdQuery, HypercertClient } from "@hypercerts-org/sdk";
 
 const inputSchemaPost = z.object({
   signature: z.string(),
@@ -139,9 +142,51 @@ export default async function handler(
     console.log("[marketplace-api] Recovered address", recoveredAddress);
 
     if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
-      return res
-        .status(401)
-        .json({ message: "Invalid signature", success: false, data: null });
+      return res.status(401).json({
+        message: "Recovered address is not equal to signer of order",
+        success: false,
+        data: null,
+      });
+    }
+
+    const hypercertClient = new HypercertClient({
+      chain: { id: chainId },
+      nftStorageToken: NFT_STORAGE_TOKEN,
+      easContractAddress: EAS_CONTRACT_ADDRESS,
+    });
+    const tokenIds = makerOrder.itemIds.map(
+      (id) => `${makerOrder.collection.toLowerCase()}-${id}`,
+    );
+    console.log("[marketplace-api] Token IDs", tokenIds);
+
+    const claimTokens = await Promise.all(
+      tokenIds.map(
+        (id) => hypercertClient.indexer.fractionById(id) as ClaimTokenByIdQuery,
+      ),
+    );
+    console.log("[marketplace-api] Claim tokens", claimTokens);
+
+    // Check if all fractions exist
+    if (claimTokens.some((claimToken) => !claimToken.claimToken)) {
+      return res.status(401).json({
+        message: "Not all fractions in itemIds exist",
+        success: false,
+        data: null,
+      });
+    }
+
+    // Check if all fractions are owned by signer
+    if (
+      !claimTokens.every(
+        (claimToken) =>
+          claimToken.claimToken?.owner.toLowerCase() === recoveredAddress,
+      )
+    ) {
+      return res.status(401).json({
+        message: "Not all fractions are owned by signer",
+        success: false,
+        data: null,
+      });
     }
 
     // Add to database

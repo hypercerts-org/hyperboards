@@ -51,6 +51,36 @@ export const useCreateFractionalMakerAsk = ({
         throw new Error("Fractions not found");
       }
 
+      if (!provider) {
+        throw new Error("Provider not initialized");
+      }
+
+      if (!signer) {
+        throw new Error("Signer not initialized");
+      }
+
+      const [contractAddress, tokenId] = values.fractionId.split("-");
+
+      if (!contractAddress || !isAddress(contractAddress)) {
+        throw new Error("Invalid contract address");
+      }
+
+      let tokenIdBigInt: BigInt | undefined;
+      try {
+        tokenIdBigInt = BigInt(tokenId);
+      } catch (e) {
+        console.error(e);
+        throw new Error("Error parsing token ID");
+      }
+
+      if (!tokenIdBigInt) {
+        throw new Error("Invalid token ID");
+      }
+
+      if (!walletClientData) {
+        throw new Error("Wallet client not initialized");
+      }
+
       onOpen([
         {
           title: "Splitting",
@@ -81,36 +111,6 @@ export const useCreateFractionalMakerAsk = ({
           description: "Creating order",
         },
       ]);
-
-      if (!provider) {
-        throw new Error("Provider not initialized");
-      }
-
-      if (!signer) {
-        throw new Error("Signer not initialized");
-      }
-
-      const [contractAddress, tokenId] = values.fractionId.split("-");
-
-      if (!contractAddress || !isAddress(contractAddress)) {
-        throw new Error("Invalid contract address");
-      }
-
-      let tokenIdBigInt: BigInt | undefined;
-      try {
-        tokenIdBigInt = BigInt(tokenId);
-      } catch (e) {
-        console.error(e);
-        throw new Error("Error parsing token ID");
-      }
-
-      if (!tokenIdBigInt) {
-        throw new Error("Invalid token ID");
-      }
-
-      if (!walletClientData) {
-        throw new Error("Wallet client not initialized");
-      }
 
       let signature: string | undefined;
 
