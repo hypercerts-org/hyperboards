@@ -24,6 +24,8 @@ export interface MintingFormValues {
   contributors: string;
   backgroundColor: string;
   textColor: string;
+  logoImg?: string;
+  backgroundImg?: string;
 }
 
 // Default values minting form for testing
@@ -37,6 +39,8 @@ export const defaultMintingFormValues: MintingFormValues = {
   contributors: "Test",
   backgroundColor: "#73C9CC",
   textColor: "#194446",
+  backgroundImg: "https://i.imgur.com/wsM3fWd.jpeg",
+  logoImg: "https://i.imgur.com/sDQhp3Y.png",
 };
 
 const useMintingForm = (initialValues?: MintingFormValues) =>
@@ -120,6 +124,18 @@ export const MintingForm = ({
                 {errors.contributors?.message}
               </FormErrorMessage>
             </FormControl>
+            <FormControl isInvalid={!!errors.logoImg?.message}>
+              <FormLabel>Logo Image</FormLabel>
+              <Input isDisabled={isDisabled} {...register("logoImg")} />
+              <FormErrorMessage>{errors.logoImg?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.backgroundImg?.message}>
+              <FormLabel>Background Image</FormLabel>
+              <Input isDisabled={isDisabled} {...register("backgroundImg")} />
+              <FormErrorMessage>
+                {errors.backgroundImg?.message}
+              </FormErrorMessage>
+            </FormControl>
             <FormControl isInvalid={!!errors.backgroundColor?.message}>
               <FormLabel>Background</FormLabel>
               <Input
@@ -154,6 +170,8 @@ export const MintingForm = ({
         values={values}
         backgroundColor={values.backgroundColor}
         textColor={values.textColor}
+        logoImg={values.logoImg}
+        backgroundImg={values.backgroundImg}
       />
     </HStack>
   );
