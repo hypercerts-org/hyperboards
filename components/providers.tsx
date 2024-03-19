@@ -141,6 +141,13 @@ export const HypercertClientProvider = ({
       return;
     }
 
+    if (chainId === mainnet.id) {
+      // Temporary fix, remove when mainnet is supported
+      // Mainnet had to be enabled to get ENS lookup working
+      setClient(undefined);
+      return;
+    }
+
     const hypercertClient = new HypercertClient({
       chain: { id: chainOverride || chainId },
       nftStorageToken: NFT_STORAGE_TOKEN,
