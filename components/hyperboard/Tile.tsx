@@ -55,7 +55,11 @@ export const Tile = ({
           justifyContent="center"
         >
           {showBackupImage ? (
-            <BackupForImage id={entry.id} fontSize={layout.font} />
+            <BackupForImage
+              id={entry.id}
+              fontSize={layout.font}
+              toolTipLabel={toolTipLabel}
+            />
           ) : (
             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
               <Image
@@ -79,7 +83,11 @@ export const Tile = ({
     return (
       <Wrapper {...wrapperProps}>
         {showBackupImage ? (
-          <BackupForImage id={entry.id} fontSize={layout.font} />
+          <BackupForImage
+            id={entry.id}
+            fontSize={layout.font}
+            toolTipLabel={toolTipLabel}
+          />
         ) : (
           <Flex
             width={"100%"}
@@ -171,7 +179,11 @@ export const Tile = ({
             )}
           </Flex>
           {showBackupImage ? (
-            <BackupForImage id={entry.id} fontSize={layout.font} />
+            <BackupForImage
+              id={entry.id}
+              fontSize={layout.font}
+              toolTipLabel={toolTipLabel}
+            />
           ) : (
             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
               <Image
@@ -198,12 +210,24 @@ export const Tile = ({
 
   return (
     <Wrapper {...wrapperProps}>
-      <BackupForImage id={entry.id} fontSize={layout.font} />
+      <BackupForImage
+        id={entry.id}
+        fontSize={layout.font}
+        toolTipLabel={toolTipLabel}
+      />
     </Wrapper>
   );
 };
 
-const BackupForImage = ({ id, fontSize }: { id: string; fontSize: number }) => {
+const BackupForImage = ({
+  id,
+  fontSize,
+  toolTipLabel,
+}: {
+  id: string;
+  fontSize: number;
+  toolTipLabel: string;
+}) => {
   const { data, isLoading } = useEnsName({
     address: isAddress(id) ? id : undefined,
     chainId: 1,
@@ -216,9 +240,11 @@ const BackupForImage = ({ id, fontSize }: { id: string; fontSize: number }) => {
 
   return (
     <Center height={"100%"} width={"100%"}>
-      <Text color="black" opacity={0.99} fontSize={fontSize}>
-        {data || fallback}
-      </Text>
+      <Tooltip label={toolTipLabel}>
+        <Text color="black" opacity={0.99} fontSize={fontSize}>
+          {data || fallback}
+        </Text>
+      </Tooltip>
     </Center>
   );
 };
