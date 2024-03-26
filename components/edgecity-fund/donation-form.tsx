@@ -244,6 +244,12 @@ export const DonationForm = () => {
                   Confirm
                 </Button>
               </HStack>
+            </VStack>
+          </form>
+        </Box>
+        <Box px={isMobile ? 2 : 0}>
+          <Box mb={"80px"}>
+            <VStack textAlign={"center"} spacing={6}>
               <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
                 Contribution hypercerts
               </Heading>
@@ -268,11 +274,11 @@ export const DonationForm = () => {
                 textDecoration={"underline"}
                 cursor={"pointer"}
                 onClick={hypercertsDetailsOnOpen}
-              >
+                >
                 See details
               </Text>
-            </VStack>
-          </form>
+            </VStack>     
+          </Box>
         </Box>
         <TransactionHistory />
       </Box>
