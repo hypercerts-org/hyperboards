@@ -18,7 +18,7 @@ import { useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { EDGECITY_DONATION_SAFE_ADDRESS } from "@/config";
 
-export const MoreInformationModal = ({
+export const HypercertsDetailsModal = ({
   ...modalProps
 }: Omit<ModalProps, "children">) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -50,7 +50,7 @@ export const MoreInformationModal = ({
             alignItems={"flex-start"}
           >
             <Text textDecoration={"underline"} textAlign={"center"} w={"100%"}>
-              <b>Edge City Denver Retroactive Funding</b>
+              <b>Edge City Denver Hypercerts</b>
             </Text>
             <Text>
               <b>Goal:</b> We fund and reward the experiences that contributed to the success of our event

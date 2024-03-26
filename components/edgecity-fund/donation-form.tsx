@@ -23,6 +23,7 @@ import { parseEther } from "viem";
 import { supabase } from "@/lib/supabase";
 import { useAddress } from "@/hooks/useAddress";
 import { MoreInformationModal } from "@/components/edgecity-fund/more-information-modal";
+import { HypercertsDetailsModal } from "@/components/edgecity-fund/hypercerts-details-modal";
 import { TransactionHistory } from "@/components/edgecity-fund/transaction-history";
 import { useRouter } from "next/router";
 import { ZuzaluConnectButton } from "@/components/edgecity-fund/connect-button";
@@ -47,6 +48,11 @@ export const DonationForm = () => {
     isOpen: moreInfoModalOpen,
     onClose: moreInfoOnClose,
     onOpen: moreInfoOnOpen,
+  } = useDisclosure();
+  const {
+    isOpen: hypercertsDetailsModalOpen,
+    onClose: hypercertsDetailsOnClose,
+    onOpen: hypercertsDetailsOnOpen,
   } = useDisclosure();
 
   const {
@@ -136,19 +142,18 @@ export const DonationForm = () => {
   return (
     <>
       <Head>
-        <title>Donate - Zuconnect Retroactive Fund</title>
+        <title>Donate - Edge City Denver Retroactive Funding</title>
       </Head>
       <Box px={isMobile ? 2 : 0}>
         <Box mb={"80px"}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
               <Heading textTransform={"uppercase"} fontSize={"xxl"}>
-                ZuConnect
+                Edge City Denver
                 <br /> Retroactive Fund
               </Heading>
               <Text fontSize={"lg"}>
-                Commit funds now and distribute them to your <br /> most valued
-                experiences after the event
+                Reward contributors retroactively
               </Text>
               <Text
                 textDecoration={"underline"}
@@ -238,6 +243,16 @@ export const DonationForm = () => {
                   Confirm
                 </Button>
               </HStack>
+              <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
+                Contribution hypercerts
+              </Heading>
+              <Text
+                textDecoration={"underline"}
+                cursor={"pointer"}
+                onClick={hypercertsDetailsOnOpen}
+              >
+                See details
+              </Text>
             </VStack>
           </form>
         </Box>
@@ -250,6 +265,10 @@ export const DonationForm = () => {
       <MoreInformationModal
         isOpen={moreInfoModalOpen}
         onClose={moreInfoOnClose}
+      />
+      <HypercertsDetailsModal
+        isOpen={hypercertsDetailsModalOpen}
+        onClose={hypercertsDetailsOnClose}
       />
     </>
   );
