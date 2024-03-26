@@ -35,10 +35,10 @@ export const TransactionHistory = () => {
   return (
     <VStack spacing={6} px={isMobile ? 2 : 0}>
       <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
-        Contributors
+        Supporters
       </Heading>
       <Flex justifyContent={"space-between"} width={"100%"}>
-        <Text fontWeight={600}>Contributor</Text>
+        <Text fontWeight={600}>Supporters</Text>
         <Text fontWeight={600}>ETH</Text>
       </Flex>
       <VStack

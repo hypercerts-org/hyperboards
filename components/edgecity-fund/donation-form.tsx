@@ -26,13 +26,14 @@ import { MoreInformationModal } from "@/components/edgecity-fund/more-informatio
 import { HypercertsDetailsModal } from "@/components/edgecity-fund/hypercerts-details-modal";
 import { TransactionHistory } from "@/components/edgecity-fund/transaction-history";
 import { useRouter } from "next/router";
-import { ZuzaluConnectButton } from "@/components/edgecity-fund/connect-button";
+import { EdgecityConnectButton } from "@/components/edgecity-fund/connect-button";
 import { useQuery } from "@tanstack/react-query";
 import { AwaitTransactionModal } from "@/components/edgecity-fund/await-transaction-modal";
 import { toPrecision } from "@chakra-ui/utils";
 import { isValidEmail } from "@/utils/validation";
 import Head from "next/head";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { Wrap, WrapItem } from "@chakra-ui/react";
 
 type FormValues = {
   amount: number;
@@ -233,7 +234,7 @@ export const DonationForm = () => {
                 </FormControl>
               </VStack>
               <HStack>
-                <ZuzaluConnectButton />
+                <EdgecityConnectButton />
                 <Button
                   bg={"#41645F"}
                   color={"white"}
@@ -246,6 +247,23 @@ export const DonationForm = () => {
               <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
                 Contribution hypercerts
               </Heading>
+              <Wrap justify="center" spacing="2">
+                <WrapItem>
+                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                </WrapItem>
+                <WrapItem>
+                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                </WrapItem>
+                <WrapItem>
+                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                </WrapItem>
+                <WrapItem>
+                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                </WrapItem>
+                <WrapItem>
+                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                </WrapItem>
+              </Wrap>
               <Text
                 textDecoration={"underline"}
                 cursor={"pointer"}
