@@ -2000,13 +2000,6 @@
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/contracts@1.1.1-alpha.1":
-  version "1.1.1-alpha.1"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.1.1-alpha.1.tgz#ecce2368976e76d1aeb5ba64cbe9308c5111f716"
-  integrity sha512-M7cNYEf+i6rT2jSOT4sob/oIlKalT2zSweBQq6iP1wCA16Vhf0Y5JDhwLH64z4XENJfOKKSO0TmDDF2kKvHReg==
-  dependencies:
-    hardhat "^2.18.3"
-
 "@hypercerts-org/contracts@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@hypercerts-org/contracts/-/contracts-1.1.2.tgz#db02692d3837c94805c217113b0662286d23e655"
@@ -2014,36 +2007,15 @@
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/marketplace-sdk@0.0.19":
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.19.tgz#717e1c8df285e1aad22b697a0788d880291e9288"
-  integrity sha512-tXvKAYHh0sw3jNv1Ol43kQ1j/c/LoQA+vZqiQifON9K4BwROt84/yWSdgsVnv5IUO08bGg45JZK3BbxymQLV/g==
+"@hypercerts-org/marketplace-sdk@0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.24.tgz#85a7af4a433ad817629ac75185c141b781873d62"
+  integrity sha512-5lRVcClMAKlpkdM/XgCs8QFPD5DaHz3pfu1rgw5hObQabZjEILWPV7BSoQNIxWuER8oa94DlSYyVNlCKuWgczw==
   dependencies:
-    "@hypercerts-org/sdk" "1.4.2-alpha.2"
+    "@hypercerts-org/sdk" "1.4.3"
     "@supabase/supabase-js" "^2.39.2"
     ethers "^6.6.2"
     merkletreejs "^0.3.9"
-
-"@hypercerts-org/sdk@1.4.2-alpha.2":
-  version "1.4.2-alpha.2"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-1.4.2-alpha.2.tgz#407aadef99635e871dc33db8a4515b3ed3d7d5d4"
-  integrity sha512-uwyN/lNrMk9/Iaje2rWghVHsP6L9Z3AYhTLlPW9twgNeC9BNNXGSpq70z48NMiEWS+eLDAXHBB2MkSoRl28g1Q==
-  dependencies:
-    "@ethereum-attestation-service/eas-sdk" "1.3.7"
-    "@ethersproject/abstract-signer" "^5.7.0"
-    "@graphql-typed-document-node/core" "^3.2.0"
-    "@hypercerts-org/contracts" "1.1.1-alpha.1"
-    "@openzeppelin/merkle-tree" "^1.0.5"
-    "@urql/core" "^4.2.0"
-    "@whatwg-node/fetch" "^0.9.13"
-    ajv "^8.11.2"
-    axios "^1.6.2"
-    dotenv "^16.0.3"
-    ethers "5.7.2"
-    graphql "^16.8.1"
-    loglevel "^1.8.1"
-    urql "^4.0.6"
-    viem "^1.21.4"
 
 "@hypercerts-org/sdk@1.4.3":
   version "1.4.3"
