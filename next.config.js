@@ -14,6 +14,9 @@ const nextConfig = {
       case "zuzalu":
         console.log("zuzalu build");
         return ["zuzalu.tsx"];
+      case "edgecity":
+        console.log("edgecity build");
+        return ["edgecity.tsx"];
       default:
         return ["tsx", "ts", "jsx", "js"];
     }

@@ -75,23 +75,12 @@ const config = getDefaultConfig({
         zerionWallet,
       ],
     },
-    // {
-    //   groupName: "Recommended with CELO",
-    //   wallets: [Valora, CeloWallet, CeloTerminal, walletConnectWallet],
-    // },
     {
       groupName: "Injected",
       wallets: [injectedWallet],
     },
   ],
 });
-
-// const config = getDefaultConfig({
-//   appName: "RainbowKit App",
-//   projectId: "YOUR_PROJECT_ID",
-//   chains: [optimism, sepolia],
-//   ssr: true,
-// });
 
 const queryClient = new QueryClient();
 
