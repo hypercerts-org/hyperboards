@@ -25,7 +25,7 @@ export const useFetchFractionSpecificDisplay = (
       const metadata = await Promise.all(
         claimIds.map(async (claimId) => {
           const claim = (await client.indexer.claimById(
-            claimId,
+            `${chainId}-${claimId}`,
           )) as ClaimByIdQuery;
 
           if (!claim?.claim?.uri) {

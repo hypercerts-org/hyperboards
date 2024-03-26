@@ -21,7 +21,7 @@ export const useFetchHypercertById = (hypercertId: string) => {
       }
 
       const claim = (await client.indexer.claimById(
-        hypercertId,
+        `${chainId}-${hypercertId}`,
       )) as ClaimByIdQuery;
 
       if (!claim?.claim?.uri) {

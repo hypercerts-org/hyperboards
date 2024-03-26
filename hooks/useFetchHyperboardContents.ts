@@ -49,7 +49,7 @@ const processRegistryForDisplay = async (
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
       const fractions = (await client.indexer.fractionsByClaim(
-        claim.hypercert_id,
+        `${registry.chain_id}-${claim.hypercert_id}`,
       )) as ClaimTokensByClaimQuery;
 
       return {
@@ -322,8 +322,10 @@ export const useFetchHyperboardContents = (
       const allowlistEntriesWithClaims = sift(
         await Promise.all(
           allowlistData?.map(async (entry) => {
-            const claim = await client.indexer.claimById(entry.claimId!);
-            if (!claim.claim) {
+            const claim = await client.indexer.claimById(
+              `${entry.chainId}-${entry.claimId}`,
+            );
+            if (!claim?.claim) {
               return null;
             }
             return { ...entry, claim: claim.claim };

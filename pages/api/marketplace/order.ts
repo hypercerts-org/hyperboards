@@ -130,7 +130,11 @@ export default async function handler(
 
     const claimTokens = await Promise.all(
       tokenIds.map(
-        (id) => hypercertClient.indexer.fractionById(id) as ClaimTokenByIdQuery,
+        (id) =>
+          hypercertClient.indexer.fractionById(
+            // TODO: Remove when migration script is run
+            `${chainId}-${id}`,
+          ) as ClaimTokenByIdQuery,
       ),
     );
     console.log("[marketplace-api] Claim tokens", claimTokens);

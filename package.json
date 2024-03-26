@@ -39,7 +39,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.1.0",
-    "@hypercerts-org/marketplace-sdk": "0.0.19",
+    "@hypercerts-org/marketplace-sdk": "0.0.24",
     "@hypercerts-org/sdk": "1.4.3",
     "@rainbow-me/rainbowkit": "^2.0.0",
     "@supabase/supabase-js": "^2.33.1",
