@@ -37,6 +37,7 @@ import {
   zerionWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import connectors from "@celo/rainbowkit-celo/lists";
+import Fonts from "@/fonts";
 
 const projectId = WALLETCONNECT_ID;
 
@@ -85,6 +86,7 @@ export const EdgecityFundPage = () => {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <ChakraProvider theme={index}>
+            <Fonts />
             <Center minHeight={"100vh"} backgroundColor={"#F1F1F1"} py={"80px"}>
               <Box maxW={"550px"}>
                 <EdgeCityFund />
