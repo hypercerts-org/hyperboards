@@ -8,10 +8,23 @@
     src: url(/fonts/Director-regular.woff2) format("woff2");
 }
 
-@font-face {
-    font-family: "Director-Variable";
-    font-style: normal;
-    font-weight: 100 900;
-    font-display: optional;
-    src: url(/fonts/Director-Variable.woff2) format("woff2");
-}
+.hypercertsTitle {
+    font-family: 'Inter', sans-serif; /* Add fallback fonts as needed */
+    font-size: 12px; /* Adjust if necessary */
+    font-weight: 700;
+    line-height: 1.1;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+.hrStyle {
+    border: none;
+    height: 1px;
+    background-color: #333;
+    margin: 20px 0;
+  }
+  
+.hypercertsParagraph {
+    margin-top: 12px;
+  }
+  

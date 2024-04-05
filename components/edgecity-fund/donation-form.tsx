@@ -250,9 +250,9 @@ export const DonationForm = () => {
         <Box px={isMobile ? 2 : 0}>
           <Box mb={"80px"}>
             <VStack textAlign={"center"} spacing={6}>
-              <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
-                Contribution hypercerts
-              </Heading>
+              <Text fontSize={"lg"}>
+                The funds will be distributed to the hypercerts of the contributors
+              </Text>
               <Wrap justify="center" spacing="2">
                 <WrapItem>
                   <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
