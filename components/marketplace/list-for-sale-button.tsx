@@ -19,6 +19,8 @@ import {
 import { CreateOrderForm } from "@/components/marketplace/create-order-form";
 import React from "react";
 import { CreateFractionalOrderForm } from "@/components/marketplace/create-fractional-order-form";
+import { useHypercertClient } from "@/components/providers";
+import { useChainId } from "wagmi";
 
 type Props = {
   hypercertId: string;
@@ -54,10 +56,18 @@ export const ListForSaleButton = React.forwardRef<HTMLButtonElement, Props>(
       onOpen();
     };
 
+    const client = useHypercertClient();
+    const chainId = useChainId();
+
+    const disabled =
+      !client ||
+      !client.isClaimOrFractionOnConnectedChain(`${chainId}-${hypercertId}`);
+
     return (
       <>
         <Button
           ref={ref}
+          disabled={disabled}
           variant="blackAndWhite"
           onClick={onClickButton}
           {...props}

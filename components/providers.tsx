@@ -157,6 +157,7 @@ export const HypercertClientProvider = ({
       walletClient,
       // @ts-ignore
       publicClient,
+      indexerEnvironment: "all",
     });
 
     setClient(hypercertClient);

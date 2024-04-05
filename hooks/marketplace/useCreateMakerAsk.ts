@@ -15,6 +15,7 @@ import { CreateOfferFormValues } from "@/components/marketplace/create-order-for
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { constructTokenIdsFromSplitFractionContractReceipt } from "@/utils/constructTokenIdsFromSplitFractionContractReceipt";
 import { useMutation } from "@tanstack/react-query";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 
 export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
   const { onOpen, onClose, setStep } = useInteractionModal();
@@ -32,6 +33,10 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
   return useMutation({
     mutationKey: ["createMakerAsk"],
     mutationFn: async (values: CreateOfferFormValues) => {
+      // if (!client?.isClaimOrFractionOnConnectedChain(values.fractionId)) {
+      //   throw new Error("Claim not on connected chain");
+      // }
+      //
       if (!client) {
         throw new Error("Client not initialized");
       }
@@ -87,22 +92,12 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         throw new Error("Signer not initialized");
       }
 
-      const [contractAddress, tokenId] = values.fractionId.split("-");
+      const { id: tokenId, contractAddress } = parseClaimOrFractionId(
+        values.fractionId,
+      );
 
       if (!contractAddress || !isAddress(contractAddress)) {
         throw new Error("Invalid contract address");
-      }
-
-      let tokenIdBigInt: BigInt | undefined;
-      try {
-        tokenIdBigInt = BigInt(tokenId);
-      } catch (e) {
-        console.error(e);
-        throw new Error("Error parsing token ID");
-      }
-
-      if (!tokenIdBigInt) {
-        throw new Error("Invalid token ID");
       }
 
       if (!walletClientData) {
