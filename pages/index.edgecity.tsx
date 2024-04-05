@@ -44,7 +44,7 @@ const projectId = WALLETCONNECT_ID;
 const config = getDefaultConfig({
   projectId,
   appName: "Hyperboards",
-  chains: [sepolia, optimism, mainnet],
+  chains: [mainnet],
   ssr: true,
   wallets: [
     {
