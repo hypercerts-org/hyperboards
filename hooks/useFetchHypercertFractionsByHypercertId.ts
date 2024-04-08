@@ -23,7 +23,7 @@ export const useFetchHypercertFractionsByHypercertId = (
       }
 
       const fractions = (await client.indexer.fractionsByClaim(
-        `${chainId}-${hypercertId}`,
+        hypercertId,
       )) as ClaimTokensByClaimQuery;
       const totalUnitsForAllFractions = fractions.claimTokens.reduce(
         (acc, cur) => acc + BigInt(cur.units),
@@ -62,7 +62,7 @@ export const useFetchHypercertFractionsByHypercertIds = (
       return Promise.all(
         hypercertIds.map(async (hypercertId) => {
           const fractions = (await client.indexer.fractionsByClaim(
-            `${chainId}-${hypercertId}`,
+            hypercertId,
           )) as ClaimTokensByClaimQuery;
           const totalUnitsForAllFractions = fractions.claimTokens.reduce(
             (acc, cur) => acc + BigInt(cur.units),

@@ -60,8 +60,7 @@ export const ListForSaleButton = React.forwardRef<HTMLButtonElement, Props>(
     const chainId = useChainId();
 
     const disabled =
-      !client ||
-      !client.isClaimOrFractionOnConnectedChain(`${chainId}-${hypercertId}`);
+      !client || !client.isClaimOrFractionOnConnectedChain(hypercertId);
 
     return (
       <>
