@@ -255,19 +255,19 @@ export const DonationForm = () => {
               </Text>
               <Wrap justify="center" spacing="2">
                 <WrapItem>
-                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5aee1591-398a-4514-0925-7a6accd82600/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5a9166c8-f297-4ad7-6367-c6ecaee71300/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/eafdf551-ed04-4f2f-a849-b86888e3a800/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/ac3f66c7-2795-4cb1-2f1c-e83520b12b00/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://hypercerts-test.vercel.app/img/hypercert_example_shadow.png" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/c5ce69e7-5406-4c1e-e469-51e82ecd5e00/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
                 </WrapItem>
               </Wrap>
               <Text
