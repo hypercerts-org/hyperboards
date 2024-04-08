@@ -1,7 +1,9 @@
 import { useHover } from "@uidotdev/usehooks";
-import { Box, Flex, Image } from "@chakra-ui/react";
+import { Badge, Box, Flex, Image } from "@chakra-ui/react";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { MarketplaceStats } from "@/components/marketplace/marketplace-stats";
+import { chainIdToName } from "@/utils/formatting";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 
 export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
   const [ref, isHovered] = useHover();
@@ -14,6 +16,7 @@ export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
       flexDir={"column"}
       outline={isHovered ? "1px solid black" : "none"}
       cursor={"pointer"}
+      position={"relative"}
     >
       <Image
         alt="Detail image for hypercert"
@@ -26,6 +29,9 @@ export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
       <Box backgroundColor={isHovered ? "white" : "none"} py={5} px={3}>
         <MarketplaceStats hypercertId={hypercertId} />
       </Box>
+      <Badge position={"absolute"} right={7} top={2}>
+        {chainIdToName(parseClaimOrFractionId(hypercertId).chainId)}
+      </Badge>
     </Flex>
   );
 };

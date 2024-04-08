@@ -287,6 +287,7 @@ export const Index = () => {
                   <Button
                     variant="blackAndWhiteOutline"
                     width={"100%"}
+                    isDisabled
                     backgroundColor={"background"}
                   >
                     Make offer
