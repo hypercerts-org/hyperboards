@@ -8,6 +8,20 @@
     src: url(/fonts/Director-regular.woff2) format("woff2");
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+.hero-font {
+  font-family: 'Instrument-Serif';
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: lowercase;
+  max-width: 800px;
+  text-align: center;
+  margin-left: auto; 
+  margin-right: auto; 
+}
+
 .hypercertsTitle {
     font-family: 'Inter', sans-serif; /* Add fallback fonts as needed */
     font-size: 12px; /* Adjust if necessary */

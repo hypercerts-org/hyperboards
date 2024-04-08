@@ -149,7 +149,7 @@ export const DonationForm = () => {
         <Box mb={"80px"}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
-              <Heading textTransform={"uppercase"} fontSize={"xxl"}>
+              <Heading style={{ fontFamily: '"Inter", sans-serif', fontSize: '42px', textTransform:"uppercase"}}>
                 Edge City Denver
                 <br /> Retroactive Fund
               </Heading>
@@ -275,7 +275,7 @@ export const DonationForm = () => {
                 cursor={"pointer"}
                 onClick={hypercertsDetailsOnOpen}
                 >
-                See details
+                See the details of all 17 hypercerts
               </Text>
             </VStack>     
           </Box>

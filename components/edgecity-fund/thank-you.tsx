@@ -20,13 +20,9 @@ export const ThankYou = () => {
           Thank you
         </Heading>
         <Text>
-          We are excited for your contribution and are looking forward to
-          collectively recognize and reward those who are making ZuConnect
-          special.
-        </Text>
-        <Text>
-          We will email you about the next steps. If you have questions, please
-          reach out to zuzalu [at] hypercerts.org.
+          We will send you an email notification once your hypercerts are 
+          available for claim. If you have questions, please reach out to 
+          team [at] hypercerts.org.
         </Text>
         <Text>
           View your transaction on{" "}
@@ -42,9 +38,9 @@ export const ThankYou = () => {
               Back to the form
             </Button>
           </Link>
-          <Link target={"_blank"} href={"https://zuzalu.city/"}>
+          <Link target={"_blank"} href={"https://www.edgecity.live/"}>
             <Button bg={"#41645F"} color={"white"}>
-              zuzalu.city
+              edgecity.live
             </Button>
           </Link>
           <Link href="https://hypercerts.org/" target="_blank">

@@ -34,7 +34,7 @@ export const TransactionHistory = () => {
 
   return (
     <VStack spacing={6} px={isMobile ? 2 : 0}>
-      <Heading textTransform={"uppercase"} textAlign={"center"} width={"100%"}>
+      <Heading style={{ textAlign:"center", fontFamily: '"Inter", sans-serif', fontSize: '24px', textTransform:"uppercase"}}>
         Supporters
       </Heading>
       <Flex justifyContent={"space-between"} width={"100%"}>

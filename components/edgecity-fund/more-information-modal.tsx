@@ -60,7 +60,7 @@ export const MoreInformationModal = ({
                 <b>Steps</b>
               </Text>
               <OrderedList spacing={2} mt={1}>
-                <ListItem>Contributors organize experience at Edge City Denver &#x2705;</ListItem>
+                <ListItem>Contributors organize experiences at Edge City Denver &#x2705;</ListItem>
                 <ListItem>Funders observe the event and experiences &#x2705;</ListItem>
                 <ListItem>
                   Contributors submit{" "}
@@ -74,7 +74,7 @@ export const MoreInformationModal = ({
                   to apply for retroactive funding &#x2705;
                 </ListItem>
                 <ListItem> Funders fund the retroactive fund, which is distributed to the contributors</ListItem>
-                <ListItem>Funders receive parts of the funded hypercerts</ListItem>
+                <ListItem>Funders receive parts of the collective hypercert for Edge City Denver</ListItem>
               </OrderedList>
             </Box>
             <Text>
@@ -96,7 +96,7 @@ export const MoreInformationModal = ({
                 Please use a wallet that you have used to interact with Edge City before. 
                 If that is not possible, please send an email to us after committing funds.
                 </ListItem>
-                <ListItem>The minimum contribution is 0.01 ETH.</ListItem>
+                <ListItem>The minimum contribution is 0.01 ETH to receive parts of the hypercert.</ListItem>
               </UnorderedList>
             </Box>
             <Box>
