@@ -14,15 +14,15 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import styles from "@/styles/Edgecity.module.css";
 
 export const HypercertsDetailsModal = ({
   ...modalProps
 }: Omit<ModalProps, "children">) => {
-  const ref = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const ref = useRef<HTMLDivElement>(null);
 
   const hypercertsData = [
     {
@@ -159,7 +159,7 @@ export const HypercertsDetailsModal = ({
               <Box key={index} pb={0}>
                 <hr className={styles.hrStyle} />
                 <Grid
-                  templateColumns={isMobile ? "1fr" : "400px 200px"}
+                  templateColumns={isMobile ? "1fr" : "2fr 1fr"}
                   gap={4}
                   alignItems="start"
                 >
@@ -178,8 +178,7 @@ export const HypercertsDetailsModal = ({
                     </Text>
                   </Box>
                   <Box
-                    maxW={isMobile ? "300px" : undefined}
-                    mx={isMobile ? "200px" : undefined}
+                    maxW={isMobile ? "240px" : undefined}
                   >
                     <Image src={hypercert.imageUrl} alt={hypercert.title} />
                   </Box>
