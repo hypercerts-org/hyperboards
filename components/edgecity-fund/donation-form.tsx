@@ -251,7 +251,8 @@ export const DonationForm = () => {
           <Box mb={"80px"}>
             <VStack textAlign={"center"} spacing={6}>
               <Text fontSize={"lg"}>
-                The funds will be distributed to the hypercerts of the contributors
+                The funds will be distributed to the hypercerts of the
+                contributors
               </Text>
               <Wrap justify="center" spacing="2">
                 <WrapItem>

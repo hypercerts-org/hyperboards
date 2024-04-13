@@ -14,35 +14,22 @@ import {
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { EDGECITY_DONATION_SAFE_ADDRESS } from "@/config";
 
 export const MoreInformationModal = ({
   ...modalProps
 }: Omit<ModalProps, "children">) => {
-  const ref = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  const hasRef = !!ref.current;
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    if (!hasRef) {
-      return;
-    }
-    if (modalProps.isOpen) {
-      window.document.body.scroll(0, 0);
-      ref.current.scrollTop = 0;
-    }
-  }, [modalProps.isOpen, hasRef]);
-
   return (
-    <Modal {...modalProps} size={isMobile ? "full" : undefined}>
+    <Modal
+      id="edge-city-more-information-modal"
+      autoFocus={false}
+      {...modalProps}
+    >
       <ModalOverlay />
-      <ModalContent ref={ref} borderRadius={0} minW={isMobile ? "100%" : 700}>
+      <ModalContent borderRadius={0} minW={isMobile ? undefined : 700}>
         <ModalBody p={8}>
           <VStack
             spacing={6}
@@ -53,15 +40,20 @@ export const MoreInformationModal = ({
               <b>Edge City Denver Retroactive Funding</b>
             </Text>
             <Text>
-              <b>Goal:</b> We fund and reward the experiences that contributed to the success of our event
+              <b>Goal:</b> We fund and reward the experiences that contributed
+              to the success of our event
             </Text>
             <Box>
               <Text>
                 <b>Steps</b>
               </Text>
               <OrderedList spacing={2} mt={1}>
-                <ListItem>Contributors organize experiences at Edge City Denver &#x2705;</ListItem>
-                <ListItem>Funders observe the event and experiences &#x2705;</ListItem>
+                <ListItem>
+                  Contributors organize experiences at Edge City Denver &#x2705;
+                </ListItem>
+                <ListItem>
+                  Funders observe the event and experiences &#x2705;
+                </ListItem>
                 <ListItem>
                   Contributors submit{" "}
                   <a
@@ -73,15 +65,21 @@ export const MoreInformationModal = ({
                   </a>{" "}
                   to apply for retroactive funding &#x2705;
                 </ListItem>
-                <ListItem> Funders fund the retroactive fund, which is distributed to the contributors</ListItem>
-                <ListItem>Funders receive parts of the collective hypercert for Edge City Denver</ListItem>
+                <ListItem>
+                  {" "}
+                  Funders fund the retroactive fund, which is distributed to the
+                  contributors
+                </ListItem>
+                <ListItem>
+                  Funders receive parts of the collective hypercert for Edge City Denver
+                </ListItem>
               </OrderedList>
             </Box>
             <Text>
-            The funds will be distributed automatically to the contributions based 
-            on a predetermined allocation - available on the detail view of the hypercerts. 
-            If the caps of each hypercert is reached, the additional funds will be allocated 
-            to Edge City.
+              The funds will be distributed automatically to the contributions
+              based on a predetermined allocation - available on the detail view
+              of the hypercerts. If the caps of each hypercert is reached, the
+              additional funds will be allocated to Edge City.
             </Text>
             <Box>
               <Text pb={0} mb={0}>
@@ -89,12 +87,14 @@ export const MoreInformationModal = ({
               </Text>
               <UnorderedList mt={1} spacing={2}>
                 <ListItem>
-                This fund is set up by the Edge City community for the  Edge City community: 
-                If you are not connected to Edge City, please email us before committing funds.
+                  This fund is set up by the Edge City community for the Edge
+                  City community: If you are not connected to Edge City, please
+                  email us before committing funds.
                 </ListItem>
                 <ListItem>
-                Please use a wallet that you have used to interact with Edge City before. 
-                If that is not possible, please send an email to us after committing funds.
+                  Please use a wallet that you have used to interact with Edge
+                  City before. If that is not possible, please send an email to
+                  us after committing funds.
                 </ListItem>
                 <ListItem>The minimum contribution is 0.01 ETH to receive parts of the hypercert.</ListItem>
               </UnorderedList>
@@ -106,7 +106,8 @@ export const MoreInformationModal = ({
               <UnorderedList spacing={2} mt={1}>
                 <ListItem>Address: {EDGECITY_DONATION_SAFE_ADDRESS}</ListItem>
                 <ListItem>
-                  Signers (2/3): edgevillage.eth, garysheng.eth, hypercerts.holke.eth
+                  Signers (2/3): edgevillage.eth, garysheng.eth,
+                  hypercerts.holke.eth
                 </ListItem>
               </UnorderedList>
             </Box>
