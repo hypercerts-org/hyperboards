@@ -24,7 +24,7 @@ export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
         width={"100%"}
         height={"100%"}
         objectFit={"cover"}
-        backgroundColor={isHovered ? "black" : "none"}
+        backgroundColor={isHovered ? "black" : undefined}
       />
       <Box backgroundColor={isHovered ? "white" : "none"} py={5} px={3}>
         <MarketplaceStats hypercertId={hypercertId} />

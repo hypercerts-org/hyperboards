@@ -5,6 +5,7 @@ import {
   Claim,
   ClaimTokensByClaimQuery,
   HypercertClient,
+  parseClaimOrFractionId,
 } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
@@ -296,9 +297,15 @@ export const useFetchHyperboardContents = (
 
       const allClaimIds = sift(
         hyperboardData.hyperboard_registries
-          .map((registry) => registry.registries?.claims)
+          .map((registry) => registry.registries?.claims || [])
           .flat()
-          .map((claim) => claim?.hypercert_id),
+          .map((claim) => {
+            const { contractAddress, id } = parseClaimOrFractionId(
+              claim.hypercert_id,
+            );
+
+            return `${contractAddress}-${id}`;
+          }),
       );
       const { data: allowlistData, error: allowlistError } =
         await supabaseHypercerts
