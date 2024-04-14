@@ -50,7 +50,7 @@ const processRegistryForDisplay = async (
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
       const fractions = (await client.indexer.fractionsByClaim(
-        `${registry.chain_id}-${claim.hypercert_id}`,
+        claim.hypercert_id,
       )) as ClaimTokensByClaimQuery;
 
       return {

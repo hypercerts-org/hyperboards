@@ -2042,10 +2042,10 @@
     urql "^4.0.6"
     viem "^1.21.4"
 
-"@hypercerts-org/sdk@2.0.0-alpha.0":
-  version "2.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.0.tgz#c9abac23961dfad54f5dbdc650135ba1b2e71edc"
-  integrity sha512-5NnqZ/LGafkHZtl1pl9f+TND8fnu1FKMFy+XV3MPPUXkcScl1XkUHlzmoXe9hWPBRCljMgKlT1jv9uCW6pyK/A==
+"@hypercerts-org/sdk@2.0.0-alpha.4":
+  version "2.0.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.4.tgz#ea72d5c7e85ffe63d67bb9febd442a1fc1bf73e0"
+  integrity sha512-DtfqGV4KWH4h4CDhz/lVQrL0ELkjwFKNRlLyEhUNMnLCMvzYNglcXIz2eKZ7EkDFlB32rDt+mdJbW9JqveGhzg==
   dependencies:
     "@ethereum-attestation-service/eas-sdk" "1.3.7"
     "@ethersproject/abstract-signer" "^5.7.0"

@@ -40,7 +40,7 @@
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.1.0",
     "@hypercerts-org/marketplace-sdk": "0.0.24",
-    "@hypercerts-org/sdk": "2.0.0-alpha.0",
+    "@hypercerts-org/sdk": "2.0.0-alpha.4",
     "@rainbow-me/rainbowkit": "^2.0.0",
     "@snaplet/seed": "^0.91.1",
     "@supabase/supabase-js": "^2.33.1",
