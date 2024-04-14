@@ -38,6 +38,8 @@ export const useFetchMarketplaceOrdersForHypercert = (hypercertId: string) => {
           chainId,
         });
 
+      console.log(orders);
+
       if (!orders) {
         throw new Error("No orders");
       }

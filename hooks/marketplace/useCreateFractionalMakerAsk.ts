@@ -14,6 +14,7 @@ import { useEthersSigner } from "@/hooks/useEthersSigner";
 import { useFetchHypercertFractionsByHypercertId } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { CreateFractionalOfferFormValues } from "@/components/marketplace/create-fractional-order-form";
 import { useMutation } from "@tanstack/react-query";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 
 export const useCreateFractionalMakerAsk = ({
   hypercertId,
@@ -59,22 +60,12 @@ export const useCreateFractionalMakerAsk = ({
         throw new Error("Signer not initialized");
       }
 
-      const [contractAddress, tokenId] = values.fractionId.split("-");
+      const { contractAddress, id: fractionTokenId } = parseClaimOrFractionId(
+        values.fractionId,
+      );
 
       if (!contractAddress || !isAddress(contractAddress)) {
         throw new Error("Invalid contract address");
-      }
-
-      let tokenIdBigInt: BigInt | undefined;
-      try {
-        tokenIdBigInt = BigInt(tokenId);
-      } catch (e) {
-        console.error(e);
-        throw new Error("Error parsing token ID");
-      }
-
-      if (!tokenIdBigInt) {
-        throw new Error("Invalid token ID");
       }
 
       if (!walletClientData) {
@@ -129,7 +120,7 @@ export const useCreateFractionalMakerAsk = ({
           startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
           endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
           price: parseEther(values.price), // Be careful to use a price in wei, this example is for 1 ETH
-          itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
+          itemIds: [fractionTokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
           minUnitAmount: BigInt(values.minUnitsToKeep), // Minimum amount of units to keep after the sale
           maxUnitAmount: BigInt(values.maxUnitAmount), // Maximum amount of units to sell
           minUnitsToKeep: BigInt(values.minUnitsToKeep), // Minimum amount of units to keep after the sale
@@ -167,14 +158,20 @@ export const useCreateFractionalMakerAsk = ({
       }
 
       setStep("Create order");
-      await createOrder({
-        order: maker,
-        signature: signature,
-        signer: address,
-        quoteType: QuoteType.Ask,
-      });
+      try {
+        await createOrder({
+          order: maker,
+          signature: signature,
+          signer: address,
+          quoteType: QuoteType.Ask,
+        });
+      } catch (e) {
+        console.error(e);
+        throw new Error("Error registering order");
+      }
     },
-    onSettled: () => {
+    throwOnError: true,
+    onSuccess: () => {
       onClose();
     },
   });

@@ -31,7 +31,7 @@ export const HypercertTile = ({ hypercertId }: { hypercertId: string }) => {
       <ChainBadge
         hypercertId={hypercertId}
         position={"absolute"}
-        right={7}
+        right={2}
         top={2}
       />
     </Flex>

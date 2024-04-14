@@ -43,6 +43,14 @@ await seed.hyperboards([
               owner_id: myAddress,
               chain_id: sepoliaChainId,
             },
+            {
+              admin_id: myAddress,
+              display_size: 2,
+              hypercert_id:
+                "11155111-0xa16dfb32eb140a6f3f2ac68f41dad8c7e83c4941-1020847100762815390390123822295304634368",
+              owner_id: myAddress,
+              chain_id: sepoliaChainId,
+            }
           ],
         }),
       },

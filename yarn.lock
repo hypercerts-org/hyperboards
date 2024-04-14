@@ -2011,41 +2011,43 @@
   dependencies:
     hardhat "^2.18.3"
 
-"@hypercerts-org/marketplace-sdk@0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.0.24.tgz#85a7af4a433ad817629ac75185c141b781873d62"
-  integrity sha512-5lRVcClMAKlpkdM/XgCs8QFPD5DaHz3pfu1rgw5hObQabZjEILWPV7BSoQNIxWuER8oa94DlSYyVNlCKuWgczw==
+"@hypercerts-org/marketplace-sdk@0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/marketplace-sdk/-/marketplace-sdk-0.1.6.tgz#5f897a690e31fc0110861a0693b61c68ab10bc61"
+  integrity sha512-jyg/y5PBOya9hvodb8h3G3CZNLNyP8SVCK9dMSJQ5F5vMrh9kNmOk+jAL1Q/V9M7Rwfie3yVjb0IAT/Wb50GYA==
   dependencies:
-    "@hypercerts-org/sdk" "1.4.3"
+    "@hypercerts-org/sdk" "2.0.0-alpha.5"
     "@supabase/supabase-js" "^2.39.2"
     ethers "^6.6.2"
     merkletreejs "^0.3.9"
 
-"@hypercerts-org/sdk@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-1.4.3.tgz#215e47496192e35c24b817925303edb493547990"
-  integrity sha512-9K/2dY/r5dXZiFPlM9rg06P36aH49grpetsvisi9HxJMJYTIQy6ZKvB/ix3zC7LS+zSv8fhz13AEoQVlmP3Svw==
+"@hypercerts-org/sdk@2.0.0-alpha.4":
+  version "2.0.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.4.tgz#ea72d5c7e85ffe63d67bb9febd442a1fc1bf73e0"
+  integrity sha512-DtfqGV4KWH4h4CDhz/lVQrL0ELkjwFKNRlLyEhUNMnLCMvzYNglcXIz2eKZ7EkDFlB32rDt+mdJbW9JqveGhzg==
   dependencies:
     "@ethereum-attestation-service/eas-sdk" "1.3.7"
     "@ethersproject/abstract-signer" "^5.7.0"
     "@graphql-typed-document-node/core" "^3.2.0"
     "@hypercerts-org/contracts" "1.1.2"
     "@openzeppelin/merkle-tree" "^1.0.5"
-    "@urql/core" "^4.2.0"
+    "@urql/core" "^4.3.0"
     "@whatwg-node/fetch" "^0.9.13"
     ajv "^8.11.2"
     axios "^1.6.2"
     dotenv "^16.0.3"
     ethers "5.7.2"
+    fast-deep-equal "^3.1.3"
     graphql "^16.8.1"
     loglevel "^1.8.1"
     urql "^4.0.6"
-    viem "^1.21.4"
+    viem "^2.9.4"
+    wonka "^6.3.4"
 
 "@hypercerts-org/sdk@2.0.0-alpha.5":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.4.tgz#ea72d5c7e85ffe63d67bb9febd442a1fc1bf73e0"
-  integrity sha512-DtfqGV4KWH4h4CDhz/lVQrL0ELkjwFKNRlLyEhUNMnLCMvzYNglcXIz2eKZ7EkDFlB32rDt+mdJbW9JqveGhzg==
+  version "2.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.5.tgz#971ff33f922bffa05f673c17002a1368f0d2990b"
+  integrity sha512-OQL6jNliFg73J6+XfPoYAEiFmHfI6Uxj4bGDJyMY/6e55UHDCorDkml5bGawxApl8Ldj1E0AZcPaj/687jPg2g==
   dependencies:
     "@ethereum-attestation-service/eas-sdk" "1.3.7"
     "@ethersproject/abstract-signer" "^5.7.0"
@@ -4953,7 +4955,7 @@
   resolved "https://registry.yarnpkg.com/@uidotdev/usehooks/-/usehooks-2.4.1.tgz#4b733eaeae09a7be143c6c9ca158b56cc1ea75bf"
   integrity sha512-1I+RwWyS+kdv3Mv0Vmc+p0dPYH0DTRAo04HLyXReYBL9AeseDWUJyi4THuksBJcu9F0Pih69Ak150VDnqbVnXg==
 
-"@urql/core@^4.2.0", "@urql/core@^4.3.0":
+"@urql/core@^4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@urql/core/-/core-4.3.0.tgz#5e150412ed08d167861b05ceed417abbd048553f"
   integrity sha512-wT+FeL8DG4x5o6RfHEnONNFVDM3616ouzATMYUClB6CB+iIu2mwfBKd7xSUxYOZmwtxna5/hDRQdMl3nbQZlnw==
@@ -13845,7 +13847,7 @@ viem@2.7.9:
     isows "1.0.3"
     ws "8.13.0"
 
-viem@^1.0.0, viem@^1.1.4, viem@^1.21.4, viem@^1.6.0:
+viem@^1.0.0, viem@^1.1.4, viem@^1.6.0:
   version "1.21.4"
   resolved "https://registry.yarnpkg.com/viem/-/viem-1.21.4.tgz#883760e9222540a5a7e0339809202b45fe6a842d"
   integrity sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==

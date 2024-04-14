@@ -92,9 +92,7 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         throw new Error("Signer not initialized");
       }
 
-      const { id: tokenId, contractAddress } = parseClaimOrFractionId(
-        values.fractionId,
-      );
+      const { contractAddress } = parseClaimOrFractionId(values.fractionId);
 
       if (!contractAddress || !isAddress(contractAddress)) {
         throw new Error("Invalid contract address");
