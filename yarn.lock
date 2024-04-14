@@ -2042,7 +2042,7 @@
     urql "^4.0.6"
     viem "^1.21.4"
 
-"@hypercerts-org/sdk@2.0.0-alpha.4":
+"@hypercerts-org/sdk@2.0.0-alpha.5":
   version "2.0.0-alpha.4"
   resolved "https://registry.yarnpkg.com/@hypercerts-org/sdk/-/sdk-2.0.0-alpha.4.tgz#ea72d5c7e85ffe63d67bb9febd442a1fc1bf73e0"
   integrity sha512-DtfqGV4KWH4h4CDhz/lVQrL0ELkjwFKNRlLyEhUNMnLCMvzYNglcXIz2eKZ7EkDFlB32rDt+mdJbW9JqveGhzg==

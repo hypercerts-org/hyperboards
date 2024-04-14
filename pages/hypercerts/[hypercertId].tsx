@@ -40,6 +40,7 @@ import { ListForSaleButton } from "@/components/marketplace/list-for-sale-button
 import Link from "next/link";
 import { ProfileInfo } from "@/components/profile-info";
 import { OwnershipStats } from "@/components/marketplace/ownership-stats";
+import { ChainBadge } from "@/components/chain-badge";
 
 export const Index = () => {
   const { query } = useRouter();
@@ -116,7 +117,7 @@ export const Index = () => {
               justifyContent={"space-between"}
               width={"100%"}
               alignItems={"center"}
-              mb={10}
+              mb={6}
             >
               <Link href={"/hypercerts"}>
                 <Flex alignItems={"center"}>
@@ -130,9 +131,16 @@ export const Index = () => {
               </Link>
               <Image alt="Share hypercert" src="/icons/share.svg" />
             </Flex>
-            <Text fontSize={"4xl"} textStyle={"secondary"}>
-              {hypercert?.metadata?.name}
-            </Text>
+            <Flex>
+              <Text
+                fontSize={"4xl"}
+                lineHeight={"2.25rem"}
+                textStyle={"secondary"}
+              >
+                {hypercert?.metadata?.name}
+              </Text>
+              <ChainBadge ml={2} hypercertId={hypercertId as string} />
+            </Flex>
           </Flex>
           <HStack divider={<Divider orientation="vertical" />} width={"100%"}>
             <VStack
