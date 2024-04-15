@@ -35,12 +35,15 @@ import Head from "next/head";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Wrap, WrapItem } from "@chakra-ui/react";
 import { waitForTransactionReceipt } from "viem/actions";
+import { useEffect } from "react";
 
 type FormValues = {
   amount: number;
   email: string;
   agreement: boolean;
 };
+
+const minAmount = 0.01;
 
 export const DonationForm = () => {
   const isMobile = useIsMobile();
@@ -70,12 +73,13 @@ export const DonationForm = () => {
   const {
     handleSubmit,
     register,
+    setError,
+    clearErrors,
     formState: { isValid, errors, isSubmitting },
     getValues,
     watch,
   } = useForm<FormValues>({
     defaultValues: {},
-    reValidateMode: "onChange",
   });
 
   const handleEmailValidation = (email: string) => {
@@ -141,6 +145,8 @@ export const DonationForm = () => {
     await push(`/?page=thank-you&txHash=${txHash}`);
   };
 
+  console.log(errors);
+
   return (
     <>
       <Head>
@@ -176,15 +182,21 @@ export const DonationForm = () => {
                       border={"none"}
                       type={"number"}
                       isDisabled={isSubmitting}
-                      placeholder={"Amount (min. 0.01 ETH)"}
+                      placeholder={`Amount (min. ${minAmount} ETH)`}
                       step={"any"}
                       {...register("amount", {
-                        required: "This is required",
-                        valueAsNumber: true,
-                        min: {
-                          value: 0.01,
-                          message: "Minimum amount is 0.01",
+                        onChange: (amount) => {
+                          if (amount.target.value < minAmount) {
+                            setError("amount", {
+                              type: "manual",
+                              message: `The minimum amount is ${minAmount} ETH`,
+                            });
+                            return;
+                          }
+                          clearErrors("amount");
                         },
+                        valueAsNumber: true,
+                        required: "An amount is required",
                       })}
                     />
                     <InputRightAddon>ETH</InputRightAddon>
@@ -199,9 +211,15 @@ export const DonationForm = () => {
                 </FormControl>
                 <VStack w={"100%"}>
                   <Text fontSize={"md"}>
-                    To notify you about the next steps
+                    To notify you when your hypercert is ready to claim
                   </Text>
-                  <FormControl isInvalid={!!errors.email}>
+                  <FormControl
+                    isInvalid={!!errors.email}
+                    {...register("email", {
+                      required: "An email address is required",
+                      validate: handleEmailValidation,
+                    })}
+                  >
                     <Input
                       type="email"
                       bg={"white"}

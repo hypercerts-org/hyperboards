@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { toHex } from "viem";
 import { ALCHEMY_KEY } from "@/config";
+import _ from "lodash";
 
 const START_BLOCK = 9898972;
 const baseURL = `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`;
@@ -43,9 +44,15 @@ export const useFetchTransactionHistory = (address: string) => {
       return fetchHistoryToAddress(address);
     },
     select: (data) => {
-      const copiedData = [...data];
-      copiedData.sort((a, b) => b.value - a.value);
-      return copiedData;
+      return _.chain(data)
+        .groupBy((x) => x.from)
+        .map((txs, from) => ({
+          from,
+          value: _.sumBy(txs, (tx) => tx.value),
+        }))
+        .sortBy("value")
+        .reverse()
+        .value();
     },
   });
 };
