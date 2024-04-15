@@ -1,22 +1,15 @@
 import { useHypercertClient } from "@/components/providers";
 import { useQuery } from "@tanstack/react-query";
-import { useChainId } from "wagmi";
 import { ClaimByIdQuery } from "@hypercerts-org/sdk";
 
 export const useFetchHypercertById = (hypercertId: string) => {
   const client = useHypercertClient();
-  const chainId = useChainId();
 
   return useQuery({
-    queryKey: ["hypercert", "id", hypercertId, "chain", chainId],
+    queryKey: ["hypercert", "id", hypercertId],
     queryFn: async () => {
       if (!client) {
         console.log("no client");
-        return null;
-      }
-
-      if (!chainId) {
-        console.log("no chainId");
         return null;
       }
 
@@ -36,6 +29,5 @@ export const useFetchHypercertById = (hypercertId: string) => {
         metadata,
       };
     },
-    enabled: !!client && !!chainId,
   });
 };

@@ -52,3 +52,20 @@ export const formatStrategyType = (strategyType: number) => {
       return "Unknown";
   }
 };
+
+export const chainIdToName = (chainId: number) => {
+  switch (chainId) {
+    case 10:
+      return "Optimism";
+    case 11155111:
+      return "Sepolia";
+    case 84532:
+      return "Base Sepolia";
+    case 8453:
+      return "Base Mainnet";
+    case 42220:
+      return "Celo";
+    default:
+      return `Chain ID ${chainId}`;
+  }
+};

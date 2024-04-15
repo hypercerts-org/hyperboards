@@ -5,6 +5,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 export const constructClaimIdFromCreateClaimContractReceipt = (
   receipt: TransactionReceipt,
+  chainId: number,
 ) => {
   debugLog(receipt);
   const events = receipt.logs.map((log) =>
@@ -42,5 +43,5 @@ export const constructClaimIdFromCreateClaimContractReceipt = (
   const contractId = receipt.to?.toLowerCase();
   const tokenId = tokenIdBigNumber.toString();
 
-  return `${contractId}-${tokenId}`;
+  return `${chainId}-${contractId}-${tokenId}`;
 };
