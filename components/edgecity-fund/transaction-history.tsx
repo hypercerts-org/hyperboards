@@ -13,6 +13,7 @@ import { useEnsName } from "wagmi";
 import { formatAddress } from "@/utils/formatting";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { EDGECITY_DONATION_SAFE_ADDRESS } from "@/config";
+import { mainnet } from "viem/chains";
 
 export const TransactionHistory = () => {
   const { data, isLoading } = useFetchTransactionHistory(
@@ -34,7 +35,14 @@ export const TransactionHistory = () => {
 
   return (
     <VStack spacing={6} px={isMobile ? 2 : 0}>
-      <Heading style={{ textAlign:"center", fontFamily: '"Inter", sans-serif', fontSize: '24px', textTransform:"uppercase"}}>
+      <Heading
+        style={{
+          textAlign: "center",
+          fontFamily: '"Inter", sans-serif',
+          fontSize: "24px",
+          textTransform: "uppercase",
+        }}
+      >
         Supporters
       </Heading>
       <Flex justifyContent={"space-between"} width={"100%"}>
@@ -71,7 +79,7 @@ const TransactionRow = ({
 }) => {
   const { data, isFetched } = useEnsName({
     address: from,
-    chainId: 10,
+    chainId: mainnet.id,
   });
 
   if (!isFetched) {
