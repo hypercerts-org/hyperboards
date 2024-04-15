@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import "@rainbow-me/rainbowkit/styles.css";
-import { usePublicClient, useSendTransaction } from "wagmi";
+import { useSendTransaction, useWalletClient } from "wagmi";
 import { EDGECITY_DONATION_SAFE_ADDRESS } from "@/config";
 import { parseEther } from "viem";
 import { supabase } from "@/lib/supabase";
@@ -34,6 +34,7 @@ import { isValidEmail } from "@/utils/validation";
 import Head from "next/head";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Wrap, WrapItem } from "@chakra-ui/react";
+import { waitForTransactionReceipt } from "viem/actions";
 
 type FormValues = {
   amount: number;
@@ -149,13 +150,17 @@ export const DonationForm = () => {
         <Box mb={"80px"}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack textAlign={"center"} spacing={6}>
-              <Heading style={{ fontFamily: '"Inter", sans-serif', fontSize: '42px', textTransform:"uppercase"}}>
+              <Heading
+                style={{
+                  fontFamily: '"Inter", sans-serif',
+                  fontSize: "42px",
+                  textTransform: "uppercase",
+                }}
+              >
                 Edge City Denver
                 <br /> Retroactive Fund
               </Heading>
-              <Text fontSize={"lg"}>
-                Reward contributors retroactively
-              </Text>
+              <Text fontSize={"lg"}>Reward contributors retroactively</Text>
               <Text
                 textDecoration={"underline"}
                 cursor={"pointer"}
@@ -256,29 +261,49 @@ export const DonationForm = () => {
               </Text>
               <Wrap justify="center" spacing="2">
                 <WrapItem>
-                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5aee1591-398a-4514-0925-7a6accd82600/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img
+                    src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5aee1591-398a-4514-0925-7a6accd82600/public"
+                    alt="Placeholder"
+                    style={{ maxWidth: "100px" }}
+                  />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5a9166c8-f297-4ad7-6367-c6ecaee71300/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img
+                    src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/5a9166c8-f297-4ad7-6367-c6ecaee71300/public"
+                    alt="Placeholder"
+                    style={{ maxWidth: "100px" }}
+                  />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/eafdf551-ed04-4f2f-a849-b86888e3a800/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img
+                    src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/eafdf551-ed04-4f2f-a849-b86888e3a800/public"
+                    alt="Placeholder"
+                    style={{ maxWidth: "100px" }}
+                  />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/ac3f66c7-2795-4cb1-2f1c-e83520b12b00/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img
+                    src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/ac3f66c7-2795-4cb1-2f1c-e83520b12b00/public"
+                    alt="Placeholder"
+                    style={{ maxWidth: "100px" }}
+                  />
                 </WrapItem>
                 <WrapItem>
-                  <img src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/c5ce69e7-5406-4c1e-e469-51e82ecd5e00/public" alt="Placeholder" style={{ maxWidth: '100px' }} />
+                  <img
+                    src="https://imagedelivery.net/bRzpE2_yvXyRL0k6jCSFRQ/c5ce69e7-5406-4c1e-e469-51e82ecd5e00/public"
+                    alt="Placeholder"
+                    style={{ maxWidth: "100px" }}
+                  />
                 </WrapItem>
               </Wrap>
               <Text
                 textDecoration={"underline"}
                 cursor={"pointer"}
                 onClick={hypercertsDetailsOnOpen}
-                >
+              >
                 See the details of all 17 hypercerts
               </Text>
-            </VStack>     
+            </VStack>
           </Box>
         </Box>
         <TransactionHistory />
@@ -301,6 +326,8 @@ export const DonationForm = () => {
 
 const useSendDonation = ({ amount }: { amount: number }) => {
   const toast = useToast();
+  const { data: walletClient } = useWalletClient();
+
   let valueInWei = parseEther("0");
   if (!isNaN(amount)) {
     try {
@@ -309,7 +336,6 @@ const useSendDonation = ({ amount }: { amount: number }) => {
       console.log(e);
     }
   }
-  const publicClient = usePublicClient();
 
   const { sendTransactionAsync } = useSendTransaction({
     mutation: {
@@ -326,7 +352,7 @@ const useSendDonation = ({ amount }: { amount: number }) => {
   });
 
   return async () => {
-    if (!publicClient) {
+    if (!walletClient) {
       throw new Error("Public client not initialized");
     }
     const hash = await sendTransactionAsync({
@@ -334,9 +360,14 @@ const useSendDonation = ({ amount }: { amount: number }) => {
       value: valueInWei,
     });
 
-    await publicClient.waitForTransactionReceipt({
+    console.log("txHash", hash);
+
+    const receipt = await waitForTransactionReceipt(walletClient, {
       hash,
     });
+
+    console.log("receipt", receipt);
+
     return hash;
   };
 };
