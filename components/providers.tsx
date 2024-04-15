@@ -122,23 +122,29 @@ export const HypercertClientProvider = ({
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({});
   const publicClient = usePublicClient({});
+  const defaultChain = 11155111;
 
   const [client, setClient] = useState<HypercertClient>();
 
   useEffect(() => {
-    if (!chainId) {
-      return;
-    }
+    const chainToUse = () => {
+      if (chainOverride) {
+        return chainOverride;
+      }
 
-    if (chainId === mainnet.id) {
-      // Temporary fix, remove when mainnet is supported
-      // Mainnet had to be enabled to get ENS lookup working
-      setClient(undefined);
-      return;
-    }
+      if (chainId === 1) {
+        return defaultChain;
+      }
+
+      if (chainId) {
+        return chainId;
+      }
+
+      return defaultChain;
+    };
 
     const hypercertClient = new HypercertClient({
-      chain: { id: chainOverride || chainId },
+      chain: { id: chainToUse() },
       nftStorageToken: NFT_STORAGE_TOKEN,
       web3StorageToken: WEB3_STORAGE_TOKEN,
       easContractAddress: EAS_CONTRACT_ADDRESS,
@@ -146,6 +152,7 @@ export const HypercertClientProvider = ({
       walletClient,
       // @ts-ignore
       publicClient,
+      indexerEnvironment: "all",
     });
 
     setClient(hypercertClient);

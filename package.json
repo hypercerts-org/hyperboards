@@ -20,6 +20,7 @@
     "lint": "next lint",
     "supabase:init": "supabase init",
     "supabase:start": "supabase start",
+    "supabase:seed": "npx @snaplet/seed sync && npx tsx seed.mts",
     "supabase:types": "supabase gen types typescript --local > ./types/database.ts",
     "supabase:types:hypercerts": "npx supabase gen types typescript --project-id clagjjfinooizoqdkvqc --schema public > types/hypercerts-database.ts",
     "supabase:migration:new": "supabase migration new",
@@ -39,9 +40,10 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.1.0",
-    "@hypercerts-org/marketplace-sdk": "0.0.24",
-    "@hypercerts-org/sdk": "1.4.3",
+    "@hypercerts-org/marketplace-sdk": "0.1.6",
+    "@hypercerts-org/sdk": "2.0.0-alpha.4",
     "@rainbow-me/rainbowkit": "^2.0.0",
+    "@snaplet/seed": "^0.91.1",
     "@supabase/supabase-js": "^2.33.1",
     "@tanstack/react-query": "^5.18.1",
     "@tanstack/react-query-devtools": "^5.20.5",
@@ -59,7 +61,7 @@
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-    "next": "^14.1.4",
+    "next": "13.5.5",
     "nextjs-cors": "^2.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -87,9 +89,11 @@
     "lokijs": "^1.5.12",
     "parcel": "^2.11.0",
     "parcel-namer-rewrite": "^2.10.3-rc.2",
+    "postgres": "^3.4.4",
     "prettier": "^3.0.3",
     "process": "^0.11.10",
     "rimraf": "^5.0.5",
-    "snaplet": "0.71"
+    "snaplet": "0.71",
+    "tsx": "^4.7.2"
   }
 }

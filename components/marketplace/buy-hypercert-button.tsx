@@ -21,6 +21,7 @@ import React from "react";
 import { BalanceOverview } from "@/components/balance-overview";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { OwnershipStats } from "@/components/marketplace/ownership-stats";
+import { useHypercertClient } from "@/components/providers";
 
 type Props = {
   hypercertId: string;
@@ -33,6 +34,8 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
     const { isOpen, onClose, onOpen } = useDisclosure({
       id: "buy-hypercert-button",
     });
+
+    const client = useHypercertClient();
 
     const { data: orderData } =
       useFetchMarketplaceOrdersForHypercert(hypercertId);
@@ -55,9 +58,20 @@ export const BuyHypercertButton = React.forwardRef<HTMLButtonElement, Props>(
       ? orderData?.orders[boughtFractionId]
       : undefined;
 
+    const disabled =
+      !client ||
+      !client.isClaimOrFractionOnConnectedChain(hypercertId) ||
+      Object.keys(orderData?.orders ?? {}).length === 0;
+
     return (
       <>
-        <Button variant="blackAndWhite" onClick={onOpen} ref={ref} {...props}>
+        <Button
+          variant="blackAndWhite"
+          onClick={onOpen}
+          ref={ref}
+          isDisabled={disabled}
+          {...props}
+        >
           {text}
         </Button>
         <Modal isOpen={isOpen} onClose={onClose}>

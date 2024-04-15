@@ -52,5 +52,6 @@ export const useCreateOrderInSupabase = () => {
         signature,
       });
     },
+    throwOnError: true,
   });
 };

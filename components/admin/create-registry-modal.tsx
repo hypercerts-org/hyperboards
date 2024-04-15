@@ -107,7 +107,7 @@ export const CreateRegistryModal = ({
             display_size,
           }) => {
             const claim = await client.indexer.claimById(hypercert_id);
-            if (!claim.claim) {
+            if (!claim?.claim) {
               throw new Error("Claim not found");
             }
             return {

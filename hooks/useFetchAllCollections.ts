@@ -7,10 +7,7 @@ export const useFetchAllCollections = () => {
   return useQuery({
     queryKey: ["collections", "all"],
     queryFn: async () => {
-      return supabase
-        .from("registries")
-        .select("*, claims(*)")
-        .eq("chain_id", chainId);
+      return supabase.from("registries").select("*, claims(*)");
     },
     enabled: !!chainId,
   });

@@ -23,12 +23,12 @@ import {
 import { useInteractionModal } from "@/components/interaction-modal";
 import { useAddress } from "@/hooks/useAddress";
 import { useGetAuthenticatedClient } from "@/hooks/useGetAuthenticatedClient";
-import { useChainId } from "wagmi";
+import { useChainId, useWalletClient } from "wagmi";
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/alert";
 import { TransactionReceipt } from "viem";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
-import { useEthersProvider } from "@/hooks/useEthersProvider";
 import { constructClaimIdFromCreateClaimContractReceipt } from "@/utils/constructClaimIdFromCreateClaimContractReceipt";
+import { waitForTransactionReceipt } from "viem/actions";
 
 const formValuesToHypercertMetadata = (
   values: MintingFormValues,
@@ -99,9 +99,9 @@ export const BlueprintMinter = ({
   const { onOpen, setStep, onClose } = useInteractionModal();
   const address = useAddress();
   const getClient = useGetAuthenticatedClient();
-  const provider = useEthersProvider();
-
+  const { data: walletClient } = useWalletClient();
   const chainId = useChainId();
+
   const isCorrectChain = chainId === blueprint?.data?.registries?.chain_id;
 
   const [previewImageSrc, setPreviewImageSrc] = useState<string | undefined>(
@@ -145,6 +145,17 @@ export const BlueprintMinter = ({
       toast({
         title: "Error",
         description: "Client not initialized",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!walletClient) {
+      toast({
+        title: "Error",
+        description: "Wallet client not initialized",
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -206,8 +217,13 @@ export const BlueprintMinter = ({
         NUMBER_OF_UNITS_IN_HYPERCERT,
         TransferRestrictions.FromCreatorOnly,
       );
-      // @ts-ignore
-      transactionReceipt = await provider.waitForTransaction(transactionHash);
+
+      if (!transactionHash) {
+        throw new Error("No transaction hash");
+      }
+      transactionReceipt = await waitForTransactionReceipt(walletClient, {
+        hash: transactionHash,
+      });
     } catch (e) {
       console.error(e);
       toast({
@@ -226,6 +242,7 @@ export const BlueprintMinter = ({
     try {
       claimId = constructClaimIdFromCreateClaimContractReceipt(
         transactionReceipt!,
+        chainId,
       );
     } catch (e) {
       console.error(e);

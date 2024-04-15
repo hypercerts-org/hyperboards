@@ -122,9 +122,10 @@ export default async function handler(
       chain: { id: chainId },
       nftStorageToken: NFT_STORAGE_TOKEN,
       easContractAddress: EAS_CONTRACT_ADDRESS,
+      indexerEnvironment: "all",
     });
     const tokenIds = makerOrder.itemIds.map(
-      (id) => `${makerOrder.collection.toLowerCase()}-${id}`,
+      (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,
     );
     console.log("[marketplace-api] Token IDs", tokenIds);
 
