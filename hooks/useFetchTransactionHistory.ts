@@ -49,6 +49,7 @@ export const useFetchTransactionHistory = (address: string) => {
         .map((txs, from) => ({
           from,
           value: _.sumBy(txs, (tx) => tx.value),
+          hash: _.last(txs)!.hash,
         }))
         .sortBy("value")
         .reverse()

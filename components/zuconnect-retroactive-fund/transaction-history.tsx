@@ -51,7 +51,7 @@ export const TransactionHistory = () => {
           <TransactionRow
             key={transaction.hash}
             value={transaction.value}
-            from={transaction.from}
+            from={transaction.from as `0x${string}`}
             txHash={transaction.hash}
           />
         ))}

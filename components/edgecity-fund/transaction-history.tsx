@@ -57,9 +57,9 @@ export const TransactionHistory = () => {
       >
         {data.map((transaction) => (
           <TransactionRow
-            key={transaction.hash}
+            key={transaction.from}
             value={transaction.value}
-            from={transaction.from}
+            from={transaction.from as `0x${string}`}
             txHash={transaction.hash}
           />
         ))}
