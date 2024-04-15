@@ -17,7 +17,7 @@ export const useBuyMakerBid = () => {
   const provider = useEthersProvider();
   const signer = useEthersSigner();
   const address = useAddress();
-  const currentAllowance = useGetCurrentERC20Allowance();
+  const getCurrentAllowance = useGetCurrentERC20Allowance();
 
   return useMutation({
     mutationKey: ["buyMakerBid"],
@@ -38,14 +38,17 @@ export const useBuyMakerBid = () => {
           description: "Setting up order execution",
         },
         {
-          title: "Setting approval",
+          title: "ERC20",
           description: "Setting approval",
+        },
+        {
+          title: "Transfer manager",
+          description: "Approving transfer manager",
         },
         {
           title: "Awaiting buy signature",
           description: "Awaiting buy signature",
         },
-
         {
           title: "Awaiting confirmation",
           description: "Awaiting confirmation",
@@ -58,7 +61,10 @@ export const useBuyMakerBid = () => {
       const takerOrder = lr.createTaker(order, address);
 
       try {
-        setStep("Setting approval");
+        const currentAllowance = await getCurrentAllowance(
+          order.currency as `0x${string}`,
+        );
+        setStep("ERC20");
         if (currentAllowance < BigInt(order.price)) {
           const approveTx = await lr.approveErc20(
             lr.addresses.WETH,
@@ -71,7 +77,7 @@ export const useBuyMakerBid = () => {
 
         const isTransferManagerApproved = await lr.isTransferManagerApproved();
         if (!isTransferManagerApproved) {
-          setStep("Setting approval");
+          setStep("Transfer manager");
           const transferManagerApprove = await lr
             .grantTransferManagerApproval()
             .call();

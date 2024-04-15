@@ -18,7 +18,7 @@ export const useBuyFractionalMakerAsk = () => {
   const provider = useEthersProvider();
   const signer = useEthersSigner();
   const address = useAddress();
-  const currentAllowance = useGetCurrentERC20Allowance();
+  const getCurrentERC20Allowance = useGetCurrentERC20Allowance();
 
   return useMutation({
     mutationKey: ["buyFractionalMakerAsk"],
@@ -47,14 +47,17 @@ export const useBuyFractionalMakerAsk = () => {
           description: "Setting up order execution",
         },
         {
-          title: "Setting approval",
+          title: "ERC20",
           description: "Setting approval",
+        },
+        {
+          title: "Transfer manager",
+          description: "Approving transfer manager",
         },
         {
           title: "Awaiting buy signature",
           description: "Awaiting buy signature",
         },
-
         {
           title: "Awaiting confirmation",
           description: "Awaiting confirmation",
@@ -76,10 +79,13 @@ export const useBuyFractionalMakerAsk = () => {
       );
 
       try {
-        setStep("Setting approval");
+        setStep("ERC20");
+        const currentAllowance = await getCurrentERC20Allowance(
+          order.currency as `0x${string}`,
+        );
         if (currentAllowance < BigInt(order.price) * BigInt(unitAmount)) {
           const approveTx = await hypercertExchangeClient.approveErc20(
-            hypercertExchangeClient.addresses.WETH,
+            order.currency,
             BigInt(order.price) * BigInt(unitAmount),
           );
           await waitForTransactionReceipt(walletClientData, {
@@ -87,10 +93,10 @@ export const useBuyFractionalMakerAsk = () => {
           });
         }
 
+        setStep("Transfer manager");
         const isTransferManagerApproved =
           await hypercertExchangeClient.isTransferManagerApproved();
         if (!isTransferManagerApproved) {
-          setStep("Setting approval");
           const transferManagerApprove = await hypercertExchangeClient
             .grantTransferManagerApproval()
             .call();
