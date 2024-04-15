@@ -34,6 +34,7 @@ await seed.hyperboards([
         registries: () => ({
           name: "Test registry",
           chain_id: sepoliaChainId,
+          admin_id: myAddress,
           claims: () => [
             {
               admin_id: myAddress,
