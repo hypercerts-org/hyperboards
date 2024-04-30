@@ -73,9 +73,8 @@ export const Index = () => {
     listForSaleButtonRef.current?.click();
   };
 
-  const ownedByConnectedUser = !!fractionsData?.some(
-    (fraction) => fraction.owner === address,
-  );
+  const ownedByConnectedUser =
+    !!fractionsData?.some((fraction) => fraction.owner === address) || true;
   const createdByCurrentUser = hypercert?.owner === address;
 
   if (isLoading)

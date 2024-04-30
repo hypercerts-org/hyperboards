@@ -113,8 +113,9 @@ export const AvailableOrders = ({
 
   const [step, setStep] = useState<"table" | "fractional-order-form">("table");
 
-  const selectedOrder = table.getRowModel().rows.find((x) => x.getIsSelected())
-    ?.original;
+  const selectedOrder = table
+    .getRowModel()
+    .rows.find((x) => x.getIsSelected())?.original;
 
   const onClickBuy = async () => {
     if (!selectedOrder) return;

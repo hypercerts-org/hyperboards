@@ -113,6 +113,9 @@ export const useCreateFractionalMakerAsk = ({
         provider as unknown as Provider,
         // @ts-ignore
         signer,
+        {
+          apiEndpoint: process.env.NEXT_PUBLIC_MARKETPLACE_API_ENDPOINT,
+        },
       );
 
       const { maker, isCollectionApproved, isTransferManagerApproved } =

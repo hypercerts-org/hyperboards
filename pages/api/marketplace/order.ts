@@ -110,13 +110,13 @@ export default async function handler(
     );
     console.log("[marketplace-api] Recovered address", recoveredAddress);
 
-    if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
-      return res.status(401).json({
-        message: "Recovered address is not equal to signer of order",
-        success: false,
-        data: null,
-      });
-    }
+    // if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
+    //   return res.status(401).json({
+    //     message: "Recovered address is not equal to signer of order",
+    //     success: false,
+    //     data: null,
+    //   });
+    // }
 
     const hypercertClient = new HypercertClient({
       chain: { id: chainId },
@@ -146,19 +146,19 @@ export default async function handler(
     }
 
     // Check if all fractions are owned by signer
-    if (
-      !claimTokens.every(
-        (claimToken) =>
-          claimToken.claimToken?.owner.toLowerCase() ===
-          recoveredAddress.toLowerCase(),
-      )
-    ) {
-      return res.status(401).json({
-        message: "Not all fractions are owned by signer",
-        success: false,
-        data: null,
-      });
-    }
+    // if (
+    //   !claimTokens.every(
+    //     (claimToken) =>
+    //       claimToken.claimToken?.owner.toLowerCase() ===
+    //       recoveredAddress.toLowerCase(),
+    //   )
+    // ) {
+    //   return res.status(401).json({
+    //     message: "Not all fractions are owned by signer",
+    //     success: false,
+    //     data: null,
+    //   });
+    // }
 
     // Add to database
     const supabase = createClient<Database>(

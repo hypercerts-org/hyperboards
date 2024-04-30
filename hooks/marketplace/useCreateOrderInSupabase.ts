@@ -45,6 +45,9 @@ export const useCreateOrderInSupabase = () => {
         provider as unknown as Provider,
         // @ts-ignore
         signer,
+        {
+          apiEndpoint: process.env.NEXT_PUBLIC_HYPERCERTS_MARKETPLACE_API_URL,
+        },
       );
 
       return hypercertExchangeClient.registerOrder({

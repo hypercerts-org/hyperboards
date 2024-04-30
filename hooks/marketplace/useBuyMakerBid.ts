@@ -56,7 +56,9 @@ export const useBuyMakerBid = () => {
       ]);
 
       // @ts-ignore
-      const lr = new HypercertExchangeClient(chainId, provider, signer);
+      const lr = new HypercertExchangeClient(chainId, provider, signer, {
+        apiEndpoint: process.env.NEXT_PUBLIC_HYPERCERTS_MARKETPLACE_API_URL,
+      });
       setStep("Setting up order execution");
       const takerOrder = lr.createTaker(order, address);
 

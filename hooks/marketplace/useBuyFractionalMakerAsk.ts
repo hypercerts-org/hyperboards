@@ -69,6 +69,9 @@ export const useBuyFractionalMakerAsk = () => {
         // @ts-ignore
         provider,
         signer,
+        {
+          apiEndpoint: process.env.NEXT_PUBLIC_HYPERCERTS_MARKETPLACE_API_URL,
+        },
       );
       setStep("Setting up order execution");
       const takerOrder = hypercertExchangeClient.createFractionalSaleTakerBid(

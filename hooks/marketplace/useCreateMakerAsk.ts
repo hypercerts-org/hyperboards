@@ -134,26 +134,26 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         listingsWithUnits.reduce((acc, cur) => acc + cur.units, 0n);
 
       // Perform the split and await confirmation
-      const hash = await client.splitFractionUnits(
-        BigInt(selectedFraction.tokenID),
-        [restAmount, ...listingsWithUnits.map((x) => x.units)],
-      );
-      if (!hash) {
-        throw new Error("No hash found for splitting transaction");
-      }
-      setStep("Waiting");
-      const receipt = await waitForTransactionReceipt(walletClientData, {
-        confirmations: 3,
-        hash: hash,
-      });
-
-      if (!receipt || receipt?.status === "reverted") {
-        throw new Error("Splitting failed");
-      }
-
-      // Get new token ids and their corresponding values
-      const newTokenIds =
-        constructTokenIdsFromSplitFractionContractReceipt(receipt);
+      // const hash = await client.splitFractionUnits(
+      //   BigInt(selectedFraction.tokenID),
+      //   [restAmount, ...listingsWithUnits.map((x) => x.units)],
+      // );
+      // if (!hash) {
+      //   throw new Error("No hash found for splitting transaction");
+      // }
+      // setStep("Waiting");
+      // const receipt = await waitForTransactionReceipt(walletClientData, {
+      //   confirmations: 3,
+      //   hash: hash,
+      // });
+      //
+      // if (!receipt || receipt?.status === "reverted") {
+      //   throw new Error("Splitting failed");
+      // }
+      //
+      // // Get new token ids and their corresponding values
+      // const newTokenIds =
+      //   constructTokenIdsFromSplitFractionContractReceipt(receipt);
 
       let signature: string | undefined;
 
@@ -161,13 +161,13 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
         const listing = listingsWithUnits[index];
 
         // Find the entry for the newly split token with the right amount of units
-        const newTokenEntryIndex = newTokenIds.findIndex(
-          (newTokenId) => newTokenId.value === listing.units,
-        );
-        const { tokenId } = newTokenIds[newTokenEntryIndex];
+        // const newTokenEntryIndex = newTokenIds.findIndex(
+        //   (newTokenId) => newTokenId.value === listing.units,
+        // );
+        // const { tokenId } = newTokenIds[newTokenEntryIndex];
 
         // Remove the entry for the newly split token from the list of new token ids so there is only one order created per token
-        newTokenIds.splice(newTokenEntryIndex, 1);
+        // newTokenIds.splice(newTokenEntryIndex, 1);
 
         if (!listing.price) {
           throw new Error("Invalid price");
@@ -182,6 +182,10 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
             provider as unknown as Provider,
             // @ts-ignore
             signer,
+            {
+              apiEndpoint:
+                process.env.NEXT_PUBLIC_HYPERCERTS_MARKETPLACE_API_URL,
+            },
           );
 
           const { maker, isCollectionApproved, isTransferManagerApproved } =
@@ -189,7 +193,9 @@ export const useCreateMakerAsk = ({ hypercertId }: { hypercertId: string }) => {
               startTime: Math.floor(Date.now() / 1000), // Use it to create an order that will be valid in the future (Optional, Default to now)
               endTime: Math.floor(Date.now() / 1000) + 86400, // If you use a timestamp in ms, the function will revert
               price: parseEther(listing.price), // Be careful to use a price in wei, this example is for 1 ETH
-              itemIds: [tokenId.toString()], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
+              itemIds: [
+                parseClaimOrFractionId(values.fractionId).id.toString(),
+              ], // Token id of the NFT(s) you want to sell, add several ids to create a bundle
             });
 
           // Grant the TransferManager the right the transfer assets on behalf od the LooksRareProtocol

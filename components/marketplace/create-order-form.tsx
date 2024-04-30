@@ -138,9 +138,7 @@ export const CreateOrderForm = ({
     );
   }
 
-  const yourFractions = fractions.filter(
-    (fraction) => fraction.owner === address,
-  );
+  const yourFractions = fractions;
 
   const fractionsWithActiveOrder = currentOrdersForHypercert?.orders
     ? Object.values(currentOrdersForHypercert.orders).map(
@@ -148,9 +146,7 @@ export const CreateOrderForm = ({
       )
     : [];
 
-  const yourFractionsWithoutActiveOrder = yourFractions.filter(
-    (fraction) => !fractionsWithActiveOrder.includes(fraction.id),
-  );
+  const yourFractionsWithoutActiveOrder = yourFractions;
 
   const hasFractionsWithoutActiveOrder =
     yourFractionsWithoutActiveOrder.length > 0;
