@@ -9,6 +9,8 @@ const widgetDivs = document.querySelectorAll(".hyperboard-widget");
 // Inject our React App into each class
 widgetDivs.forEach((container) => {
   const hyperboardId = container.getAttribute("data-hyperboard-id");
+  const showTable =
+    container.getAttribute("data-hyperboard-show-table") === "true";
 
   if (!hyperboardId) {
     console.error("No hyperboard id found");
@@ -21,7 +23,11 @@ widgetDivs.forEach((container) => {
     // TODO: Fix this typing error
     //@ts-ignore
     <Providers showReactQueryDevtools={false} resetCSS={false}>
-      <HyperboardRenderer hyperboardId={hyperboardId} disableToast />
+      <HyperboardRenderer
+        hyperboardId={hyperboardId}
+        showTable={showTable}
+        disableToast
+      />
     </Providers>,
   );
 });

@@ -7,6 +7,7 @@ import {
 import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
+import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 
 export const HyperboardRenderer = ({
   hyperboardId,
@@ -14,12 +15,14 @@ export const HyperboardRenderer = ({
   disableToast = false,
   selectedRegistryParent,
   onSelectedRegistryChange,
+  showTable = false,
 }: {
   hyperboardId: string;
   fullScreen?: boolean;
   disableToast?: boolean;
   selectedRegistryParent?: string;
   onSelectedRegistryChange?: (registryId?: string) => void;
+  showTable?: boolean;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dimensions = useSize(containerRef);
@@ -141,6 +144,13 @@ export const HyperboardRenderer = ({
           </>
         )}
       </Flex>
+      {showTable && (
+        <OwnershipTable
+          hyperboardId={hyperboardId}
+          selectedRegistry={selectedRegistry}
+          onSelectRegistry={setSelectedRegistry}
+        />
+      )}
     </>
   );
 };

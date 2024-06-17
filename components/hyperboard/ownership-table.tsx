@@ -158,7 +158,7 @@ export const OwnershipTable = ({
                     icon={
                       <Image
                         alt={"Board icon"}
-                        src={"/icons/board.svg"}
+                        src={"https://staging.hyperboards.org/icons/board.svg"}
                         width={"24px"}
                       />
                     }
@@ -187,7 +187,9 @@ export const OwnershipTable = ({
                             icon={
                               <Image
                                 alt={"Claim icon"}
-                                src={"/icons/claim.svg"}
+                                src={
+                                  "https://staging.hyperboards.org/icons/board.svg"
+                                }
                                 width={"12px"}
                               />
                             }
@@ -316,7 +318,11 @@ const HypercertClaimRow = ({
       {...props}
       text={claim.metadata.name || "No name"}
       icon={
-        <Image alt={"Claim icon"} src={"/icons/claim.svg"} width={"12px"} />
+        <Image
+          alt={"Claim icon"}
+          src={"https://staging.hyperboards.org/icons/claim.svg"}
+          width={"12px"}
+        />
       }
     />
   );
