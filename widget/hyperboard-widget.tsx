@@ -17,7 +17,7 @@ widgetDivs.forEach((container) => {
     return;
   }
 
-  console.log("rendering hyperboard", hyperboardId);
+  console.log("rendering hyperboard", hyperboardId, "showTable", showTable);
   const root = createRoot(container); // createRoot(container!) if you use TypeScript
   root.render(
     // TODO: Fix this typing error
