@@ -42,7 +42,7 @@
     "@hypercerts-org/contracts": "1.1.0",
     "@hypercerts-org/marketplace-sdk": "0.1.6",
     "@hypercerts-org/sdk": "2.0.0-alpha.4",
-    "@rainbow-me/rainbowkit": "^2.0.0",
+    "@rainbow-me/rainbowkit": "^2.1.2",
     "@snaplet/seed": "^0.91.1",
     "@supabase/supabase-js": "^2.33.1",
     "@tanstack/react-query": "^5.18.1",
@@ -73,7 +73,7 @@
     "supabase": "^1.106.1",
     "typescript": "5.2.2",
     "viem": "2.7.9",
-    "wagmi": "2.5.7",
+    "wagmi": "2.10.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
