@@ -147,6 +147,7 @@ export const HyperboardRenderer = ({
       {showTable && (
         <OwnershipTable
           hyperboardId={hyperboardId}
+          showHeader
           selectedRegistry={selectedRegistry}
           onSelectRegistry={setSelectedRegistry}
         />
