@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase, supabaseHypercerts } from "@/lib/supabase";
 
 import {
-  Claim,
-  ClaimTokensByClaimQuery,
+  CONSTANTS,
   HypercertClient,
   parseClaimOrFractionId,
 } from "@hypercerts-org/sdk";
@@ -21,6 +20,10 @@ import {
 import { sift } from "@/utils/sift";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
+import { cacheExchange, Client, fetchExchange } from "@urql/core";
+import { graphql } from "gql.tada";
+import { getFractionsByHypercert } from "@/hooks/useFetchHypercertFractionsByHypercertId";
+import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
 
 export const useListRegistries = () => {
   return useQuery({
@@ -40,25 +43,32 @@ const processRegistryForDisplay = async (
     blueprints: BlueprintEntity[];
   },
   allowlistEntries: (AllowlistCacheEntity & {
-    claim: Claim;
+    claim: { totalUnits: bigint };
   })[],
   label: string | null,
   totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
+  const urqlClient = new Client({
+    url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
+    exchanges: [cacheExchange, fetchExchange],
+  });
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
-      const fractions = (await client.indexer.fractionsByClaim(
+      const fractions = await getFractionsByHypercert(
         claim.hypercert_id,
-      )) as ClaimTokensByClaimQuery;
+        urqlClient,
+      );
 
       return {
         claim,
-        fractions: fractions.claimTokens,
+        fractions: fractions?.data || [],
       };
     }),
   );
+
+  console.log("claimsAndFractions", claimsAndFractions);
 
   // Calculate the total number of units in all claims, allowlistEntries and blueprints combined
   const totalUnitsInAllowlistEntries = allowlistEntries.reduce(
@@ -84,7 +94,7 @@ const processRegistryForDisplay = async (
 
     // The total number of units in this claim
     const totalUnitsInClaim = fractions.reduce(
-      (acc, curr) => acc + BigInt(curr.units),
+      (acc, curr) => acc + BigInt(curr.units || 0),
       0n,
     );
 
@@ -97,10 +107,10 @@ const processRegistryForDisplay = async (
 
     // Calculate the relative number of units per fraction
     return fractions.map((fraction) => ({
-      id: fraction.id,
-      owner: fraction.owner.toLowerCase(),
+      id: fraction.fraction_id,
+      owner: fraction.owner_address?.toLowerCase(),
       unitsAdjustedForDisplaySize:
-        (BigInt(fraction.units) * displayUnitsPerUnit) / 10n ** 14n,
+        (BigInt(fraction.units || 0) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: false,
       hypercertId: claim.hypercert_id,
       hypercertOwnerAddress: claim.owner_id,
@@ -158,7 +168,7 @@ const processRegistryForDisplay = async (
     claimsAndFractions
       .map((x) => x.fractions)
       .flat()
-      .map((x) => x.id),
+      .map((x) => x.fraction_id!),
     registry.chain_id,
   );
 
@@ -167,6 +177,7 @@ const processRegistryForDisplay = async (
       fractionSpecificDisplayDataResponse.data?.find(
         (x) => x.fraction_id === fraction.id,
       );
+    console.log(fraction, fractionSpecificDisplayData, claimDisplayData);
     if (
       fraction.owner === fraction.hypercertOwnerAddress &&
       fractionSpecificDisplayData
@@ -180,7 +191,7 @@ const processRegistryForDisplay = async (
     return {
       ...fraction,
       displayData: {
-        ...claimDisplayData[fraction.owner],
+        ...claimDisplayData[fraction.owner!],
         value: fraction.owner,
       },
       ownerId: fraction.owner,
@@ -326,16 +337,22 @@ export const useFetchHyperboardContents = (
         }
       }
 
+      const urqlClient = new Client({
+        url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
+        exchanges: [cacheExchange, fetchExchange],
+      });
+
       const allowlistEntriesWithClaims = sift(
         await Promise.all(
           allowlistData?.map(async (entry) => {
-            const claim = await client.indexer.claimById(
-              `${entry.chainId}-${entry.claimId}`,
+            const claim = await getHypercertWithMetadata(
+              entry.claimId!,
+              urqlClient,
             );
-            if (!claim?.claim) {
+            if (!claim) {
               return null;
             }
-            return { ...entry, claim: claim.claim };
+            return { ...entry, claim: claim };
           }) || [],
         ),
       );

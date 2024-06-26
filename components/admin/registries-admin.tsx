@@ -224,7 +224,7 @@ export const ClaimRow = ({
         </Link>
       </Td>
       <Td>{chain_id}</Td>
-      <Td>{formatAddress(data.owner)}</Td>
+      <Td>{formatAddress(data.owner_address)}</Td>
       <Td>
         <Link
           href={data.metadata.external_url}

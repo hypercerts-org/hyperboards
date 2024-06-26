@@ -155,15 +155,11 @@ export const HypercertClientProvider = ({
     };
 
     const hypercertClient = new HypercertClient({
-      chain: { id: chainToUse() },
-      nftStorageToken: NFT_STORAGE_TOKEN,
-      web3StorageToken: WEB3_STORAGE_TOKEN,
-      easContractAddress: EAS_CONTRACT_ADDRESS,
+      environment: "test",
       // @ts-ignore
       walletClient,
       // @ts-ignore
       publicClient,
-      indexerEnvironment: "all",
     });
 
     setClient(hypercertClient);
