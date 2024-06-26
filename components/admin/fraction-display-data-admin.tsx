@@ -56,10 +56,15 @@ const DefaultDisplayDataForClaim = ({
   };
   const address = useAddress();
   const fractionsOwnedByAdmin = fractions
-    ?.filter((fraction) => fraction.owner === address?.toLowerCase())
+    ?.filter(
+      (fraction) =>
+        fraction?.owner_address?.toLowerCase() === address?.toLowerCase(),
+    )
     .map((fraction) => ({
-      ...(fractionSpecificData?.find((x) => x.fraction_id === fraction.id) ||
-        {}),
+      ...(fractionSpecificData?.find(
+        (x) =>
+          x.fraction_id.toLowerCase() === fraction?.fraction_id?.toLowerCase(),
+      ) || {}),
       ...fraction,
     }));
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +90,7 @@ const DefaultDisplayDataForClaim = ({
     }
     const csvData = fractionsOwnedByAdmin.map((fraction) => [
       fraction.metadata?.name || "",
-      fraction.hypercertId,
+      fraction.hypercert_id,
       fraction.id,
       fraction.units,
       fraction.value || "",
@@ -161,7 +166,7 @@ const DefaultDisplayDataForClaim = ({
             {fractionsOwnedByAdmin?.map((fraction) => (
               <Tr key={fraction.id}>
                 <Td>{fraction.metadata?.name}</Td>
-                <Td>{fraction.tokenID}</Td>
+                <Td>{fraction.fraction_id}</Td>
                 <Td>{fraction.units}</Td>
                 <Td>{fraction.percentage}</Td>
                 <Td>{fraction.value}</Td>

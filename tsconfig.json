@@ -16,7 +16,14 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "https://staging-api.hypercerts.org/v1/graphql",
+        "tadaOutputLocation": "./graphql-hypercerts-env.d.ts"
+      }
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

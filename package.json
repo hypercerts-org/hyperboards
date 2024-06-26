@@ -34,6 +34,7 @@
     "widget:serve": "npx -y http-server 'dist-widget' -p 3001"
   },
   "dependencies": {
+    "@0no-co/graphqlsp": "^1.12.8",
     "@ant-design/icons": "^5.3.0",
     "@celo/rainbowkit-celo": "^1.1.2",
     "@chakra-ui/react": "^2.8.0",
@@ -41,7 +42,7 @@
     "@emotion/styled": "^11.11.0",
     "@hypercerts-org/contracts": "1.1.0",
     "@hypercerts-org/marketplace-sdk": "0.1.6",
-    "@hypercerts-org/sdk": "2.0.0-alpha.4",
+    "@hypercerts-org/sdk": "2.0.0-alpha.27",
     "@rainbow-me/rainbowkit": "^2.1.2",
     "@snaplet/seed": "^0.91.1",
     "@supabase/supabase-js": "^2.33.1",
@@ -49,6 +50,7 @@
     "@tanstack/react-query-devtools": "^5.20.5",
     "@tanstack/react-table": "^8.10.7",
     "@uidotdev/usehooks": "^2.4.1",
+    "@urql/core": "^5.0.4",
     "chakra-dayzed-datepicker": "^0.2.10",
     "d3": "^7.8.5",
     "date-fns": "^2.30.0",
@@ -57,6 +59,7 @@
     "eslint-config-next": "13.4.19",
     "ethers": "6.8.0",
     "framer-motion": "^10.16.2",
+    "gql.tada": "^1.7.6",
     "hamburger-react": "^2.5.0",
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.2",

@@ -59,7 +59,7 @@ export const Index = () => {
   );
 
   const { data: displayData } = useFetchDefaultSponsorMetadataByAddress(
-    hypercert?.owner,
+    hypercert?.creator_address,
   );
 
   const buyButtonRef = useRef<HTMLButtonElement>(null);
@@ -74,9 +74,9 @@ export const Index = () => {
   };
 
   const ownedByConnectedUser = !!fractionsData?.some(
-    (fraction) => fraction.owner === address,
+    (fraction) => fraction.creator_address === address,
   );
-  const createdByCurrentUser = hypercert?.owner === address;
+  const createdByCurrentUser = hypercert?.creator_address === address;
 
   if (isLoading)
     return (
@@ -155,7 +155,7 @@ export const Index = () => {
               </Text>
               <Text>
                 {displayData?.data?.companyName ||
-                  formatAddress(hypercert?.owner)}
+                  formatAddress(hypercert?.creator_address)}
                 {createdByCurrentUser && (
                   <Text as={"span"} ml={1}>
                     (you)
@@ -196,9 +196,10 @@ export const Index = () => {
               Work timeframe:
             </Text>
             <Text as="span" fontSize={"16px"}>
-              {formatWorkTimeframe(
-                hypercert?.metadata?.hypercert?.work_timeframe?.value,
-              )}
+              {formatWorkTimeframe([
+                hypercert?.metadata?.work_timeframe_from,
+                hypercert?.metadata?.work_timeframe_to,
+              ])}
             </Text>
           </Flex>
           <VStack px={4} py={5} alignItems={"flex-start"}>
@@ -206,7 +207,7 @@ export const Index = () => {
               Work scope:
             </Text>
             <HStack flexWrap={"wrap"}>
-              {hypercert?.metadata?.hypercert?.work_scope?.value?.map((x) => (
+              {hypercert?.metadata?.work_scope?.map((x) => (
                 <Tag key={x} size={"lg"}>
                   <Text fontWeight={400}>{x}</Text>
                 </Tag>
@@ -222,19 +223,17 @@ export const Index = () => {
           </AccordionLine>
           <AccordionLine
             title="contributors"
-            count={
-              hypercert?.metadata?.hypercert?.contributors?.value?.length || 0
-            }
+            count={hypercert?.metadata?.contributors?.length || 0}
           >
-            {hypercert?.metadata?.hypercert?.contributors?.value?.join(", ")}
+            {hypercert?.metadata?.hypercert?.contributors?.join(", ")}
           </AccordionLine>
           <AccordionLine
             title="owners"
-            count={uniqBy(fractionsData || [], (x) => x.owner).length}
+            count={uniqBy(fractionsData || [], (x) => x.owner_address).length}
           >
             <HStack flexWrap={"wrap"}>
-              {uniqBy(fractionsData || [], (x) => x.owner).map((x) => (
-                <ProfileInfo key={x.owner} address={x.owner} />
+              {uniqBy(fractionsData || [], (x) => x.owner_address).map((x) => (
+                <ProfileInfo key={x.owner_address} address={x.owner_address} />
               ))}
             </HStack>
           </AccordionLine>

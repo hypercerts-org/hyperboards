@@ -243,6 +243,8 @@ export const OwnershipTable = ({
           overflowY={"auto"}
           className={"custom-scrollbar"}
         >
+          {/*
+          //@ts-ignore */}
           <ClaimOwnershipOverview data={dataToShow} />
         </Flex>
       </Flex>
@@ -316,7 +318,7 @@ const HypercertClaimRow = ({
   return (
     <ClaimRow
       {...props}
-      text={claim.metadata.name || "No name"}
+      text={claim?.metadata?.name || "No name"}
       icon={
         <Image
           alt={"Claim icon"}

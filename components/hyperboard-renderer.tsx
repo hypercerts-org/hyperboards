@@ -135,6 +135,7 @@ export const HyperboardRenderer = ({
                   borderColor={borderColor}
                   data={
                     (Object.values(x.content) || {}).map(
+                      // @ts-ignore
                       registryContentItemToHyperboardEntry,
                     ) || []
                   }

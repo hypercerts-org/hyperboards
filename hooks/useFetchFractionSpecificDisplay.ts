@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useHypercertClient } from "@/components/providers";
-import { ClaimByIdQuery } from "@hypercerts-org/sdk";
+import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
+import { urqlClient } from "@/hooks/urqlClient";
 
 export const useFetchFractionSpecificDisplay = (
   claimIds: string[],
   chainId?: number,
 ) => {
   const client = useHypercertClient();
-
   return useQuery({
     queryKey: ["fraction-specific-display", claimIds, chainId],
     queryFn: async () => {
@@ -24,21 +24,7 @@ export const useFetchFractionSpecificDisplay = (
 
       const metadata = await Promise.all(
         claimIds.map(async (claimId) => {
-          const claim = (await client.indexer.claimById(
-            claimId,
-          )) as ClaimByIdQuery;
-
-          if (!claim?.claim?.uri) {
-            console.log("no claim");
-            return null;
-          }
-
-          const metadata = await client.storage.getMetadata(claim.claim.uri);
-
-          return {
-            ...claim.claim,
-            metadata,
-          };
+          return getHypercertWithMetadata(claimId, urqlClient);
         }),
       );
 
@@ -51,7 +37,7 @@ export const useFetchFractionSpecificDisplay = (
 
       return fractionSponsorMetadata.data?.map((data) => {
         const metadataForClaim = metadata.find(
-          (m) => m?.id === data.hypercert_id,
+          (m) => m?.hypercert_id === data.hypercert_id,
         );
 
         return {
