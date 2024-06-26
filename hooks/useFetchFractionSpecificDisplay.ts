@@ -1,20 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useHypercertClient } from "@/components/providers";
-import { CONSTANTS } from "@hypercerts-org/sdk";
-import { cacheExchange, Client, fetchExchange } from "@urql/core";
 import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
+import { urqlClient } from "@/hooks/urqlClient";
 
 export const useFetchFractionSpecificDisplay = (
   claimIds: string[],
   chainId?: number,
 ) => {
   const client = useHypercertClient();
-  const urqlClient = new Client({
-    url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-    exchanges: [cacheExchange, fetchExchange],
-  });
-
   return useQuery({
     queryKey: ["fraction-specific-display", claimIds, chainId],
     queryFn: async () => {

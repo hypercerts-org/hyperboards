@@ -1,11 +1,11 @@
 import { useHypercertClient } from "@/components/providers";
 import { useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { CONSTANTS } from "@hypercerts-org/sdk";
 import { graphql, readFragment } from "@/graphql";
 import { ResultOf } from "gql.tada";
-import { cacheExchange, Client, fetchExchange } from "@urql/core";
+import { Client } from "@urql/core";
 import { formatHypercertId } from "@/hooks/useFetchHypercertById";
+import { urqlClient } from "@/hooks/urqlClient";
 
 export const FractionStateFragment = graphql(`
   fragment FractionStateFragment on Fraction {
@@ -61,21 +61,11 @@ export async function getFractionsByHypercert(
 export const useFetchHypercertFractionsByHypercertId = (
   hypercertId: string,
 ) => {
-  const client = useHypercertClient();
   const chainId = useChainId();
-  const urqlClient = new Client({
-    url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-    exchanges: [cacheExchange, fetchExchange],
-  });
 
   return useQuery({
     queryKey: ["hypercert", "id", hypercertId, "chain", chainId, "fractions"],
     queryFn: async () => {
-      if (!client) {
-        console.log("no client");
-        return null;
-      }
-
       if (!chainId) {
         console.log("no chainId");
         return null;
@@ -95,7 +85,7 @@ export const useFetchHypercertFractionsByHypercertId = (
         ),
       }));
     },
-    enabled: !!client && !!chainId,
+    enabled: !!chainId,
   });
 };
 
@@ -104,10 +94,6 @@ export const useFetchHypercertFractionsByHypercertIds = (
 ) => {
   const client = useHypercertClient();
   const chainId = useChainId();
-  const urqlClient = new Client({
-    url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-    exchanges: [cacheExchange, fetchExchange],
-  });
 
   return useQuery({
     queryKey: ["hypercert", "ids", hypercertIds, "chain", chainId, "fractions"],

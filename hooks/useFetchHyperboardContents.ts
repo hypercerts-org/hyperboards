@@ -21,9 +21,9 @@ import { sift } from "@/utils/sift";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
 import { cacheExchange, Client, fetchExchange } from "@urql/core";
-import { graphql } from "gql.tada";
 import { getFractionsByHypercert } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
+import { urqlClient } from "@/hooks/urqlClient";
 
 export const useListRegistries = () => {
   return useQuery({
@@ -49,10 +49,6 @@ const processRegistryForDisplay = async (
   totalOfAllDisplaySizes: bigint,
   client: HypercertClient,
 ) => {
-  const urqlClient = new Client({
-    url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-    exchanges: [cacheExchange, fetchExchange],
-  });
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
     registry.claims.map(async (claim) => {
@@ -336,11 +332,6 @@ export const useFetchHyperboardContents = (
           });
         }
       }
-
-      const urqlClient = new Client({
-        url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-        exchanges: [cacheExchange, fetchExchange],
-      });
 
       const allowlistEntriesWithClaims = sift(
         await Promise.all(

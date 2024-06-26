@@ -1,10 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { cacheExchange, Client, fetchExchange } from "@urql/core";
-import { CONSTANTS, parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import { Client } from "@urql/core";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { graphql, readFragment } from "@/graphql";
 import { getAddress } from "viem";
+import { urqlClient } from "@/hooks/urqlClient";
 
-export const formatHypercertId = (hypercertId: string) => {
+export const formatHypercertId = (hypercertId?: string) => {
+  if (!hypercertId) {
+    return undefined;
+  }
   const { id, contractAddress, chainId } = parseClaimOrFractionId(hypercertId);
   const formattedAddress = getAddress(contractAddress);
   const formattedId = `${chainId}-${formattedAddress}-${id}`;
@@ -63,11 +67,6 @@ export const useFetchHypercertById = (hypercertId: string) => {
   return useQuery({
     queryKey: ["hypercert", "id", formatHypercertId(hypercertId)],
     queryFn: async () => {
-      const urqlClient = new Client({
-        url: `${CONSTANTS.ENDPOINTS["test"]}/v1/graphql`,
-        exchanges: [cacheExchange, fetchExchange],
-      });
-
       return await getHypercertWithMetadata(
         formatHypercertId(hypercertId),
         urqlClient,

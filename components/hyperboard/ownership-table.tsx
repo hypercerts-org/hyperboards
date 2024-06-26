@@ -243,6 +243,8 @@ export const OwnershipTable = ({
           overflowY={"auto"}
           className={"custom-scrollbar"}
         >
+          {/*
+          //@ts-ignore */}
           <ClaimOwnershipOverview data={dataToShow} />
         </Flex>
       </Flex>

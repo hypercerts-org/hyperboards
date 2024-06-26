@@ -12,6 +12,8 @@ import {
 import { useChainId } from "wagmi";
 import { useCreateClaims } from "@/hooks/useCreateClaims";
 import { useHypercertClient } from "@/components/providers";
+import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
+import { urqlClient } from "@/hooks/urqlClient";
 
 export const CreateRegistryModal = ({
   initialValues,
@@ -106,8 +108,11 @@ export const CreateRegistryModal = ({
             claim_id = crypto.randomUUID(),
             display_size,
           }) => {
-            const claim = await client.indexer.claimById(hypercert_id);
-            if (!claim?.claim) {
+            const claim = await getHypercertWithMetadata(
+              hypercert_id,
+              urqlClient,
+            );
+            if (!claim) {
               throw new Error("Claim not found");
             }
             return {
@@ -117,7 +122,7 @@ export const CreateRegistryModal = ({
               hypercert_id,
               chain_id: chainId,
               admin_id: address,
-              owner_id: claim.claim.owner,
+              owner_id: claim.creator_address!,
             };
           },
         ),

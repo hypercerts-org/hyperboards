@@ -220,22 +220,22 @@ export const ClaimRow = ({
           target={"_blank"}
           textDecoration={"underline"}
         >
-          {data.metadata.name}
+          {data.metadata?.name}
         </Link>
       </Td>
       <Td>{chain_id}</Td>
-      <Td>{formatAddress(data.owner_address)}</Td>
+      <Td>{formatAddress(data.creator_address || "")}</Td>
       <Td>
         <Link
-          href={data.metadata.external_url}
+          href={data.metadata?.external_url || ""}
           target={"_blank"}
           textDecoration={"underline"}
         >
-          {data.metadata.external_url}
+          {data.metadata?.external_url}
         </Link>
       </Td>
       <Td maxW={"300px"} isTruncated>
-        {data.metadata.description}
+        {data.metadata?.description}
       </Td>
       <Td>{display_size}</Td>
       <Td textAlign={"end"}>
