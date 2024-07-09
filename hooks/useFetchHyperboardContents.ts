@@ -164,16 +164,15 @@ const processRegistryForDisplay = async (
     claimsAndFractions
       .map((x) => x.fractions)
       .flat()
-      .map((x) => x.fraction_id!),
+      .map((x) => x.fraction_id!.toLowerCase()),
     registry.chain_id,
   );
 
   const fractionsWithDisplayData = fractions.map((fraction) => {
     const fractionSpecificDisplayData =
       fractionSpecificDisplayDataResponse.data?.find(
-        (x) => x.fraction_id === fraction.id,
+        (x) => x.fraction_id.toLowerCase() === fraction.id!.toLowerCase(),
       );
-    console.log(fraction, fractionSpecificDisplayData, claimDisplayData);
     if (
       fraction.owner === fraction.hypercertOwnerAddress &&
       fractionSpecificDisplayData
