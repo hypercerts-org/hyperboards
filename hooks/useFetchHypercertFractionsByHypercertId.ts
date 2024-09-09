@@ -25,7 +25,7 @@ export type FractionStateFragment = ResultOf<typeof FractionStateFragment>;
 const query = graphql(
   `
     query Fraction($hypercert_id: String!) {
-      fractions(where: { hypercert_id: { eq: $hypercert_id } }, count: COUNT) {
+      fractions(where: { hypercert_id: { eq: $hypercert_id } }) {
         count
         data {
           ...FractionStateFragment
@@ -40,9 +40,18 @@ export async function getFractionsByHypercert(
   hypercertId: string,
   client: Client,
 ) {
+  const formattedHypercertId = formatHypercertId(hypercertId);
+
+  if (!formattedHypercertId) {
+    console.error("Invalid hypercertId", hypercertId);
+    return undefined;
+  }
+
   const res = await client.query(query, {
-    hypercert_id: formatHypercertId(hypercertId),
+    hypercert_id: formattedHypercertId,
   });
+
+  console.log("res", res);
 
   if (!res.data?.fractions?.data) {
     return undefined;

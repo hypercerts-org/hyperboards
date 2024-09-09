@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase, supabaseHypercerts } from "@/lib/supabase";
 
-import {
-  CONSTANTS,
-  HypercertClient,
-  parseClaimOrFractionId,
-} from "@hypercerts-org/sdk";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { useHypercertClient } from "@/components/providers";
@@ -20,7 +16,6 @@ import {
 import { sift } from "@/utils/sift";
 import { NUMBER_OF_UNITS_IN_HYPERCERT } from "@/config";
 import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
-import { cacheExchange, Client, fetchExchange } from "@urql/core";
 import { getFractionsByHypercert } from "@/hooks/useFetchHypercertFractionsByHypercertId";
 import { getHypercertWithMetadata } from "@/hooks/useFetchHypercertById";
 import { urqlClient } from "@/hooks/urqlClient";
@@ -43,11 +38,10 @@ const processRegistryForDisplay = async (
     blueprints: BlueprintEntity[];
   },
   allowlistEntries: (AllowlistCacheEntity & {
-    claim: { totalUnits: bigint };
+    claim: { units: string | null | undefined };
   })[],
   label: string | null,
   totalOfAllDisplaySizes: bigint,
-  client: HypercertClient,
 ) => {
   // Fetch all fractions per all claims
   const claimsAndFractions = await Promise.all(
@@ -64,11 +58,9 @@ const processRegistryForDisplay = async (
     }),
   );
 
-  console.log("claimsAndFractions", claimsAndFractions);
-
   // Calculate the total number of units in all claims, allowlistEntries and blueprints combined
   const totalUnitsInAllowlistEntries = allowlistEntries.reduce(
-    (acc, entry) => acc + BigInt(entry.claim?.totalUnits || 0),
+    (acc, entry) => acc + BigInt(entry.claim?.units || 0),
     0n,
   );
   const totalUnitsInBlueprints =
@@ -115,11 +107,11 @@ const processRegistryForDisplay = async (
 
   const allowlistResults = allowlistEntries.map((entry) => {
     // Calculate the number of units per display unit
-    const displayUnitsPerUnit = displayPerUnit / BigInt(entry.claim.totalUnits);
+    const displayUnitsPerUnit = displayPerUnit / BigInt(entry.claim.units || 1);
     return {
       owner: entry.address!.toLowerCase(),
       unitsAdjustedForDisplaySize:
-        (BigInt(entry.claim.totalUnits) * displayUnitsPerUnit) / 10n ** 14n,
+        (BigInt(entry.claim.units || 1) * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
       hypercertId: entry.claimId,
       hypercertOwnerAddress: undefined,
@@ -361,11 +353,9 @@ export const useFetchHyperboardContents = (
         hyperboardData.hyperboard_registries.map(async (registry) => {
           return await processRegistryForDisplay(
             registry.registries!,
-            // @ts-ignore
             allowlistEntriesWithClaims || [],
             registry.label,
             BigInt(totalOfAllDisplaySizes),
-            client,
           );
         }),
       );
@@ -400,8 +390,8 @@ export const registryContentItemToHyperboardEntry = ({
   isBlueprint,
   ...item
 }: {
-  displayData: Omit<DefaultSponsorMetadataEntity, "address"> & {
-    value: string;
+  displayData: Partial<Omit<DefaultSponsorMetadataEntity, "address">> & {
+    value?: string;
   };
   isBlueprint: boolean;
   totalValue: bigint;
@@ -419,13 +409,13 @@ export const registryContentItemToHyperboardEntry = ({
     };
   }
   return {
-    type: item.displayData.type,
-    companyName: item.displayData.companyName,
-    lastName: item.displayData.lastName,
-    firstName: item.displayData.firstName,
-    image: item.displayData.image,
+    type: item.displayData?.type!,
+    companyName: item.displayData?.companyName!,
+    lastName: item.displayData?.lastName!,
+    firstName: item.displayData?.firstName!,
+    image: item.displayData?.image!,
     value: item.totalValue,
-    id: item.displayData.value,
+    id: item.displayData.value!,
     isBlueprint,
   };
 };
