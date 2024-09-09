@@ -1,10 +1,8 @@
-// Find all widget divs
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { HyperboardRenderer } from "@/components/hyperboard-renderer";
 import { Providers } from "@/components/providers";
 
-// Create an observer instance linked to the callback function
 const observer = new MutationObserver((mutationList, observer) => {
   // Callback function to execute when mutations are observed
   const widgetDivs = document.querySelectorAll(".hyperboard-widget");
