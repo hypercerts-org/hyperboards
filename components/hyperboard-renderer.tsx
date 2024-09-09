@@ -42,6 +42,7 @@ export const HyperboardRenderer = ({
     },
   );
   const results = data?.results;
+  console.log("results", results);
 
   const height = ((dimensions?.width || 1) / 16) * 9;
   const widthPerBoard = `${100 / (results?.length || 1)}%`;
@@ -134,9 +135,8 @@ export const HyperboardRenderer = ({
                   grayscaleImages={grayscaleImages}
                   borderColor={borderColor}
                   data={
-                    (Object.values(x.content) || {}).map(
-                      // @ts-ignore
-                      registryContentItemToHyperboardEntry,
+                    (Object.values(x.content) || {}).map((x) =>
+                      registryContentItemToHyperboardEntry(x),
                     ) || []
                   }
                 />

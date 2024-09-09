@@ -4,6 +4,7 @@ import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { graphql, readFragment } from "@/graphql";
 import { getAddress } from "viem";
 import { urqlClient } from "@/hooks/urqlClient";
+import { ResultOf } from "gql.tada";
 
 export const formatHypercertId = (hypercertId?: string) => {
   if (!hypercertId) {
@@ -11,8 +12,7 @@ export const formatHypercertId = (hypercertId?: string) => {
   }
   const { id, contractAddress, chainId } = parseClaimOrFractionId(hypercertId);
   const formattedAddress = getAddress(contractAddress);
-  const formattedId = `${chainId}-${formattedAddress}-${id}`;
-  return formattedId;
+  return `${chainId}-${formattedAddress}-${id}`;
 };
 
 const HypercertFragment = graphql(`
@@ -46,6 +46,8 @@ const hypercertWithMetadataQuery = graphql(
   [HypercertFragment],
 );
 
+export type HypercertFragment = ResultOf<typeof HypercertFragment>;
+
 export const getHypercertWithMetadata = async (
   hypercert_id: string,
   client: Client,
@@ -67,10 +69,12 @@ export const useFetchHypercertById = (hypercertId: string) => {
   return useQuery({
     queryKey: ["hypercert", "id", formatHypercertId(hypercertId)],
     queryFn: async () => {
-      return await getHypercertWithMetadata(
-        formatHypercertId(hypercertId),
-        urqlClient,
-      );
+      const formattedHypercertId = formatHypercertId(hypercertId);
+      if (!formattedHypercertId) {
+        console.error("Invalid hypercertId", hypercertId);
+        return null;
+      }
+      return await getHypercertWithMetadata(formattedHypercertId, urqlClient);
     },
   });
 };

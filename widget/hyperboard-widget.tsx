@@ -28,8 +28,6 @@ const observer = new MutationObserver((mutationList, observer) => {
     console.log("rendering hyperboard", hyperboardId, "showTable", showTable);
     const root = createRoot(container); // createRoot(container!) if you use TypeScript
     root.render(
-      // TODO: Fix this typing error
-      //@ts-ignore
       <Providers showReactQueryDevtools={false} resetCSS={false}>
         <HyperboardRenderer
           hyperboardId={hyperboardId}
