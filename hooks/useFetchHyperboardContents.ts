@@ -29,6 +29,8 @@ export const useListRegistries = () => {
   });
 };
 
+export const useFetchHyperboardContents2 = (hyperboardId: string) => {};
+
 const processRegistryForDisplay = async (
   {
     blueprints,
@@ -387,35 +389,36 @@ export const getFractionsDisplayData = async (
 };
 
 export const registryContentItemToHyperboardEntry = ({
-  isBlueprint,
-  ...item
+  percentage_owned,
+  avatar,
+  display_name,
+  address,
 }: {
-  displayData: Partial<Omit<DefaultSponsorMetadataEntity, "address">> & {
-    value?: string;
-  };
-  isBlueprint: boolean;
-  totalValue: bigint;
+  percentage_owned: number | null;
+  address: string | null;
+  display_name: string | null;
+  avatar: string | null;
 }): HyperboardEntry => {
-  if (!item.displayData) {
-    return {
-      type: "person",
-      companyName: null,
-      lastName: null,
-      firstName: null,
-      image: "",
-      value: item.totalValue,
-      id: "",
-      isBlueprint,
-    };
-  }
+  // if (!item.displayData) {
+  //   return {
+  //     type: "person",
+  //     companyName: null,
+  //     lastName: null,
+  //     firstName: null,
+  //     image: "",
+  //     value: item.totalValue,
+  //     id: "",
+  //     isBlueprint,
+  //   };
+  // }
   return {
-    type: item.displayData?.type!,
-    companyName: item.displayData?.companyName!,
-    lastName: item.displayData?.lastName!,
-    firstName: item.displayData?.firstName!,
-    image: item.displayData?.image!,
-    value: item.totalValue,
-    id: item.displayData.value!,
-    isBlueprint,
+    type: "company",
+    companyName: display_name,
+    lastName: display_name,
+    firstName: display_name,
+    image: avatar || "",
+    value: percentage_owned!,
+    id: address!,
+    isBlueprint: false,
   };
 };
