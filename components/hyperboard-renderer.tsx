@@ -35,6 +35,12 @@ export const HyperboardRenderer = ({
   const { data, isLoading, isLoadingError } =
     useFetchHyperboardById(hyperboardId);
 
+  useEffect(() => {
+    if (!selectedRegistry && data?.sections.data.length === 1) {
+      setSelectedRegistry(data.sections.data[0].collection.id);
+    }
+  }, [selectedRegistry, data]);
+
   if (!data) {
     return null;
   }

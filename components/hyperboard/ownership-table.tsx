@@ -130,31 +130,37 @@ export const OwnershipTable = ({
               const totalValueInRegistry = _.sum([
                 ...sift(entries).map((entry) => entry.display_size),
               ]);
+              const isSingleSection =
+                hyperboardContentData.sections.data.length === 1;
               return (
                 <div key={id}>
-                  <RegistryRow
-                    isSelected={isRegistrySelected}
-                    fadedBorder={isRegistrySelected}
-                    text={label || "No label"}
-                    isFirstAfterSelected={isFirstAfterSelected}
-                    percentage={100}
-                    onClick={() => {
-                      if (isRegistrySelected) {
-                        onSelectRegistry?.(undefined);
-                      } else {
-                        setSelectedClaim(undefined);
-                        setSelectedBlueprint(undefined);
-                        onSelectRegistry?.(id);
+                  {!isSingleSection && (
+                    <RegistryRow
+                      isSelected={isRegistrySelected}
+                      fadedBorder={isRegistrySelected}
+                      text={label || "No label"}
+                      isFirstAfterSelected={isFirstAfterSelected}
+                      percentage={100}
+                      onClick={() => {
+                        if (isRegistrySelected) {
+                          onSelectRegistry?.(undefined);
+                        } else {
+                          setSelectedClaim(undefined);
+                          setSelectedBlueprint(undefined);
+                          onSelectRegistry?.(id);
+                        }
+                      }}
+                      icon={
+                        <Image
+                          alt={"Board icon"}
+                          src={
+                            "https://staging.hyperboards.org/icons/board.svg"
+                          }
+                          width={"24px"}
+                        />
                       }
-                    }}
-                    icon={
-                      <Image
-                        alt={"Board icon"}
-                        src={"https://staging.hyperboards.org/icons/board.svg"}
-                        width={"24px"}
-                      />
-                    }
-                  />
+                    />
+                  )}
                   {selectedRegistry === id && (
                     <>
                       {entries.map((claim, index) => {
@@ -167,6 +173,7 @@ export const OwnershipTable = ({
                             Number(claim.id) === selectedBlueprint;
                           return (
                             <ClaimRow
+                              isSingleSection={isSingleSection}
                               key={claim.id}
                               isSelected={isBlueprintSelected}
                               isLast={false}
@@ -191,13 +198,11 @@ export const OwnershipTable = ({
                         return (
                           <HypercertClaimRow
                             key={claim.id}
+                            isSingleSection={isSingleSection}
                             isSelected={isClaimSelected}
                             isLast={isLastClaim}
                             hypercertId={claim.id}
-                            percentage={(
-                              (claim.display_size / totalValueInRegistry) *
-                              100
-                            ).toPrecision(2)}
+                            percentage={claim.percentage_of_section}
                             onClick={() => {
                               setSelectedBlueprint(undefined);
                               setSelectedClaim(claim.id);
@@ -294,6 +299,7 @@ const HypercertClaimRow = ({
 }: Omit<SelectionRowProps, "text"> & {
   isLast?: boolean;
   hypercertId: string;
+  isSingleSection?: boolean;
 }) => {
   const { data: claim } = useFetchHypercertById(hypercertId);
 
@@ -323,7 +329,8 @@ const ClaimRow = ({
   percentage,
   onClick,
   isLast,
-}: SelectionRowProps & { isLast?: boolean }) => {
+  isSingleSection = false,
+}: SelectionRowProps & { isLast?: boolean; isSingleSection?: boolean }) => {
   return (
     <Flex
       cursor={"pointer"}
@@ -336,10 +343,11 @@ const ClaimRow = ({
         width={"100%"}
         borderBottom={!isLast ? "1px solid rgba(0, 0, 0, 0.3)" : "none"}
         borderRight={isSelected ? "none" : "1px solid black"}
-        ml={"42px"}
+        ml={isSingleSection ? "0px" : "42px"}
         py={"14px"}
         pr={"20px"}
         position={"relative"}
+        alignItems={"center"}
       >
         {icon}
         <Text ml={4}>{text}</Text>
