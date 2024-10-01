@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useSize } from "@chakra-ui/react-use-size";
+import { useEffect, useState } from "react";
 import { registryContentItemToHyperboardEntry } from "@/hooks/useFetchHyperboardContents";
 import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
+import { useMeasure } from "react-use";
 
 export const HyperboardRenderer = ({
   hyperboardId,
@@ -22,8 +22,7 @@ export const HyperboardRenderer = ({
   onSelectedRegistryChange?: (registryId?: string) => void;
   showTable?: boolean;
 }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const dimensions = useSize(containerRef);
+  const [containerRef, dimensions] = useMeasure<HTMLDivElement>();
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
 
@@ -36,11 +35,9 @@ export const HyperboardRenderer = ({
   const { data, isLoading, isLoadingError } =
     useFetchHyperboardById(hyperboardId);
 
-  console.log("data", data);
   if (!data) {
     return null;
   }
-  console.log("bla");
   const sections = data.sections.data;
 
   const height = ((dimensions?.width || 1) / 16) * 9;

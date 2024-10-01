@@ -2,9 +2,9 @@ import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { HyperboardEntry } from "@/types/Hyperboard";
 import { Tile } from "@/components/hyperboard/Tile";
-import { useSize } from "@chakra-ui/react-use-size";
 import { Flex, Text } from "@chakra-ui/react";
 import _ from "lodash";
+import { useMeasure } from "react-use";
 
 export interface HyperboardProps {
   data: HyperboardEntry[];
@@ -23,9 +23,8 @@ type Leaf = {
 } & d3.HierarchyNode<HyperboardEntry>;
 
 export const Hyperboard = (props: HyperboardProps) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerRef, dimensions] = useMeasure<HTMLDivElement>();
   const ref = useRef<string>("");
-  const dimensions = useSize(containerRef);
 
   const [leaves, setLeaves] = useState<Leaf[]>([]);
 
@@ -42,7 +41,7 @@ export const Hyperboard = (props: HyperboardProps) => {
 
   const { height, width } = dimensions || {};
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!containerRef) {
       return;
     }
     if (!dimensions) {
@@ -54,7 +53,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", props.height)
       .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
-  }, [containerRef.current, width, height, props.data.length]);
+  }, [containerRef, width, height, props.data.length]);
 
   const draw = () => {
     if (!dimensions) {
@@ -90,9 +89,6 @@ export const Hyperboard = (props: HyperboardProps) => {
     dimensions?.width && dimensions?.height
       ? dimensions.width / dimensions.height
       : 1;
-
-  console.log("data", props.data);
-  console.log("leaves", leaves);
 
   return (
     <Flex
