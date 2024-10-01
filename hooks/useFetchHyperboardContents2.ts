@@ -1,19 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Client } from "@urql/core";
-import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { graphql, readFragment } from "@/graphql";
-import { getAddress } from "viem";
 import { urqlClient } from "@/hooks/urqlClient";
 import { ResultOf } from "gql.tada";
-
-export const formatHypercertId = (hypercertId?: string) => {
-  if (!hypercertId) {
-    return undefined;
-  }
-  const { id, contractAddress, chainId } = parseClaimOrFractionId(hypercertId);
-  const formattedAddress = getAddress(contractAddress);
-  return `${chainId}-${formattedAddress}-${id}`;
-};
 
 export const HyperboardFragment = graphql(`
   fragment HyperboardFragment on Hyperboard {
@@ -25,6 +14,7 @@ export const HyperboardFragment = graphql(`
     background_image
     grayscale_images
     tile_border_color
+    chain_ids
     sections {
       count
       data {
@@ -89,6 +79,7 @@ export const getHyperboard = async (hyperboard_id: string, client: Client) => {
   }
 
   const hyperboard = data?.hyperboards?.data?.[0];
+  console.log("hyperboard", data);
 
   return readFragment(HyperboardFragment, hyperboard);
 };

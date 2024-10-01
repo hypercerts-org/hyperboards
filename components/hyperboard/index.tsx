@@ -54,7 +54,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", props.height)
       .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
-  }, [containerRef.current, width, height]);
+  }, [containerRef.current, width, height, props.data.length]);
 
   const draw = () => {
     if (!dimensions) {
@@ -90,6 +90,9 @@ export const Hyperboard = (props: HyperboardProps) => {
     dimensions?.width && dimensions?.height
       ? dimensions.width / dimensions.height
       : 1;
+
+  console.log("data", props.data);
+  console.log("leaves", leaves);
 
   return (
     <Flex

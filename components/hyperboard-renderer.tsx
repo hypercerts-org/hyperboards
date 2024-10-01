@@ -36,9 +36,11 @@ export const HyperboardRenderer = ({
   const { data, isLoading, isLoadingError } =
     useFetchHyperboardById(hyperboardId);
 
+  console.log("data", data);
   if (!data) {
     return null;
   }
+  console.log("bla");
   const sections = data.sections.data;
 
   const height = ((dimensions?.width || 1) / 16) * 9;
