@@ -5,6 +5,6 @@ export interface HyperboardEntry {
   firstName: string | null;
   lastName: string | null;
   image: string;
-  value: bigint;
+  value: number;
   isBlueprint: boolean;
 }

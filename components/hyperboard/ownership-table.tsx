@@ -5,12 +5,12 @@ import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
-import { useFetchHyperboardContents } from "@/hooks/useFetchHyperboardContents";
 import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { formatAddress } from "@/utils/formatting";
 import { isAddress } from "viem";
+import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -26,8 +26,7 @@ export const OwnershipTable = ({
   onSelectRegistry,
 }: OwnershipTableProps) => {
   // TODO: Show blueprints in ownership table
-  const { data: hyperboardContentData } =
-    useFetchHyperboardContents(hyperboardId);
+  const { data: hyperboardContentData } = useFetchHyperboardById(hyperboardId);
   const [selectedClaim, setSelectedClaim] = useState<string>();
   const [selectedBlueprint, setSelectedBlueprint] = useState<number>();
 
@@ -49,12 +48,12 @@ export const OwnershipTable = ({
     }
 
     if (selectedRegistry) {
-      const registry = hyperboardContentData.results.find(
-        (registry) => registry.registry.id === selectedRegistry,
+      const section = hyperboardContentData.sections.data.find(
+        (collection) => collection.collection.id === selectedRegistry,
       );
-      if (registry) {
+      if (section) {
         return {
-          claimIds: Object.keys(registry.byClaim),
+          claimIds: section.entries.map((entry) => entry.id),
         };
       }
     }
@@ -66,25 +65,23 @@ export const OwnershipTable = ({
 
   const { claimIds } = getClaimIds();
 
-  const indexOfSelectedRegistry = hyperboardContentData.results.findIndex(
-    (registry) => registry.registry.id === selectedRegistry,
+  const indexOfSelectedRegistry = hyperboardContentData.sections.data.findIndex(
+    (registry) => registry.collection.id === selectedRegistry,
   );
 
-  const dataToShow = _.chain(hyperboardContentData.results)
+  const dataToShow = _.chain(hyperboardContentData.sections.data)
     // Get all claims
-    .map((registry) => registry.byClaim)
+    .flatMap((section) => section.entries)
     // Filter out only for the selected claims
-    .map((claimsById) =>
-      _.pickBy(claimsById, (_, claimId) => claimIds.includes(claimId)),
-    )
+    .filter(({ id }) => claimIds.includes(id))
     // Create a flat list of all claims
-    .flatMap((x) => Object.values(x))
-    .flatMap((claim) => Object.values(claim))
+    .flatMap((entry) => entry.owners)
     // Only show every owner once in the overview
-    .groupBy((claim) => claim.displayData?.value)
-    .mapValues((claims) => ({
-      displayData: claims[0].displayData,
-      total: claims.reduce((acc, x) => acc + x.totalValue, 0n),
+    .groupBy((owner) => owner.address)
+    .mapValues((entriesForOwner) => ({
+      avatar: entriesForOwner[0].avatar,
+      displayName: entriesForOwner[0].display_name,
+      total: entriesForOwner.reduce((acc, x) => acc + BigInt(x.units || 0), 0n),
     }))
     .values()
     // Sort by total ownership
@@ -118,71 +115,97 @@ export const OwnershipTable = ({
           overflowY={"auto"}
           className={"custom-scrollbar"}
         >
-          {hyperboardContentData.hyperboard.hyperboard_registries.map(
-            ({ label, registry_id, registries: registry }, index) => {
-              if (!registry) {
+          {hyperboardContentData.sections.data.map(
+            ({ label, collection: { id }, entries }, index) => {
+              if (!entries) {
                 return null;
               }
               const isRegistrySelected =
-                !selectedClaim &&
-                !selectedBlueprint &&
-                selectedRegistry === registry_id;
+                !selectedClaim && !selectedBlueprint && selectedRegistry === id;
               const isFirstAfterSelected =
                 indexOfSelectedRegistry !== -1 &&
                 index === indexOfSelectedRegistry + 1;
               const isLastRegistry =
-                index === hyperboardContentData.results.length - 1;
+                index === hyperboardContentData.sections.data.length - 1;
               const totalValueInRegistry = _.sum([
-                ...sift(registry.claims).map((claim) => claim.display_size),
-                ...registry.blueprints.map(
-                  (blueprint) => blueprint.display_size,
-                ),
+                ...sift(entries).map((entry) => entry.display_size),
               ]);
+              const isSingleSection =
+                hyperboardContentData.sections.data.length === 1;
               return (
-                <div key={registry.id}>
-                  <RegistryRow
-                    isSelected={isRegistrySelected}
-                    fadedBorder={isRegistrySelected}
-                    text={label || "No label"}
-                    isFirstAfterSelected={isFirstAfterSelected}
-                    percentage={100}
-                    onClick={() => {
-                      if (isRegistrySelected) {
-                        onSelectRegistry?.(undefined);
-                      } else {
-                        setSelectedClaim(undefined);
-                        setSelectedBlueprint(undefined);
-                        onSelectRegistry?.(registry.id);
+                <div key={id}>
+                  {!isSingleSection && (
+                    <RegistryRow
+                      isSelected={isRegistrySelected}
+                      fadedBorder={isRegistrySelected}
+                      text={label || "No label"}
+                      isFirstAfterSelected={isFirstAfterSelected}
+                      percentage={100}
+                      onClick={() => {
+                        if (isRegistrySelected) {
+                          onSelectRegistry?.(undefined);
+                        } else {
+                          setSelectedClaim(undefined);
+                          setSelectedBlueprint(undefined);
+                          onSelectRegistry?.(id);
+                        }
+                      }}
+                      icon={
+                        <Image
+                          alt={"Board icon"}
+                          src={
+                            "https://staging.hyperboards.org/icons/board.svg"
+                          }
+                          width={"24px"}
+                        />
                       }
-                    }}
-                    icon={
-                      <Image
-                        alt={"Board icon"}
-                        src={"https://staging.hyperboards.org/icons/board.svg"}
-                        width={"24px"}
-                      />
-                    }
-                  />
-                  {selectedRegistry === registry.id && (
+                    />
+                  )}
+                  {selectedRegistry === id && (
                     <>
-                      {registry.claims.map((claim, index) => {
+                      {entries.map((claim, index) => {
                         const isClaimSelected = claim.id === selectedClaim;
                         const isLastClaim =
-                          !isLastRegistry &&
-                          index === registry.claims.length - 1;
+                          !isLastRegistry && index === entries.length - 1;
+
+                        if (claim.is_blueprint) {
+                          const isBlueprintSelected =
+                            Number(claim.id) === selectedBlueprint;
+                          return (
+                            <ClaimRow
+                              isSingleSection={isSingleSection}
+                              key={claim.id}
+                              isSelected={isBlueprintSelected}
+                              isLast={false}
+                              text={claim.name || "No name"}
+                              percentage={(
+                                (claim.display_size / totalValueInRegistry) *
+                                100
+                              ).toPrecision(2)}
+                              onClick={() => {
+                                setSelectedClaim(undefined);
+                                setSelectedBlueprint(Number(claim.id));
+                              }}
+                              icon={
+                                <BlueprintTooltip
+                                  width={"12p"}
+                                  alignItems={"center"}
+                                />
+                              }
+                            />
+                          );
+                        }
                         return (
                           <HypercertClaimRow
                             key={claim.id}
+                            isSingleSection={isSingleSection}
                             isSelected={isClaimSelected}
                             isLast={isLastClaim}
-                            hypercertId={claim.hypercert_id}
-                            percentage={(
-                              (claim.display_size / totalValueInRegistry) *
-                              100
-                            ).toPrecision(2)}
+                            hypercertId={claim.id}
+                            percentage={claim.percentage_of_section}
                             onClick={() => {
                               setSelectedBlueprint(undefined);
-                              setSelectedClaim(claim.hypercert_id);
+                              setSelectedClaim(claim.id);
                             }}
                             icon={
                               <Image
@@ -191,38 +214,6 @@ export const OwnershipTable = ({
                                   "https://staging.hyperboards.org/icons/board.svg"
                                 }
                                 width={"12px"}
-                              />
-                            }
-                          />
-                        );
-                      })}
-                      {registry.blueprints.map((blueprint) => {
-                        const isBlueprintSelected =
-                          blueprint.id === selectedBlueprint;
-                        return (
-                          <ClaimRow
-                            key={blueprint.id}
-                            isSelected={isBlueprintSelected}
-                            isLast={false}
-                            text={
-                              (
-                                blueprint.form_values as unknown as {
-                                  name: string;
-                                }
-                              )?.name || "No name"
-                            }
-                            percentage={(
-                              (blueprint.display_size / totalValueInRegistry) *
-                              100
-                            ).toPrecision(2)}
-                            onClick={() => {
-                              setSelectedClaim(undefined);
-                              setSelectedBlueprint(blueprint.id);
-                            }}
-                            icon={
-                              <BlueprintTooltip
-                                width={"12p"}
-                                alignItems={"center"}
                               />
                             }
                           />
@@ -308,6 +299,7 @@ const HypercertClaimRow = ({
 }: Omit<SelectionRowProps, "text"> & {
   isLast?: boolean;
   hypercertId: string;
+  isSingleSection?: boolean;
 }) => {
   const { data: claim } = useFetchHypercertById(hypercertId);
 
@@ -337,7 +329,8 @@ const ClaimRow = ({
   percentage,
   onClick,
   isLast,
-}: SelectionRowProps & { isLast?: boolean }) => {
+  isSingleSection = false,
+}: SelectionRowProps & { isLast?: boolean; isSingleSection?: boolean }) => {
   return (
     <Flex
       cursor={"pointer"}
@@ -350,10 +343,11 @@ const ClaimRow = ({
         width={"100%"}
         borderBottom={!isLast ? "1px solid rgba(0, 0, 0, 0.3)" : "none"}
         borderRight={isSelected ? "none" : "1px solid black"}
-        ml={"42px"}
+        ml={isSingleSection ? "0px" : "42px"}
         py={"14px"}
         pr={"20px"}
         position={"relative"}
+        alignItems={"center"}
       >
         {icon}
         <Text ml={4}>{text}</Text>
@@ -381,7 +375,9 @@ const ClaimOwnershipOverview = ({
   data,
 }: {
   data: {
-    displayData: Partial<DefaultSponsorMetadataEntity> & { value: string };
+    displayName?: string;
+    address: string;
+    avatar?: string;
     total: bigint;
   }[];
 }) => {
@@ -408,7 +404,7 @@ const ClaimOwnershipOverview = ({
         const percentage =
           Number((ownership.total * 10000n) / totalValueForAllFractions) / 100;
         return (
-          <Flex key={ownership.displayData?.value} backgroundColor={"white"}>
+          <Flex key={ownership.address} backgroundColor={"white"}>
             <Flex
               borderBottom={"1px solid rgba(0, 0, 0, 0.3)"}
               width={"100%"}
@@ -416,7 +412,7 @@ const ClaimOwnershipOverview = ({
               mx={"20px"}
               py={1}
             >
-              <Text>{formatMetadata(ownership.displayData)}</Text>
+              <Text>{formatMetadata(ownership)}</Text>
               <Text textStyle={"secondary"}>{percentage.toFixed(2)}%</Text>
             </Flex>
           </Flex>
@@ -426,31 +422,17 @@ const ClaimOwnershipOverview = ({
   );
 };
 
-const formatMetadata = (
-  displayMetadata: Partial<DefaultSponsorMetadataEntity> & { value: string },
-) => {
+const formatMetadata = (displayMetadata: {
+  displayName?: string;
+  address: string;
+  avatar?: string;
+  total: bigint;
+}) => {
   console.log(displayMetadata);
   if (!displayMetadata) {
     return "Unknown";
   }
-  const { companyName, type, firstName, lastName, address, value } =
-    displayMetadata;
+  const { address, displayName } = displayMetadata;
 
-  if (type === "company") {
-    return companyName;
-  }
-
-  if (firstName && lastName) {
-    return `${firstName} ${lastName}`;
-  }
-
-  if (address) {
-    return formatAddress(address);
-  }
-
-  if (isAddress(value)) {
-    return formatAddress(value);
-  }
-
-  return value;
+  return displayName || formatAddress(address) || "Unknown";
 };

@@ -8,7 +8,7 @@ import { OwnershipTable } from "@/components/hyperboard/ownership-table";
 import { MdOutlineFullscreen, MdOutlineFullscreenExit } from "react-icons/md";
 import { useRouter } from "next/router";
 import { HyperboardRenderer } from "@/components/hyperboard-renderer";
-import { useFetchHyperboardData } from "@/hooks/useFetchHyperboardData";
+import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
 import { HypercertClientProvider } from "@/components/providers";
 
 const HyperboardRendererWithUiInternal = ({
@@ -129,7 +129,7 @@ export const HyperboardRendererWithUi = ({
 }: {
   hyperboardId: string;
 }) => {
-  const { data, isLoading } = useFetchHyperboardData(hyperboardId);
+  const { data, isLoading } = useFetchHyperboardById(hyperboardId);
 
   if (isLoading) {
     return (
@@ -143,8 +143,14 @@ export const HyperboardRendererWithUi = ({
     return null;
   }
 
+  const chainId = data.chain_ids?.[0];
+
+  if (!chainId) {
+    return null;
+  }
+
   return (
-    <HypercertClientProvider chainOverride={data.chain_id}>
+    <HypercertClientProvider chainOverride={Number(chainId)}>
       <HyperboardRendererWithUiInternal hyperboardId={hyperboardId} />
     </HypercertClientProvider>
   );

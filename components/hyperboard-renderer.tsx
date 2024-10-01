@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useSize } from "@chakra-ui/react-use-size";
-import {
-  registryContentItemToHyperboardEntry,
-  useFetchHyperboardContents,
-} from "@/hooks/useFetchHyperboardContents";
+import { useEffect, useState } from "react";
+import { registryContentItemToHyperboardEntry } from "@/hooks/useFetchHyperboardContents";
 import { Center, Flex, Spinner } from "@chakra-ui/react";
 import { Hyperboard } from "@/components/hyperboard";
 import * as React from "react";
 import { OwnershipTable } from "@/components/hyperboard/ownership-table";
+import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
+import { useMeasure } from "react-use";
 
 export const HyperboardRenderer = ({
   hyperboardId,
@@ -24,8 +22,7 @@ export const HyperboardRenderer = ({
   onSelectedRegistryChange?: (registryId?: string) => void;
   showTable?: boolean;
 }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const dimensions = useSize(containerRef);
+  const [containerRef, dimensions] = useMeasure<HTMLDivElement>();
 
   const [selectedRegistry, setSelectedRegistry] = useState<string>();
 
@@ -35,21 +32,26 @@ export const HyperboardRenderer = ({
     }
   }, [selectedRegistryParent]);
 
-  const { data, isLoading, isLoadingError } = useFetchHyperboardContents(
-    hyperboardId,
-    {
-      disableToast,
-    },
-  );
-  const results = data?.results;
-  console.log("results", results);
+  const { data, isLoading, isLoadingError } =
+    useFetchHyperboardById(hyperboardId);
+
+  useEffect(() => {
+    if (!selectedRegistry && data?.sections.data.length === 1) {
+      setSelectedRegistry(data.sections.data[0].collection.id);
+    }
+  }, [selectedRegistry, data]);
+
+  if (!data) {
+    return null;
+  }
+  const sections = data.sections.data;
 
   const height = ((dimensions?.width || 1) / 16) * 9;
-  const widthPerBoard = `${100 / (results?.length || 1)}%`;
+  const widthPerBoard = `${100 / (sections?.length || 1)}%`;
 
-  const backgroundImageUrl = data?.hyperboard.background_image;
-  const grayscaleImages = !!data?.hyperboard.grayscale_images;
-  const borderColor = data?.hyperboard.tile_border_color || undefined;
+  const backgroundImageUrl = data?.background_image;
+  const grayscaleImages = !!data?.grayscale_images;
+  const borderColor = data?.tile_border_color || undefined;
 
   const getWidth = (registryId: string) => {
     if (selectedRegistry === registryId) {
@@ -116,27 +118,27 @@ export const HyperboardRenderer = ({
             <Spinner color="white" />
           </Center>
         )}
-        {!isLoading && !isLoadingError && results && (
+        {!isLoading && !isLoadingError && sections && (
           <>
-            {results.map((x) => (
+            {sections.map((section) => (
               <Flex
-                key={x.registry.id}
-                width={getWidth(x.registry.id)}
-                minWidth={getWidth(x.registry.id)}
+                key={section.collection.id}
+                width={getWidth(section.collection.id)}
+                minWidth={getWidth(section.collection.id)}
                 transition={"all 0.5s ease-out"}
                 overflow={"hidden"}
               >
                 <Hyperboard
                   onClickLabel={() =>
-                    onSelectedRegistryChangeHandler(x.registry.id)
+                    onSelectedRegistryChangeHandler(section.collection.id)
                   }
-                  label={x.label || "Unlabelled"}
+                  label={section.label || "Unlabelled"}
                   height={height}
                   grayscaleImages={grayscaleImages}
                   borderColor={borderColor}
                   data={
-                    (Object.values(x.content) || {}).map((x) =>
-                      registryContentItemToHyperboardEntry(x),
+                    (Object.values(section.owners) || {}).map((owner) =>
+                      registryContentItemToHyperboardEntry(owner),
                     ) || []
                   }
                 />
