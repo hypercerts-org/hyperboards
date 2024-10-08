@@ -5,11 +5,9 @@ import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
-import { DefaultSponsorMetadataEntity } from "@/types/database-entities";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { formatAddress } from "@/utils/formatting";
-import { isAddress } from "viem";
 import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
 
 interface OwnershipTableProps {
@@ -79,6 +77,7 @@ export const OwnershipTable = ({
     // Only show every owner once in the overview
     .groupBy((owner) => owner.address)
     .mapValues((entriesForOwner) => ({
+      address: entriesForOwner[0].address,
       avatar: entriesForOwner[0].avatar,
       displayName: entriesForOwner[0].display_name,
       total: entriesForOwner.reduce((acc, x) => acc + BigInt(x.units || 0), 0n),
