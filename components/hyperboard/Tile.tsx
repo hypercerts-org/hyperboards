@@ -21,6 +21,10 @@ const formatTooltipLabel = (id: string, displayName?: string | null) => {
     return formattedId;
   }
 
+  if (displayName === formattedId) {
+    return `${displayName}`;
+  }
+
   return `${displayName}, ${formattedId}`;
 };
 
