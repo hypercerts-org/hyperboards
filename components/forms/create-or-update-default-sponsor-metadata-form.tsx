@@ -30,12 +30,10 @@ interface CreateOrUpdateDefaultSponsorMetadataFormValues {
 
 const defaultPreviewValues: HyperboardEntry = {
   id: "a",
-  value: 1n,
-  image: "https://via.placeholder.com/100",
-  companyName: "Company name",
+  value: 1,
+  avatar: "https://via.placeholder.com/100",
+  displayName: "Company name",
   type: "Test",
-  firstName: "First",
-  lastName: "Last",
   isBlueprint: true,
 };
 

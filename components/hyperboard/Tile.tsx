@@ -10,14 +10,14 @@ import { useEnsName } from "wagmi";
 const borderRadius = "0px";
 const logosAndText = "black";
 
-const formatTooltipLabel = ({ companyName, id }: HyperboardEntry) => {
-  if (companyName === id) {
-    return `${companyName}`;
+const formatTooltipLabel = ({ displayName, id }: HyperboardEntry) => {
+  if (displayName === id) {
+    return `${displayName}`;
   }
 
   const formattedId = isAddress(id) ? formatAddress(id) : id;
 
-  return `${companyName}, ${formattedId}`;
+  return `${displayName}, ${formattedId}`;
 };
 
 export const Tile = ({
@@ -38,8 +38,7 @@ export const Tile = ({
   const opacity = entry.isBlueprint ? 0.5 : 1;
   const toolTipLabel = formatTooltipLabel(entry);
 
-  const showBackupImage =
-    !entry.image && !entry.companyName && !entry.firstName && !entry.lastName;
+  const showBackupImage = !entry.avatar;
 
   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
 
@@ -54,159 +53,159 @@ export const Tile = ({
           alignItems="center"
           justifyContent="center"
         >
-          {showBackupImage ? (
-            <BackupForImage
-              id={entry.id}
-              fontSize={layout.font}
-              toolTipLabel={toolTipLabel}
-            />
-          ) : (
+          {entry?.avatar ? (
             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
               <Image
                 opacity={opacity}
                 className={"company-logo"}
                 maxWidth={"60%"}
                 maxHeight={"80%"}
-                src={entry.image}
-                alt={entry.image}
+                src={entry.avatar}
+                alt={entry.avatar}
                 filter={grayScale ? `grayScale(${opacity})` : undefined}
               />
             </Tooltip>
-          )}
-        </Flex>
-      </Wrapper>
-    );
-  }
-
-  if (entry.type === "person") {
-    const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
-    return (
-      <Wrapper {...wrapperProps}>
-        {showBackupImage ? (
-          <BackupForImage
-            id={entry.id}
-            fontSize={layout.font}
-            toolTipLabel={toolTipLabel}
-          />
-        ) : (
-          <Flex
-            width={"100%"}
-            position={"relative"}
-            height={"100%"}
-            justifyContent={"space-between"}
-          >
-            <>
-              <Flex
-                flexDirection={"column"}
-                marginTop={"auto"}
-                padding={padding}
-              >
-                <Text
-                  fontSize={`${layout.font}px`}
-                  color={logosAndText}
-                  fontFamily={"Switzer"}
-                  opacity={opacity}
-                >
-                  {entry.firstName}
-                </Text>
-                <Text
-                  opacity={opacity}
-                  fontSize={`${layout.font}px`}
-                  color={logosAndText}
-                >
-                  {entry.lastName}
-                </Text>
-              </Flex>
-              <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
-                <Image
-                  opacity={opacity}
-                  borderTopRightRadius={borderRadius}
-                  borderBottomLeftRadius={borderRadius}
-                  marginBottom={"auto"}
-                  src={entry.image}
-                  alt={"Test alt"}
-                  height={`${layout.image}px`}
-                  width={`${layout.image}px`}
-                  maxWidth={`${layout.image}px`}
-                  maxHeight={`${layout.image}px`}
-                  objectFit={"cover"}
-                  filter={grayScale ? `grayScale(${opacity})` : undefined}
-                />
-              </Tooltip>
-            </>
-          </Flex>
-        )}
-        {entry.isBlueprint && (
-          <BlueprintTooltip
-            position={"absolute"}
-            top={padding}
-            left={padding}
-          />
-        )}
-      </Wrapper>
-    );
-  }
-
-  if (entry.type === "speaker") {
-    const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
-    return (
-      <Wrapper {...wrapperProps}>
-        <Flex
-          width={"100%"}
-          position={"relative"}
-          height={"100%"}
-          justifyContent={"space-between"}
-        >
-          <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
-            <Text
-              fontSize={`${layout.font}px`}
-              color={logosAndText}
-              fontFamily={"Switzer"}
-              fontWeight={600}
-            >
-              {entry.firstName} {entry.lastName}
-            </Text>
-            {entry.companyName && (
-              <Text
-                fontSize={`${layout.font}px`}
-                color={logosAndText}
-                opacity={"50%"}
-                fontFamily={"Switzer"}
-                noOfLines={1}
-              >
-                {entry.companyName}
-              </Text>
-            )}
-          </Flex>
-          {showBackupImage ? (
+          ) : (
             <BackupForImage
               id={entry.id}
               fontSize={layout.font}
               toolTipLabel={toolTipLabel}
             />
-          ) : (
-            <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
-              <Image
-                position={"absolute"}
-                right={0}
-                top={0}
-                borderTopRightRadius={borderRadius}
-                borderBottomLeftRadius={borderRadius}
-                marginBottom={"auto"}
-                src={entry.image}
-                alt={"Test alt"}
-                height={`${layout.image}px`}
-                width={`${layout.image}px`}
-                maxWidth={`${layout.image}px`}
-                maxHeight={`${layout.image}px`}
-                filter={grayScale ? `grayScale(${opacity})` : undefined}
-              />
-            </Tooltip>
           )}
         </Flex>
       </Wrapper>
     );
   }
+  //
+  // if (entry.type === "person") {
+  //   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
+  //   return (
+  //     <Wrapper {...wrapperProps}>
+  //       {showBackupImage ? (
+  //         <BackupForImage
+  //           id={entry.id}
+  //           fontSize={layout.font}
+  //           toolTipLabel={toolTipLabel}
+  //         />
+  //       ) : (
+  //         <Flex
+  //           width={"100%"}
+  //           position={"relative"}
+  //           height={"100%"}
+  //           justifyContent={"space-between"}
+  //         >
+  //           <>
+  //             <Flex
+  //               flexDirection={"column"}
+  //               marginTop={"auto"}
+  //               padding={padding}
+  //             >
+  //               <Text
+  //                 fontSize={`${layout.font}px`}
+  //                 color={logosAndText}
+  //                 fontFamily={"Switzer"}
+  //                 opacity={opacity}
+  //               >
+  //                 {entry.firstName}
+  //               </Text>
+  //               <Text
+  //                 opacity={opacity}
+  //                 fontSize={`${layout.font}px`}
+  //                 color={logosAndText}
+  //               >
+  //                 {entry.lastName}
+  //               </Text>
+  //             </Flex>
+  //             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+  //               <Image
+  //                 opacity={opacity}
+  //                 borderTopRightRadius={borderRadius}
+  //                 borderBottomLeftRadius={borderRadius}
+  //                 marginBottom={"auto"}
+  //                 src={entry.image}
+  //                 alt={"Test alt"}
+  //                 height={`${layout.image}px`}
+  //                 width={`${layout.image}px`}
+  //                 maxWidth={`${layout.image}px`}
+  //                 maxHeight={`${layout.image}px`}
+  //                 objectFit={"cover"}
+  //                 filter={grayScale ? `grayScale(${opacity})` : undefined}
+  //               />
+  //             </Tooltip>
+  //           </>
+  //         </Flex>
+  //       )}
+  //       {entry.isBlueprint && (
+  //         <BlueprintTooltip
+  //           position={"absolute"}
+  //           top={padding}
+  //           left={padding}
+  //         />
+  //       )}
+  //     </Wrapper>
+  //   );
+  // }
+  //
+  // if (entry.type === "speaker") {
+  //   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
+  //   return (
+  //     <Wrapper {...wrapperProps}>
+  //       <Flex
+  //         width={"100%"}
+  //         position={"relative"}
+  //         height={"100%"}
+  //         justifyContent={"space-between"}
+  //       >
+  //         <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
+  //           <Text
+  //             fontSize={`${layout.font}px`}
+  //             color={logosAndText}
+  //             fontFamily={"Switzer"}
+  //             fontWeight={600}
+  //           >
+  //             {entry.firstName} {entry.lastName}
+  //           </Text>
+  //           {entry.companyName && (
+  //             <Text
+  //               fontSize={`${layout.font}px`}
+  //               color={logosAndText}
+  //               opacity={"50%"}
+  //               fontFamily={"Switzer"}
+  //               noOfLines={1}
+  //             >
+  //               {entry.companyName}
+  //             </Text>
+  //           )}
+  //         </Flex>
+  //         {showBackupImage ? (
+  //           <BackupForImage
+  //             id={entry.id}
+  //             fontSize={layout.font}
+  //             toolTipLabel={toolTipLabel}
+  //           />
+  //         ) : (
+  //           <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+  //             <Image
+  //               position={"absolute"}
+  //               right={0}
+  //               top={0}
+  //               borderTopRightRadius={borderRadius}
+  //               borderBottomLeftRadius={borderRadius}
+  //               marginBottom={"auto"}
+  //               src={entry.image}
+  //               alt={"Test alt"}
+  //               height={`${layout.image}px`}
+  //               width={`${layout.image}px`}
+  //               maxWidth={`${layout.image}px`}
+  //               maxHeight={`${layout.image}px`}
+  //               filter={grayScale ? `grayScale(${opacity})` : undefined}
+  //             />
+  //           </Tooltip>
+  //         )}
+  //       </Flex>
+  //     </Wrapper>
+  //   );
+  // }
 
   return (
     <Wrapper {...wrapperProps}>

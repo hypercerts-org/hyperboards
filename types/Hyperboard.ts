@@ -1,10 +1,8 @@
 export interface HyperboardEntry {
   type: string;
   id: string;
-  companyName: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  image: string;
+  avatar?: string | null;
+  displayName?: string | null;
   value: number;
   isBlueprint: boolean;
 }

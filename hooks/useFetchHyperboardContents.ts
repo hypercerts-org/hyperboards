@@ -413,10 +413,8 @@ export const registryContentItemToHyperboardEntry = ({
   // }
   return {
     type: "company",
-    companyName: display_name,
-    lastName: display_name,
-    firstName: display_name,
-    image: avatar || "",
+    displayName: display_name,
+    avatar: avatar,
     value: percentage_owned!,
     id: address!,
     isBlueprint: false,
