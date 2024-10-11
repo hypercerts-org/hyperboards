@@ -10,12 +10,16 @@ import { useEnsName } from "wagmi";
 const borderRadius = "0px";
 const logosAndText = "black";
 
-const formatTooltipLabel = ({ displayName, id }: HyperboardEntry) => {
+const formatTooltipLabel = (id: string, displayName?: string | null) => {
   if (displayName === id) {
     return `${displayName}`;
   }
 
   const formattedId = isAddress(id) ? formatAddress(id) : id;
+
+  if (!displayName) {
+    return formattedId;
+  }
 
   return `${displayName}, ${formattedId}`;
 };
@@ -36,46 +40,55 @@ export const Tile = ({
   borderColor?: string;
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
-  const toolTipLabel = formatTooltipLabel(entry);
 
-  const showBackupImage = !entry.avatar;
+  const { data: ensName, isLoading } = useEnsName({
+    address: isAddress(entry.id) ? entry.id : undefined,
+    chainId: 1,
+  });
+  const fallback = isAddress(entry.id) ? formatAddress(entry.id) : entry.id;
 
+  if (isLoading) {
+    return null;
+  }
+
+  const name = entry.displayName || ensName || fallback;
+  const toolTipLabel = formatTooltipLabel(entry.id, name);
   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
 
-  if (entry.type === "company") {
-    return (
-      <Wrapper {...wrapperProps}>
-        <Flex
-          color={"red"}
-          fill={"red"}
-          width={"100%"}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          {entry?.avatar ? (
-            <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
-              <Image
-                opacity={opacity}
-                className={"company-logo"}
-                maxWidth={"60%"}
-                maxHeight={"80%"}
-                src={entry.avatar}
-                alt={entry.avatar}
-                filter={grayScale ? `grayScale(${opacity})` : undefined}
-              />
-            </Tooltip>
-          ) : (
-            <BackupForImage
-              id={entry.id}
-              fontSize={layout.font}
-              toolTipLabel={toolTipLabel}
+  return (
+    <Wrapper {...wrapperProps}>
+      <Flex
+        color={"red"}
+        fill={"red"}
+        width={"100%"}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        {entry?.avatar ? (
+          <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
+            <Image
+              opacity={opacity}
+              className={"company-logo"}
+              maxWidth={"60%"}
+              maxHeight={"80%"}
+              src={entry.avatar}
+              alt={name}
+              filter={grayScale ? `grayScale(${opacity})` : undefined}
             />
-          )}
-        </Flex>
-      </Wrapper>
-    );
-  }
+          </Tooltip>
+        ) : (
+          <Center height={"100%"} width={"100%"}>
+            <Tooltip label={toolTipLabel}>
+              <Text color="black" opacity={0.99} fontSize={layout.font}>
+                {name}
+              </Text>
+            </Tooltip>
+          </Center>
+        )}
+      </Flex>
+    </Wrapper>
+  );
   //
   // if (entry.type === "person") {
   //   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
@@ -206,16 +219,16 @@ export const Tile = ({
   //     </Wrapper>
   //   );
   // }
-
-  return (
-    <Wrapper {...wrapperProps}>
-      <BackupForImage
-        id={entry.id}
-        fontSize={layout.font}
-        toolTipLabel={toolTipLabel}
-      />
-    </Wrapper>
-  );
+  //
+  // return (
+  //   <Wrapper {...wrapperProps}>
+  //     <BackupForImage
+  //       id={entry.id}
+  //       fontSize={layout.font}
+  //       toolTipLabel={toolTipLabel}
+  //     />
+  //   </Wrapper>
+  // );
 };
 
 const BackupForImage = ({
