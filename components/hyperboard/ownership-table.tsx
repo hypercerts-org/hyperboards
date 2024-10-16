@@ -119,6 +119,11 @@ export const OwnershipTable = ({
               if (!entries) {
                 return null;
               }
+              const sortedEntries = _.sortBy(
+                entries,
+                (entry) => -entry.percentage_of_section,
+              );
+
               const isRegistrySelected =
                 !selectedClaim && !selectedBlueprint && selectedRegistry === id;
               const isFirstAfterSelected =
@@ -126,9 +131,6 @@ export const OwnershipTable = ({
                 index === indexOfSelectedRegistry + 1;
               const isLastRegistry =
                 index === hyperboardContentData.sections.data.length - 1;
-              const totalValueInRegistry = _.sum([
-                ...sift(entries).map((entry) => entry.display_size),
-              ]);
               const isSingleSection =
                 hyperboardContentData.sections.data.length === 1;
               return (
@@ -162,10 +164,10 @@ export const OwnershipTable = ({
                   )}
                   {selectedRegistry === id && (
                     <>
-                      {entries.map((claim, index) => {
+                      {sortedEntries.map((claim, index) => {
                         const isClaimSelected = claim.id === selectedClaim;
                         const isLastClaim =
-                          !isLastRegistry && index === entries.length - 1;
+                          !isLastRegistry && index === sortedEntries.length - 1;
 
                         if (claim.is_blueprint) {
                           const isBlueprintSelected =
@@ -177,10 +179,7 @@ export const OwnershipTable = ({
                               isSelected={isBlueprintSelected}
                               isLast={false}
                               text={claim.name || "No name"}
-                              percentage={(
-                                (claim.display_size / totalValueInRegistry) *
-                                100
-                              ).toPrecision(2)}
+                              percentage={claim.percentage_of_section}
                               onClick={() => {
                                 setSelectedClaim(undefined);
                                 setSelectedBlueprint(Number(claim.id));
@@ -245,7 +244,7 @@ export const OwnershipTable = ({
 interface SelectionRowProps {
   isSelected: boolean;
   text: string;
-  percentage: number | string;
+  percentage: number;
   onClick: () => void;
   icon: React.JSX.Element;
 }
@@ -351,7 +350,7 @@ const ClaimRow = ({
         {icon}
         <Text ml={4}>{text}</Text>
         <Text textStyle={"secondary"} ml={"auto"}>
-          {percentage}%
+          {percentage.toFixed(2)}%
         </Text>
         {isSelected && <SelectedIcon />}
       </Flex>
