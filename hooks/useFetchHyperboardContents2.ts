@@ -79,7 +79,6 @@ export const getHyperboard = async (hyperboard_id: string, client: Client) => {
   }
 
   const hyperboard = data?.hyperboards?.data?.[0];
-  console.log("hyperboard", data);
 
   return readFragment(HyperboardFragment, hyperboard);
 };

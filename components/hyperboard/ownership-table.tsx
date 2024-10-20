@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Center, Flex, Icon, Image, Text } from "@chakra-ui/react";
-import { sift } from "@/utils/sift";
 import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
@@ -181,8 +180,13 @@ export const OwnershipTable = ({
                               text={claim.name || "No name"}
                               percentage={claim.percentage_of_section}
                               onClick={() => {
-                                setSelectedClaim(undefined);
-                                setSelectedBlueprint(Number(claim.id));
+                                if (isBlueprintSelected) {
+                                  setSelectedBlueprint(undefined);
+                                  setSelectedClaim(undefined);
+                                } else {
+                                  setSelectedClaim(undefined);
+                                  setSelectedBlueprint(Number(claim.id));
+                                }
                               }}
                               icon={
                                 <BlueprintTooltip
@@ -202,8 +206,13 @@ export const OwnershipTable = ({
                             hypercertId={claim.id}
                             percentage={claim.percentage_of_section}
                             onClick={() => {
-                              setSelectedBlueprint(undefined);
-                              setSelectedClaim(claim.id);
+                              if (isClaimSelected) {
+                                setSelectedBlueprint(undefined);
+                                setSelectedClaim(undefined);
+                              } else {
+                                setSelectedBlueprint(undefined);
+                                setSelectedClaim(claim.id);
+                              }
                             }}
                             icon={
                               <Image
@@ -340,7 +349,7 @@ const ClaimRow = ({
       <Flex
         width={"100%"}
         borderBottom={!isLast ? "1px solid rgba(0, 0, 0, 0.3)" : "none"}
-        borderRight={isSelected ? "none" : "1px solid black"}
+        borderRight={isSelected ? "1px solid transparent" : "1px solid black"}
         ml={isSingleSection ? "0px" : "42px"}
         py={"14px"}
         pr={"20px"}
@@ -426,7 +435,6 @@ const formatMetadata = (displayMetadata: {
   avatar?: string;
   total: bigint;
 }) => {
-  console.log(displayMetadata);
   if (!displayMetadata) {
     return "Unknown";
   }
