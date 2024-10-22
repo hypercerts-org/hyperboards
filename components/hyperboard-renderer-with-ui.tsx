@@ -18,8 +18,7 @@ const HyperboardRendererWithUiInternal = ({
 }) => {
   const { push, query } = useRouter();
 
-  const [selectedRegistryParent, setSelectedRegistryParent] =
-    useState<string>();
+  const [selectedCollection, setSelectedCollection] = useState<string>();
 
   const { data } = useFetchHyperboardContents(hyperboardId);
   const hyperboard = data?.hyperboard;
@@ -49,13 +48,13 @@ const HyperboardRendererWithUiInternal = ({
     crumbs.push({
       id: hyperboard.id,
       name: hyperboard.name,
-      onClick: () => setSelectedRegistryParent(undefined),
+      onClick: () => setSelectedCollection(undefined),
     });
   }
 
-  if (selectedRegistryParent) {
+  if (selectedCollection) {
     const registry = hyperboard?.hyperboard_registries.find(
-      (x) => x.registries?.id === selectedRegistryParent,
+      (x) => x.registries?.id === selectedCollection,
     );
     if (registry?.registries) {
       crumbs.push({
@@ -89,8 +88,8 @@ const HyperboardRendererWithUiInternal = ({
             <HyperboardRenderer
               hyperboardId={hyperboardId}
               fullScreen={fullScreen}
-              onSelectedRegistryChange={setSelectedRegistryParent}
-              selectedRegistryParent={selectedRegistryParent}
+              onSelectedRegistryChange={setSelectedCollection}
+              selectedRegistryParent={selectedCollection}
             />
             <IconButton
               variant={"blackAndWhiteOutline"}
@@ -115,8 +114,8 @@ const HyperboardRendererWithUiInternal = ({
           <OwnershipTable
             hyperboardId={hyperboard.id}
             showHeader
-            selectedRegistry={selectedRegistryParent}
-            onSelectRegistry={setSelectedRegistryParent}
+            selectedCollection={selectedCollection}
+            onSelectCollection={setSelectedCollection}
           />
         )}
       </Center>

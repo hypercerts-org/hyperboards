@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Center, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import _ from "lodash";
 
@@ -12,20 +12,58 @@ import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
 interface OwnershipTableProps {
   hyperboardId: string;
   showHeader?: boolean;
-  selectedRegistry?: string;
-  onSelectRegistry?: (registryId: string | undefined) => void;
+  selectedCollection?: string;
+  onSelectCollection?: (registryId: string | undefined) => void;
 }
 
 export const OwnershipTable = ({
   hyperboardId,
   showHeader = false,
-  selectedRegistry,
-  onSelectRegistry,
+  selectedCollection,
+  onSelectCollection,
 }: OwnershipTableProps) => {
-  // TODO: Show blueprints in ownership table
   const { data: hyperboardContentData } = useFetchHyperboardById(hyperboardId);
   const [selectedClaim, setSelectedClaim] = useState<string>();
   const [selectedBlueprint, setSelectedBlueprint] = useState<number>();
+
+  const dataToShow = useMemo(() => {
+    const getData = () => {
+      if (!hyperboardContentData) {
+        return [];
+      }
+
+      if (selectedClaim) {
+        return hyperboardContentData.sections.data
+          .flatMap((section) => section.entries)
+          .find((entry) => entry.id === selectedClaim)?.owners;
+      }
+
+      if (selectedBlueprint) {
+        return hyperboardContentData.sections.data
+          .flatMap((section) => section.entries)
+          .find((entry) => entry.id === selectedBlueprint.toString())?.owners;
+      }
+
+      if (selectedCollection) {
+        const section = hyperboardContentData.sections.data.find(
+          (collection) => collection.collection.id === selectedCollection,
+        );
+        if (section) {
+          return section.owners.map((owner) => ({
+            ...owner,
+            percentage: owner.percentage_owned,
+          }));
+        }
+      }
+
+      return hyperboardContentData.owners.map((owner) => ({
+        ...owner,
+        percentage: owner.percentage_owned,
+      }));
+    };
+    const data = getData();
+    return (data || []).sort((a, b) => b.percentage - a.percentage);
+  }, [selectedCollection, selectedClaim]);
 
   if (!hyperboardContentData) {
     return null;
@@ -44,9 +82,9 @@ export const OwnershipTable = ({
       };
     }
 
-    if (selectedRegistry) {
+    if (selectedCollection) {
       const section = hyperboardContentData.sections.data.find(
-        (collection) => collection.collection.id === selectedRegistry,
+        (collection) => collection.collection.id === selectedCollection,
       );
       if (section) {
         return {
@@ -63,28 +101,8 @@ export const OwnershipTable = ({
   const { claimIds } = getClaimIds();
 
   const indexOfSelectedRegistry = hyperboardContentData.sections.data.findIndex(
-    (registry) => registry.collection.id === selectedRegistry,
+    (registry) => registry.collection.id === selectedCollection,
   );
-
-  const dataToShow = _.chain(hyperboardContentData.sections.data)
-    // Get all claims
-    .flatMap((section) => section.entries)
-    // Filter out only for the selected claims
-    .filter(({ id }) => claimIds.includes(id))
-    // Create a flat list of all claims
-    .flatMap((entry) => entry.owners)
-    // Only show every owner once in the overview
-    .groupBy((owner) => owner.address)
-    .mapValues((entriesForOwner) => ({
-      address: entriesForOwner[0].address,
-      avatar: entriesForOwner[0].avatar,
-      displayName: entriesForOwner[0].display_name,
-      total: entriesForOwner.reduce((acc, x) => acc + BigInt(x.units || 0), 0n),
-    }))
-    .values()
-    // Sort by total ownership
-    .sortBy((x) => -x.total)
-    .value();
 
   return (
     <>
@@ -124,7 +142,9 @@ export const OwnershipTable = ({
               );
 
               const isRegistrySelected =
-                !selectedClaim && !selectedBlueprint && selectedRegistry === id;
+                !selectedClaim &&
+                !selectedBlueprint &&
+                selectedCollection === id;
               const isFirstAfterSelected =
                 indexOfSelectedRegistry !== -1 &&
                 index === indexOfSelectedRegistry + 1;
@@ -143,11 +163,11 @@ export const OwnershipTable = ({
                       percentage={100}
                       onClick={() => {
                         if (isRegistrySelected) {
-                          onSelectRegistry?.(undefined);
+                          onSelectCollection?.(undefined);
                         } else {
                           setSelectedClaim(undefined);
                           setSelectedBlueprint(undefined);
-                          onSelectRegistry?.(id);
+                          onSelectCollection?.(id);
                         }
                       }}
                       icon={
@@ -161,7 +181,7 @@ export const OwnershipTable = ({
                       }
                     />
                   )}
-                  {selectedRegistry === id && (
+                  {selectedCollection === id && (
                     <>
                       {sortedEntries.map((claim, index) => {
                         const isClaimSelected = claim.id === selectedClaim;
@@ -382,13 +402,12 @@ const ClaimOwnershipOverview = ({
   data,
 }: {
   data: {
-    displayName?: string;
+    display_name?: string;
     address: string;
     avatar?: string;
-    total: bigint;
+    percentage: number;
   }[];
 }) => {
-  const totalValueForAllFractions = data.reduce((acc, x) => acc + x.total, 0n);
   if (data.length === 0) {
     return (
       <Center height={"100%"} width={"100%"}>
@@ -408,8 +427,6 @@ const ClaimOwnershipOverview = ({
   return (
     <>
       {data.map((ownership) => {
-        const percentage =
-          Number((ownership.total * 10000n) / totalValueForAllFractions) / 100;
         return (
           <Flex key={ownership.address} backgroundColor={"white"}>
             <Flex
@@ -420,7 +437,9 @@ const ClaimOwnershipOverview = ({
               py={1}
             >
               <Text>{formatMetadata(ownership)}</Text>
-              <Text textStyle={"secondary"}>{percentage.toFixed(2)}%</Text>
+              <Text textStyle={"secondary"}>
+                {ownership.percentage.toFixed(2)}%
+              </Text>
             </Flex>
           </Flex>
         );
@@ -430,15 +449,14 @@ const ClaimOwnershipOverview = ({
 };
 
 const formatMetadata = (displayMetadata: {
-  displayName?: string;
+  display_name?: string;
   address: string;
   avatar?: string;
-  total: bigint;
 }) => {
   if (!displayMetadata) {
     return "Unknown";
   }
-  const { address, displayName } = displayMetadata;
+  const { address, display_name } = displayMetadata;
 
-  return displayName || formatAddress(address) || "Unknown";
+  return display_name || formatAddress(address) || "Unknown";
 };

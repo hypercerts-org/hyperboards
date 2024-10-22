@@ -10,6 +10,13 @@ export const HyperboardFragment = graphql(`
       address
       chain_id
     }
+    owners {
+      percentage_owned
+      address
+      display_name
+      avatar
+    }
+
     name
     background_image
     grayscale_images

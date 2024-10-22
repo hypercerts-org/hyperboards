@@ -24,11 +24,11 @@ export const HyperboardRenderer = ({
 }) => {
   const [containerRef, dimensions] = useMeasure<HTMLDivElement>();
 
-  const [selectedRegistry, setSelectedRegistry] = useState<string>();
+  const [selectedCollection, setSelectedCollection] = useState<string>();
 
   useEffect(() => {
-    if (selectedRegistryParent !== selectedRegistry) {
-      setSelectedRegistry(selectedRegistryParent);
+    if (selectedRegistryParent !== selectedCollection) {
+      setSelectedCollection(selectedRegistryParent);
     }
   }, [selectedRegistryParent]);
 
@@ -36,10 +36,10 @@ export const HyperboardRenderer = ({
     useFetchHyperboardById(hyperboardId);
 
   useEffect(() => {
-    if (!selectedRegistry && data?.sections.data.length === 1) {
-      setSelectedRegistry(data.sections.data[0].collection.id);
+    if (!selectedCollection && data?.sections.data.length === 1) {
+      setSelectedCollection(data.sections.data[0].collection.id);
     }
-  }, [selectedRegistry, data]);
+  }, [selectedCollection, data]);
 
   if (!data) {
     return null;
@@ -54,18 +54,18 @@ export const HyperboardRenderer = ({
   const borderColor = data?.tile_border_color || undefined;
 
   const getWidth = (registryId: string) => {
-    if (selectedRegistry === registryId) {
+    if (selectedCollection === registryId) {
       return "100%";
     }
 
-    if (selectedRegistry && selectedRegistry !== registryId) {
+    if (selectedCollection && selectedCollection !== registryId) {
       return "0%";
     }
     return widthPerBoard;
   };
 
   const onSelectedRegistryChangeHandler = (registryId: string) => {
-    setSelectedRegistry((currentId) =>
+    setSelectedCollection((currentId) =>
       currentId === registryId ? undefined : registryId,
     );
     if (onSelectedRegistryChange) {
@@ -151,8 +151,8 @@ export const HyperboardRenderer = ({
         <OwnershipTable
           hyperboardId={hyperboardId}
           showHeader
-          selectedRegistry={selectedRegistry}
-          onSelectRegistry={setSelectedRegistry}
+          selectedCollection={selectedCollection}
+          onSelectCollection={setSelectedCollection}
         />
       )}
     </>
