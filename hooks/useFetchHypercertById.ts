@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Client } from "@urql/core";
-import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import { parseClaimOrFractionId, CONSTANTS } from "@hypercerts-org/sdk";
 import { graphql, readFragment } from "@/graphql";
 import { getAddress } from "viem";
-import { urqlClient } from "@/hooks/urqlClient";
+import { urqlClient, urqlClientTest } from "@/hooks/urqlClient";
 import { ResultOf } from "gql.tada";
+import { DeployedChains } from "@hypercerts-org/contracts";
 
 export const formatHypercertId = (hypercertId?: string) => {
   if (!hypercertId) {
@@ -74,7 +75,23 @@ export const useFetchHypercertById = (hypercertId: string) => {
         console.error("Invalid hypercertId", hypercertId);
         return null;
       }
-      return await getHypercertWithMetadata(formattedHypercertId, urqlClient);
+      const { chainId } = parseClaimOrFractionId(hypercertId);
+      if (!chainId) {
+        console.error("Invalid chainId", hypercertId);
+        return null;
+      }
+
+      const isTestnet =
+        CONSTANTS.DEPLOYMENTS[chainId.toString() as DeployedChains]?.isTestnet;
+
+      if (isTestnet === undefined) {
+        console.error("Invalid chainId", hypercertId);
+        return null;
+      }
+
+      return isTestnet
+        ? await getHypercertWithMetadata(formattedHypercertId, urqlClientTest)
+        : await getHypercertWithMetadata(formattedHypercertId, urqlClient);
     },
   });
 };

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Client } from "@urql/core";
 import { graphql, readFragment } from "@/graphql";
-import { urqlClient } from "@/hooks/urqlClient";
+import { urqlClient, urqlClientTest } from "@/hooks/urqlClient";
 import { ResultOf } from "gql.tada";
 
 export const HyperboardFragment = graphql(`
@@ -94,7 +94,10 @@ export const useFetchHyperboardById = (hyperboardId: string) => {
   return useQuery({
     queryKey: ["hyperboard", "id", hyperboardId],
     queryFn: async () => {
-      return await getHyperboard(hyperboardId, urqlClient);
+      return await Promise.all([
+        getHyperboard(hyperboardId, urqlClient).catch((e) => null),
+        getHyperboard(hyperboardId, urqlClientTest).catch((e) => null),
+      ]).then(([prod, test]) => prod || test);
     },
   });
 };
