@@ -93,146 +93,6 @@ export const Tile = ({
       </Flex>
     </Wrapper>
   );
-  //
-  // if (entry.type === "person") {
-  //   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
-  //   return (
-  //     <Wrapper {...wrapperProps}>
-  //       {showBackupImage ? (
-  //         <BackupForImage
-  //           id={entry.id}
-  //           fontSize={layout.font}
-  //           toolTipLabel={toolTipLabel}
-  //         />
-  //       ) : (
-  //         <Flex
-  //           width={"100%"}
-  //           position={"relative"}
-  //           height={"100%"}
-  //           justifyContent={"space-between"}
-  //         >
-  //           <>
-  //             <Flex
-  //               flexDirection={"column"}
-  //               marginTop={"auto"}
-  //               padding={padding}
-  //             >
-  //               <Text
-  //                 fontSize={`${layout.font}px`}
-  //                 color={logosAndText}
-  //                 fontFamily={"Switzer"}
-  //                 opacity={opacity}
-  //               >
-  //                 {entry.firstName}
-  //               </Text>
-  //               <Text
-  //                 opacity={opacity}
-  //                 fontSize={`${layout.font}px`}
-  //                 color={logosAndText}
-  //               >
-  //                 {entry.lastName}
-  //               </Text>
-  //             </Flex>
-  //             <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
-  //               <Image
-  //                 opacity={opacity}
-  //                 borderTopRightRadius={borderRadius}
-  //                 borderBottomLeftRadius={borderRadius}
-  //                 marginBottom={"auto"}
-  //                 src={entry.image}
-  //                 alt={"Test alt"}
-  //                 height={`${layout.image}px`}
-  //                 width={`${layout.image}px`}
-  //                 maxWidth={`${layout.image}px`}
-  //                 maxHeight={`${layout.image}px`}
-  //                 objectFit={"cover"}
-  //                 filter={grayScale ? `grayScale(${opacity})` : undefined}
-  //               />
-  //             </Tooltip>
-  //           </>
-  //         </Flex>
-  //       )}
-  //       {entry.isBlueprint && (
-  //         <BlueprintTooltip
-  //           position={"absolute"}
-  //           top={padding}
-  //           left={padding}
-  //         />
-  //       )}
-  //     </Wrapper>
-  //   );
-  // }
-  //
-  // if (entry.type === "speaker") {
-  //   const layout = getTileLayout(wrapperProps.width, wrapperProps.height);
-  //   return (
-  //     <Wrapper {...wrapperProps}>
-  //       <Flex
-  //         width={"100%"}
-  //         position={"relative"}
-  //         height={"100%"}
-  //         justifyContent={"space-between"}
-  //       >
-  //         <Flex flexDirection={"column"} marginTop={"auto"} padding={padding}>
-  //           <Text
-  //             fontSize={`${layout.font}px`}
-  //             color={logosAndText}
-  //             fontFamily={"Switzer"}
-  //             fontWeight={600}
-  //           >
-  //             {entry.firstName} {entry.lastName}
-  //           </Text>
-  //           {entry.companyName && (
-  //             <Text
-  //               fontSize={`${layout.font}px`}
-  //               color={logosAndText}
-  //               opacity={"50%"}
-  //               fontFamily={"Switzer"}
-  //               noOfLines={1}
-  //             >
-  //               {entry.companyName}
-  //             </Text>
-  //           )}
-  //         </Flex>
-  //         {showBackupImage ? (
-  //           <BackupForImage
-  //             id={entry.id}
-  //             fontSize={layout.font}
-  //             toolTipLabel={toolTipLabel}
-  //           />
-  //         ) : (
-  //           <Tooltip label={toolTipLabel} aria-label={toolTipLabel}>
-  //             <Image
-  //               position={"absolute"}
-  //               right={0}
-  //               top={0}
-  //               borderTopRightRadius={borderRadius}
-  //               borderBottomLeftRadius={borderRadius}
-  //               marginBottom={"auto"}
-  //               src={entry.image}
-  //               alt={"Test alt"}
-  //               height={`${layout.image}px`}
-  //               width={`${layout.image}px`}
-  //               maxWidth={`${layout.image}px`}
-  //               maxHeight={`${layout.image}px`}
-  //               filter={grayScale ? `grayScale(${opacity})` : undefined}
-  //             />
-  //           </Tooltip>
-  //         )}
-  //       </Flex>
-  //     </Wrapper>
-  //   );
-  // }
-  //
-  // return (
-  //   <Wrapper {...wrapperProps}>
-  //     <BackupForImage
-  //       id={entry.id}
-  //       fontSize={layout.font}
-  //       toolTipLabel={toolTipLabel}
-  //     />
-  //   </Wrapper>
-  // );
 };
 
 const BackupForImage = ({
@@ -292,8 +152,10 @@ const Wrapper = ({
       borderRadius={borderRadius}
       border={`1.2px solid ${borderColor}`}
     >
+      <Flex width={'100%'} zIndex={1}>
+        {children}
+      </Flex>
       <Background hovering={isHover} />
-      {children}
     </Flex>
   );
 };
@@ -307,6 +169,7 @@ const Background = ({ hovering }: { hovering: boolean }) => {
       backgroundColor={"white"}
       borderRadius={borderRadius}
       opacity={hovering ? 0.8 : 0.5}
+      zIndex={0}
     />
   );
 };
