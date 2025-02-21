@@ -389,7 +389,7 @@ const ClaimRow = ({
           <Link href={uri} target="_blank" rel="noopener noreferrer" display={'flex'} alignItems={'center'}>
               <Text ml={4} mr={2}>{text}
 
-              <FiExternalLink style={{ marginLeft: '8px', transform: 'translateY(2.5px)'}} />
+              <FiExternalLink style={{ marginLeft: '8px', transform: 'translateY(2px)', display: 'inline'}} />
               </Text>
           </Link>
         ) : (
