@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Center, Flex, Icon, Image, Text } from "@chakra-ui/react";
+import { Center, Flex, Icon, Image, Link, Text } from "@chakra-ui/react";
 import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
 import { BiChevronRight } from "react-icons/bi";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
-import { formatAddress } from "@/utils/formatting";
+import { formatAddress, generateHypercertDetailLink } from "@/utils/formatting";
 import { useFetchHyperboardById } from "@/hooks/useFetchHyperboardContents2";
+import { FiExternalLink } from "react-icons/fi";
 
 interface OwnershipTableProps {
   hyperboardId: string;
@@ -329,6 +330,7 @@ const HypercertClaimRow = ({
   isSingleSection?: boolean;
 }) => {
   const { data: claim } = useFetchHypercertById(hypercertId);
+  const link = generateHypercertDetailLink(hypercertId);
 
   if (!claim) {
     return null;
@@ -337,6 +339,7 @@ const HypercertClaimRow = ({
   return (
     <ClaimRow
       {...props}
+      uri={link}
       text={claim?.metadata?.name || "No name"}
       icon={
         <Image
@@ -356,8 +359,13 @@ const ClaimRow = ({
   percentage,
   onClick,
   isLast,
+  uri,
   isSingleSection = false,
-}: SelectionRowProps & { isLast?: boolean; isSingleSection?: boolean }) => {
+}: SelectionRowProps & {
+  isLast?: boolean;
+  isSingleSection?: boolean;
+  uri?: string;
+}) => {
   return (
     <Flex
       cursor={"pointer"}
@@ -377,7 +385,16 @@ const ClaimRow = ({
         alignItems={"center"}
       >
         {icon}
-        <Text ml={4}>{text}</Text>
+        {uri ? (
+          <Link href={uri} target="_blank" rel="noopener noreferrer" display={'flex'} alignItems={'center'}>
+              <Text ml={4} mr={2}>{text}
+
+              <FiExternalLink style={{ marginLeft: '8px', transform: 'translateY(2.5px)'}} />
+              </Text>
+          </Link>
+        ) : (
+          <Text ml={4}>{text}</Text>
+        )}
         <Text textStyle={"secondary"} ml={"auto"}>
           {percentage.toFixed(2)}%
         </Text>

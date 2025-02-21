@@ -1,3 +1,5 @@
+import { DeployedChains } from "@hypercerts-org/contracts";
+import { CONSTANTS, parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { format } from "date-fns";
 export const formatAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -68,4 +70,23 @@ export const chainIdToName = (chainId: number) => {
     default:
       return `Chain ID ${chainId}`;
   }
+};
+
+export const generateHypercertDetailLink = (hypercertId: string) => {
+  const { chainId } = parseClaimOrFractionId(hypercertId);
+  const deployment =
+    CONSTANTS.DEPLOYMENTS[chainId.toString() as DeployedChains];
+
+  if (!deployment) {
+    console.error("Invalid chainId", chainId);
+    return undefined;
+  }
+
+  const isTestnet = deployment.isTestnet;
+
+  if (isTestnet) {
+    return `https://testnet.hypercerts.org/hypercerts/${hypercertId}`;
+  }
+
+  return `https://app.hypercerts.org/hypercerts/${hypercertId}`;
 };
