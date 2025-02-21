@@ -11,7 +11,7 @@ const observer = new MutationObserver((mutationList, observer) => {
   widgetDivs.forEach((container) => {
     const hyperboardId = container.getAttribute("data-hyperboard-id");
     if (container.hasChildNodes()) {
-      console.log("Hyperboard already rendered. Skipping.", hyperboardId);
+      // console.log("Hyperboard already rendered. Skipping.", hyperboardId);
       return;
     }
 
@@ -23,7 +23,7 @@ const observer = new MutationObserver((mutationList, observer) => {
       return;
     }
 
-    console.log("rendering hyperboard", hyperboardId, "showTable", showTable);
+    // console.log("rendering hyperboard", hyperboardId, "showTable", showTable);
     const root = createRoot(container); // createRoot(container!) if you use TypeScript
     root.render(
       <Providers showReactQueryDevtools={false} resetCSS={false}>

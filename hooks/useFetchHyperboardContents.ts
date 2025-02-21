@@ -390,6 +390,7 @@ export const getFractionsDisplayData = async (
 
 export const registryContentItemToHyperboardEntry = ({
   percentage_owned,
+  percentage,
   avatar,
   display_name,
   address,
@@ -398,6 +399,7 @@ export const registryContentItemToHyperboardEntry = ({
   address: string | null;
   display_name: string | null;
   avatar: string | null;
+  percentage: number | null;
 }): HyperboardEntry => {
   // if (!item.displayData) {
   //   return {
@@ -415,7 +417,7 @@ export const registryContentItemToHyperboardEntry = ({
     type: "company",
     displayName: display_name,
     avatar: avatar,
-    value: percentage_owned!,
+    value: percentage_owned || percentage!,
     id: address!,
     isBlueprint: false,
   };

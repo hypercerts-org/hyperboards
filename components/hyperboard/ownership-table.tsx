@@ -15,6 +15,8 @@ interface OwnershipTableProps {
   showHeader?: boolean;
   selectedCollection?: string;
   onSelectCollection?: (registryId: string | undefined) => void;
+  selectedClaim: string | undefined;
+  onSelectClaim: (claimId: string | undefined) => void;
 }
 
 export const OwnershipTable = ({
@@ -22,9 +24,10 @@ export const OwnershipTable = ({
   showHeader = false,
   selectedCollection,
   onSelectCollection,
+  selectedClaim,
+  onSelectClaim,
 }: OwnershipTableProps) => {
   const { data: hyperboardContentData } = useFetchHyperboardById(hyperboardId);
-  const [selectedClaim, setSelectedClaim] = useState<string>();
   const [selectedBlueprint, setSelectedBlueprint] = useState<number>();
 
   const dataToShow = useMemo(() => {
@@ -166,7 +169,7 @@ export const OwnershipTable = ({
                         if (isRegistrySelected) {
                           onSelectCollection?.(undefined);
                         } else {
-                          setSelectedClaim(undefined);
+                          onSelectClaim(undefined);
                           setSelectedBlueprint(undefined);
                           onSelectCollection?.(id);
                         }
@@ -202,10 +205,10 @@ export const OwnershipTable = ({
                               percentage={claim.percentage_of_section}
                               onClick={() => {
                                 if (isBlueprintSelected) {
+                                  onSelectClaim(undefined);
                                   setSelectedBlueprint(undefined);
-                                  setSelectedClaim(undefined);
                                 } else {
-                                  setSelectedClaim(undefined);
+                                  onSelectClaim(undefined);
                                   setSelectedBlueprint(Number(claim.id));
                                 }
                               }}
@@ -228,11 +231,11 @@ export const OwnershipTable = ({
                             percentage={claim.percentage_of_section}
                             onClick={() => {
                               if (isClaimSelected) {
+                                onSelectClaim(undefined);
                                 setSelectedBlueprint(undefined);
-                                setSelectedClaim(undefined);
                               } else {
+                                onSelectClaim(claim.id);
                                 setSelectedBlueprint(undefined);
-                                setSelectedClaim(claim.id);
                               }
                             }}
                             icon={
@@ -386,7 +389,7 @@ const ClaimRow = ({
       >
         {icon}
         {uri ? (
-          <Link href={uri} target="_blank" rel="noopener noreferrer" display={'flex'} alignItems={'center'}>
+          <Link href={uri} target="_blank" rel="noopener noreferrer">
               <Text ml={4} mr={2}>{text}
 
               <FiExternalLink style={{ marginLeft: '8px', transform: 'translateY(2px)', display: 'inline'}} />

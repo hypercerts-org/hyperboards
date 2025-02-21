@@ -25,6 +25,7 @@ export const HyperboardRenderer = ({
   const [containerRef, dimensions] = useMeasure<HTMLDivElement>();
 
   const [selectedCollection, setSelectedCollection] = useState<string>();
+  const [selectedClaim, setSelectedClaim] = useState<string>();
 
   useEffect(() => {
     if (selectedRegistryParent !== selectedCollection) {
@@ -119,7 +120,9 @@ export const HyperboardRenderer = ({
         )}
         {!isLoading && !isLoadingError && sections && (
           <>
-            {sections.map((section) => (
+            {sections.map((section) => {
+              const contentToRender = selectedClaim ? section.entries.find(entry => entry.id === selectedClaim)?.owners : section.owners;
+              return (
               <Flex
                 key={section.collection.id}
                 width={getWidth(section.collection.id)}
@@ -136,13 +139,14 @@ export const HyperboardRenderer = ({
                   grayscaleImages={grayscaleImages}
                   borderColor={borderColor}
                   data={
-                    (Object.values(section.owners) || {}).map((owner) =>
+                    Object.values(contentToRender || {}).map((owner) =>
                       registryContentItemToHyperboardEntry(owner),
                     ) || []
                   }
                 />
-              </Flex>
-            ))}
+                </Flex>
+              );
+            })}
           </>
         )}
       </Flex>
@@ -152,6 +156,8 @@ export const HyperboardRenderer = ({
           showHeader
           selectedCollection={selectedCollection}
           onSelectCollection={setSelectedCollection}
+          selectedClaim={selectedClaim}
+          onSelectClaim={setSelectedClaim}
         />
       )}
     </>

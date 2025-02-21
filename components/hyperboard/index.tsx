@@ -56,7 +56,7 @@ export const Hyperboard = (props: HyperboardProps) => {
   }, [containerRef, width, height, props.data.length]);
 
   const draw = () => {
-    if (!dimensions) {
+    if (!dimensions || dimensions.height === 0 || dimensions.width === 0) {
       return;
     }
     // Append images as patterns
