@@ -40,6 +40,9 @@ export const Hyperboard = (props: HyperboardProps) => {
   };
 
   const { height, width } = dimensions || {};
+
+  // TODO: useDeepCompareEffect?
+  const stringifiedData = JSON.stringify(formattedData);
   useEffect(() => {
     if (!containerRef) {
       return;
@@ -53,7 +56,7 @@ export const Hyperboard = (props: HyperboardProps) => {
       .attr("height", props.height)
       .attr("viewBox", `0 0 ${props.height} ${props.height}`);
     draw();
-  }, [containerRef, width, height, props.data.length]);
+  }, [containerRef, width, height, stringifiedData]);
 
   const draw = () => {
     if (!dimensions || dimensions.height === 0 || dimensions.width === 0) {

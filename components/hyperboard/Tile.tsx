@@ -45,15 +45,12 @@ export const Tile = ({
 }) => {
   const opacity = entry.isBlueprint ? 0.5 : 1;
 
-  const { data: ensName, isLoading } = useEnsName({
+  const { data: ensName } = useEnsName({
     address: isAddress(entry.id) ? entry.id : undefined,
     chainId: 1,
+    refetchOnMount: false,
   });
   const fallback = isAddress(entry.id) ? formatAddress(entry.id) : entry.id;
-
-  if (isLoading) {
-    return null;
-  }
 
   const name = entry.displayName || ensName || fallback;
   const toolTipLabel = formatTooltipLabel(entry.id, name);

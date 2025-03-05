@@ -36,7 +36,7 @@
   "dependencies": {
     "@0no-co/graphqlsp": "^1.12.8",
     "@ant-design/icons": "^5.3.0",
-    "@celo/rainbowkit-celo": "^1.1.2",
+    "@celo/rainbowkit-celo": "^1.2.1",
     "@chakra-ui/modal": "^2.3.1",
     "@chakra-ui/react": "^2.8.0",
     "@chakra-ui/react-use-size": "^2.1.0",
@@ -78,8 +78,8 @@
     "slick-carousel": "^1.8.1",
     "supabase": "^1.106.1",
     "typescript": "5.2.2",
-    "viem": "2.7.9",
-    "wagmi": "2.10.4",
+    "viem": "2.23.6",
+    "wagmi": "2.14.12",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -99,7 +99,6 @@
     "prettier": "^3.0.3",
     "process": "^0.11.10",
     "rimraf": "^5.0.5",
-    "snaplet": "0.71",
     "tsx": "^4.7.2"
   }
 }

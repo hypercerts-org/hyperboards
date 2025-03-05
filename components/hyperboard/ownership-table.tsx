@@ -229,6 +229,7 @@ export const OwnershipTable = ({
                             isLast={isLastClaim}
                             hypercertId={claim.id}
                             percentage={claim.percentage_of_section}
+                            name={claim.name}
                             onClick={() => {
                               if (isClaimSelected) {
                                 onSelectClaim(undefined);
@@ -326,24 +327,21 @@ const RegistryRow = ({
 
 const HypercertClaimRow = ({
   hypercertId,
+  name,
   ...props
 }: Omit<SelectionRowProps, "text"> & {
   isLast?: boolean;
   hypercertId: string;
   isSingleSection?: boolean;
+  name: string | null;
 }) => {
-  const { data: claim } = useFetchHypercertById(hypercertId);
   const link = generateHypercertDetailLink(hypercertId);
-
-  if (!claim) {
-    return null;
-  }
 
   return (
     <ClaimRow
       {...props}
       uri={link}
-      text={claim?.metadata?.name || "No name"}
+      text={name || "No name"}
       icon={
         <Image
           alt={"Claim icon"}
