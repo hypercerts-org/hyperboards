@@ -318,7 +318,7 @@ const RegistryRow = ({
         <Text textStyle={"secondary"} ml={"auto"}>
           {percentage}%
         </Text>
-        {isSelected && <SelectedIcon />}
+        <Flex alignItems={"center"}>{isSelected && <SelectedIcon />}</Flex>
       </Flex>
     </Flex>
   );
@@ -389,12 +389,20 @@ const ClaimRow = ({
       >
         {icon}
         {uri ? (
-          <Link href={uri} target="_blank" rel="noopener noreferrer">
-              <Text ml={4} mr={2}>{text}
-
-              <FiExternalLink style={{ marginLeft: '8px', transform: 'translateY(2px)', display: 'inline'}} />
-              </Text>
-          </Link>
+          <>
+            <Text ml={4} mr={2}>
+              {text}
+            </Text>
+            <Link href={uri} target="_blank" rel="noopener noreferrer">
+              <FiExternalLink
+                style={{
+                  marginLeft: "8px",
+                  transform: "translateY(2px)",
+                  display: "inline",
+                }}
+              />
+            </Link>
+          </>
         ) : (
           <Text ml={4}>{text}</Text>
         )}
