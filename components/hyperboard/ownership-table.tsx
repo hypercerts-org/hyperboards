@@ -396,7 +396,6 @@ const ClaimRow = ({
               <BiLinkExternal
                 style={{
                   marginLeft: "8px",
-                  transform: "translateY(2px)",
                   display: "inline",
                 }}
               />
