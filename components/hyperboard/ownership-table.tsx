@@ -3,7 +3,7 @@ import { Center, Flex, Icon, Image, Link, Text } from "@chakra-ui/react";
 import _ from "lodash";
 
 import "../../styles/scrollbar.module.css";
-import { BiChevronRight } from "react-icons/bi";
+import { BiChevronRight, BiLinkExternal } from "react-icons/bi";
 import { BlueprintTooltip } from "@/components/blueprint-tooltip";
 import { useFetchHypercertById } from "@/hooks/useFetchHypercertById";
 import { formatAddress, generateHypercertDetailLink } from "@/utils/formatting";
@@ -392,9 +392,8 @@ const ClaimRow = ({
           <>
             <Text ml={4} mr={2}>
               {text}
-            </Text>
             <Link href={uri} target="_blank" rel="noopener noreferrer">
-              <FiExternalLink
+              <BiLinkExternal
                 style={{
                   marginLeft: "8px",
                   transform: "translateY(2px)",
@@ -402,6 +401,7 @@ const ClaimRow = ({
                 }}
               />
             </Link>
+            </Text>
           </>
         ) : (
           <Text ml={4}>{text}</Text>
