@@ -1,4 +1,9 @@
-@import url('https://fonts.cdnfonts.com/css/switzer');
+@font-face {
+  font-family: "Hanken Grotesk";
+  src: url("/fonts/HankenGrotesk-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+}
 
 @font-face {
     font-family: "Director-Regular";

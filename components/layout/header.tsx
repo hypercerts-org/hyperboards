@@ -34,7 +34,7 @@ export const Header = () => {
       borderBottom={"1px solid"}
     >
       <HStack height={"100%"}>
-        <Heading fontFamily="Switzer" size={"md"} mr={4} ml={[4, 4, 0]}>
+        <Heading fontFamily="Hanken Grotesk" size={"md"} mr={4} ml={[4, 4, 0]}>
           Hyperboards
         </Heading>
         <Show above={"md"}>

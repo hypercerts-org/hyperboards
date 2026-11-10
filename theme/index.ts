@@ -10,11 +10,11 @@ export const colors = {
 export const index: ThemeOverride = extendTheme({
   fonts: {
     heading: `'Director-Variable', sans-serif`,
-    body: `'Switzer', sans-serif`,
+    body: `'Hanken Grotesk', sans-serif`,
   },
   textStyles: {
     primary: {
-      fontFamily: `'Switzer', sans-serif`,
+      fontFamily: `'Hanken Grotesk', sans-serif`,
     },
     secondary: {
       fontFamily: `'Director-Variable', sans-serif`,

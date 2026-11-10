@@ -34,13 +34,13 @@ const EventsPage = () => {
         flexDirection={"column"}
         alignItems={"flex-start"}
       >
-        <Heading fontFamily={"Switzer"} size={"lg"}>
+        <Heading fontFamily={"Hanken Grotesk"} size={"lg"}>
           Archive
         </Heading>
         <VStack alignItems={"flex-start"}>
           {data.data.map((registry) => (
             <Link key={registry.id} href={`/boards/${registry.id}`}>
-              <Heading fontFamily={"Switzer"} size={"sm"}>
+              <Heading fontFamily={"Hanken Grotesk"} size={"sm"}>
                 {registry.name}
               </Heading>
             </Link>
