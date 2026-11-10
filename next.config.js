@@ -45,6 +45,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/fonts/HankenGrotesk-Variable.woff2",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
     ];
   },
 };
